@@ -199,7 +199,7 @@ When deployed, Project Chrono will be accessible at:
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Please read our [Contributing Guidelines](docs/CONTRIBUTING.md) and follow the Protoss Code of Honor:
+We welcome contributions from the community! Please read our [Contributing Guidelines](CONTRIBUTING.md) and follow the Protoss Code of Honor:
 
 1. **Write clean, efficient code** - Optimize for performance and readability
 2. **Test thoroughly** - All code must have comprehensive tests
