@@ -28,18 +28,37 @@ After completing each ticket:
 ## Tickets
 
 ### CHRONO-001: GitHub Projects Setup
-- **Started**: TBD
-- **Status**: Not Started
+- **Started**: October 4, 2025
+- **Completed**: October 4, 2025
+- **Status**: ✅ Complete
 - **Epic**: Nexus Construction
 - **Supply Cost**: 2 (Stalker)
-- **Notes**: Will configure custom fields, columns, and views
+- **Actual Complexity**: 2 (as estimated)
+- **Key Deliverables**:
+  - GitHub Projects board with Kanban workflow
+  - Custom fields (Supply Cost, Epic, Status)
+  - Automated workflow rules
+- **Learnings**: GitHub Projects v2 GraphQL API is powerful but requires careful setup
 
 ### CHRONO-002: Repo Structure & Templates
-- **Started**: TBD
-- **Status**: Not Started
+- **Started**: October 7, 2025
+- **Completed**: October 7, 2025
+- **Status**: ✅ Complete
 - **Epic**: Nexus Construction
 - **Supply Cost**: 3 (High Templar)
-- **Notes**: Bootstrap scripts partially complete
+- **Actual Complexity**: 3 (as estimated)
+- **Key Deliverables**:
+  - **Phase 1-3**: Workflow docs, setup docs, helper scripts
+  - **Phase 4**: GitHub Actions workflows (CI, staging, production)
+  - **Phase 5**: PR template, CONTRIBUTING.md
+  - **Phase 6**: VSCode settings and extensions config
+- **Challenges**:
+  - Workflows are skeletons - will need updates as code is added
+  - .gitignore needed update to include .vscode for team consistency
+- **Learnings**:
+  - Helper scripts provide excellent DX for ticket creation
+  - VSCode settings ensure consistent formatting across team
+  - GitHub Actions workflows establish CI/CD foundation early
 
 ---
 
@@ -62,11 +81,19 @@ After completing each ticket:
 
 ## Velocity Tracking
 
-### Week 1 (TBD)
-- **Supply Points Committed**: TBD
-- **Supply Points Completed**: TBD
-- **Hours Invested**: TBD
-- **Learnings**: TBD
+### Week 1 (October 4-7, 2025)
+- **Supply Points Committed**: 5 (CHRONO-001: 2, CHRONO-002: 3)
+- **Supply Points Completed**: 5
+- **Completion Rate**: 100%
+- **Key Accomplishments**:
+  - Project infrastructure fully established
+  - GitHub Projects board operational
+  - Complete documentation structure
+  - CI/CD pipeline foundation laid
+- **Learnings**:
+  - Upfront investment in tooling and documentation pays dividends
+  - Helper scripts dramatically improve developer experience
+  - VSCode settings should be versioned for team consistency
 
 ---
 
