@@ -1,0 +1,133 @@
+{
+  // Editor settings
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.rulers": [80, 100],
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.trimAutoWhitespace": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  // Language-specific formatters
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+
+  // Rust Analyzer settings
+  "rust-analyzer.checkOnSave.command": "clippy",
+  "rust-analyzer.checkOnSave.allTargets": true,
+  "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.inlayHints.enable": true,
+  "rust-analyzer.lens.enable": true,
+  "rust-analyzer.lens.run.enable": true,
+  "rust-analyzer.lens.debug.enable": true,
+
+  // File exclusions
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/target": true,
+    "**/.DS_Store": true,
+    "**/bun.lockb": true
+  },
+
+  // Search exclusions
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/target": true,
+    "**/*.lock": true,
+    "**/.git": true
+  },
+
+  // File associations
+  "files.associations": {
+    "*.yml": "yaml",
+    "*.yaml": "yaml",
+    ".env*": "dotenv"
+  },
+
+  // TypeScript/JavaScript settings
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "relative",
+
+  // Git settings
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+
+  // Terminal settings
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.fontSize": 12,
+
+  // Prettier settings
+  "prettier.singleQuote": false,
+  "prettier.trailingComma": "es5",
+  "prettier.semi": true,
+  "prettier.printWidth": 80,
+
+  // ESLint settings
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // Markdown settings
+  "markdown.preview.fontSize": 14,
+  "markdown.preview.lineHeight": 1.6,
+
+  // Workbench settings
+  "workbench.editor.enablePreview": false,
+  "workbench.startupEditor": "readme",
+
+  // Explorer settings
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+
+  // GitLens settings
+  "gitlens.codeLens.enabled": true,
+  "gitlens.currentLine.enabled": true,
+
+  // Todo Tree settings (if extension is installed)
+  "todo-tree.general.tags": [
+    "TODO",
+    "FIXME",
+    "HACK",
+    "NOTE",
+    "XXX"
+  ],
+  "todo-tree.highlights.defaultHighlight": {
+    "foreground": "black",
+    "background": "yellow",
+    "icon": "check",
+    "type": "tag"
+  }
+}

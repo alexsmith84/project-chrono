@@ -1,0 +1,107 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [gateway]
+  workflow_dispatch:
+
+jobs:
+  deploy-staging:
+    name: Deploy to Gateway (Staging)
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://gateway.hayven.xyz
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-release-
+
+      - name: Build Rust release
+        run: |
+          if [ -d "src" ] && [ -f "Cargo.toml" ]; then
+            cargo build --release
+          else
+            echo "No Rust code found, skipping build"
+          fi
+
+      - name: Install Bun dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            bun install --production
+          else
+            echo "No package.json found, skipping"
+          fi
+
+      - name: Build frontend/API
+        run: |
+          if [ -f "package.json" ] && [ -n "$(jq -r '.scripts.build // empty' package.json)" ]; then
+            bun run build
+          else
+            echo "No build script configured, skipping"
+          fi
+
+      - name: Run database migrations
+        run: |
+          echo "Database migrations would run here"
+          echo "TODO: Implement when database schema is created"
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+
+      - name: Deploy to staging environment
+        run: |
+          echo "Deployment to staging would happen here"
+          echo "TODO: Implement SSH deployment or container deployment"
+          echo "Target: gateway.hayven.xyz"
+        env:
+          STAGING_HOST: ${{ secrets.STAGING_HOST }}
+          STAGING_SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+
+      - name: Deploy Cloudflare Workers (staging)
+        run: |
+          if [ -d "cloudflare-workers" ]; then
+            echo "Deploying Cloudflare Workers to staging"
+            # npx wrangler deploy --env staging
+            echo "TODO: Implement Cloudflare Workers deployment"
+          else
+            echo "No Cloudflare Workers found, skipping"
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Health check
+        run: |
+          echo "Health check would run here"
+          echo "Verify staging deployment is healthy"
+          # curl -f https://gateway.hayven.xyz/health || exit 1
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Staging deployment successful"
+            echo "URL: https://gateway.hayven.xyz"
+          else
+            echo "❌ Staging deployment failed"
+          fi
