@@ -602,6 +602,38 @@ Tickets are prioritized using mission-critical language:
 
 ## Development Workflow
 
+### Git-Flow Branch Strategy
+
+**Branch Structure** (StarCraft-themed):
+- `khala` - Production/main branch (the psychic link binding all Protoss)
+- `gateway` - Staging branch (portal to production for final verification)
+- `forge` - Development branch (where features are crafted and integrated)
+- `warp-in/CHRONO-XXX-description` - Feature branches (warping in new units/features)
+- `recall/hotfix-description` - Hotfix branches (emergency recall to fix critical issues)
+- `archives/vX.X.X` - Release branches (Templar Archives preserving versions)
+
+**Branch Flow**:
+```
+khala (production)
+  ↑
+gateway (staging)
+  ↑
+forge (development)
+  ↑
+warp-in/CHRONO-XXX (features) ← work here
+```
+
+**Workflow**:
+1. Create feature branch: `git checkout -b warp-in/CHRONO-XXX-description forge`
+2. Implement and commit on feature branch
+3. Create PR: `warp-in/CHRONO-XXX` → `forge`
+4. After review, merge to `forge`
+5. Test on `forge`, then merge `forge` → `gateway` for staging
+6. Final verification on `gateway`
+7. When ready for release, create `archives/vX.X.X` from `gateway`
+8. Merge `archives/vX.X.X` to `khala` (production)
+9. For hotfixes: branch from `khala` as `recall/hotfix-description`, then merge to `khala`, `gateway`, and `forge`
+
 ### Ticket Creation Process
 
 1. **Identify Need**: Feature requirement or bug discovered
@@ -613,13 +645,16 @@ Tickets are prioritized using mission-critical language:
 
 ### Implementation Process
 
-1. **Read Spec**: Thoroughly review `docs/specs/CHRONO-XXX-spec.md`
-2. **Review Implementation Guide**: Follow steps in `docs/implementation/CHRONO-XXX-guide.md`
-3. **Implement with Claude Code**: Use spec as context, implement feature
-4. **Run Tests**: Validate per `docs/tests/CHRONO-XXX-tests.md`
-5. **Manual Review**: Human verification of implementation
-6. **Commit & Push**: Create PR if using feature branches
-7. **Update Log**: Add learnings to `IMPLEMENTATION_LOG.md`
+1. **Create Feature Branch**: `git checkout -b warp-in/CHRONO-XXX-description forge`
+2. **Read Spec**: Thoroughly review `docs/specs/CHRONO-XXX-spec.md`
+3. **Review Implementation Guide**: Follow steps in `docs/implementation/CHRONO-XXX-guide.md`
+4. **Implement with Claude Code**: Use spec as context, implement feature
+5. **Run Tests**: Validate per `docs/tests/CHRONO-XXX-tests.md`
+6. **Commit Changes**: Make atomic commits with clear messages
+7. **Create PR**: `warp-in/CHRONO-XXX` → `forge`
+8. **Manual Review**: Human verification of implementation
+9. **Merge to Forge**: After approval, merge feature branch
+10. **Update Log**: Add learnings to `IMPLEMENTATION_LOG.md`
 
 ### GitHub Projects Setup
 
