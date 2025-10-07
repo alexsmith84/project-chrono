@@ -17,15 +17,19 @@
 - Short and memorable
 **Consequences**: All feature branches merge to `khala`, not `main`
 
-### Decision 002: Branch Naming Strategy
-**Date**: October 2025  
-**Status**: Accepted  
-**Decision**: Use themed branch prefixes:
-- `forge/` for feature development
-- `gateway/` for staging
-- `hotfix/` for emergency fixes
-**Rationale**: Maintains StarCraft theme, clear purpose per prefix
-**Consequences**: Team must learn new convention vs standard `feature/`, `release/`
+### Decision 002: Git-Flow Branch Strategy
+**Date**: October 2025
+**Status**: Accepted
+**Decision**: Use StarCraft-themed git-flow branch structure:
+- `khala` - Production/main branch
+- `gateway` - Staging branch (portal to production for final verification)
+- `forge` - Development branch (where features are crafted and integrated)
+- `warp-in/CHRONO-XXX-description` - Feature branches
+- `recall/hotfix-description` - Hotfix branches
+- `archives/vX.X.X` - Release branches
+**Rationale**: Maintains StarCraft theme while following professional git-flow pattern for release management
+**Branch Flow**: warp-in/* → forge → gateway → archives/vX.X.X → khala
+**Consequences**: More complex than simplified workflow, but provides professional release management even for solo developer
 
 ### Decision 003: Monorepo Structure
 **Date**: October 2025  
