@@ -17,12 +17,14 @@ Project Chrono uses a git-flow deployment strategy with three environments:
 ## Deployment Environments
 
 ### Development (Forge)
+
 - **Branch**: `forge`
 - **Purpose**: Feature integration and testing
 - **Deploy**: Manual (local development)
 - **Audience**: Developers only
 
 ### Staging (Gateway)
+
 - **Branch**: `gateway`
 - **Purpose**: Pre-production verification
 - **Deploy**: Automated on merge to `gateway`
@@ -30,6 +32,7 @@ Project Chrono uses a git-flow deployment strategy with three environments:
 - **Infrastructure**: TBD (future: staging Mac Mini or cloud VM)
 
 ### Production (Khala)
+
 - **Branch**: `khala`
 - **Purpose**: Live FTSO oracle
 - **Deploy**: Manual via release process
@@ -57,6 +60,7 @@ gh issue list --label "Critical Mission" --state open
 ```
 
 **Pre-release checklist:**
+
 - [ ] All planned tickets for release are merged
 - [ ] All tests passing on `forge`
 - [ ] No open Critical Mission issues
@@ -80,6 +84,7 @@ git push origin gateway
 ```
 
 **Post-merge:**
+
 - CI/CD pipeline deploys to staging
 - Automated smoke tests run
 - Manual verification on staging environment
@@ -89,18 +94,21 @@ git push origin gateway
 #### Step 3: Staging Verification
 
 **Automated checks:**
+
 - [ ] Deployment successful
 - [ ] All services running
 - [ ] Health checks pass
 - [ ] Smoke tests pass
 
 **Manual verification:**
+
 - [ ] Test critical user flows
 - [ ] Verify API endpoints
 - [ ] Check monitoring dashboards
 - [ ] Test FTSO submission (if applicable)
 
 **If issues found:**
+
 ```bash
 # Fix on forge
 git checkout forge
@@ -131,6 +139,7 @@ git push -u origin archives/v0.X.0
 ```
 
 **Update version numbers:**
+
 - `package.json`
 - `Cargo.toml`
 - Any version constants in code
@@ -170,6 +179,7 @@ git push origin --tags
 ```
 
 **Production deployment steps:**
+
 1. Backup current state (automated or manual)
 2. Pull latest `khala` on production server
 3. Build production assets
@@ -182,6 +192,7 @@ git push origin --tags
 #### Step 6: Post-Deployment
 
 **Immediate verification:**
+
 - [ ] Production services running
 - [ ] No error spikes in logs
 - [ ] FTSO submissions working
@@ -189,6 +200,7 @@ git push origin --tags
 - [ ] Monitoring alerts clear
 
 **Create GitHub Release:**
+
 ```bash
 gh release create v0.X.0 \
   --title "Release v0.X.0" \
@@ -196,6 +208,7 @@ gh release create v0.X.0 \
 ```
 
 **Announce:**
+
 - Update project board
 - Notify delegators (if significant changes)
 - Post to Discord/Twitter (if public)
@@ -242,6 +255,7 @@ git push origin --delete recall/hotfix-critical-bug-name
 ```
 
 **Hotfix criteria:**
+
 - Production is broken or severely degraded
 - Cannot wait for normal release cycle
 - Fix is well-understood and low-risk
@@ -324,6 +338,7 @@ redis-cli ping
 ### Monitoring
 
 **Key metrics to watch:**
+
 - Response times (p50, p95, p99)
 - Error rates
 - FTSO submission success rate
@@ -331,6 +346,7 @@ redis-cli ping
 - Memory and CPU usage
 
 **Alert on:**
+
 - Error rate > 1%
 - p99 latency > 1000ms
 - Failed FTSO submissions
@@ -341,6 +357,7 @@ redis-cli ping
 ## Environment-Specific Configuration
 
 ### Development (Local)
+
 - `.env.development`
 - PostgreSQL on localhost
 - Redis on localhost
@@ -348,6 +365,7 @@ redis-cli ping
 - Mock external APIs
 
 ### Staging (Gateway)
+
 - `.env.staging`
 - Staging database
 - Staging Redis
@@ -355,6 +373,7 @@ redis-cli ping
 - Real APIs (test accounts)
 
 ### Production (Khala)
+
 - `.env.production`
 - Production database (with replicas)
 - Production Redis (with persistence)
@@ -413,11 +432,13 @@ bun run build
 ### Backup Strategy
 
 **Automated backups:**
+
 - Database: Every 6 hours to encrypted S3
 - Configuration: Daily to git repository
 - Logs: Retained for 30 days
 
 **Manual backup before deployment:**
+
 ```bash
 ./scripts/deployment/backup-now.sh
 ```
@@ -425,6 +446,7 @@ bun run build
 ### Recovery Process
 
 **Database recovery:**
+
 ```bash
 # List available backups
 ./scripts/deployment/list-backups.sh
@@ -437,6 +459,7 @@ psql -U chrono -c "SELECT COUNT(*) FROM price_data;"
 ```
 
 **Service recovery:**
+
 ```bash
 # Reinstall from scratch
 git clone https://github.com/alexsmith84/project-chrono.git
@@ -453,6 +476,7 @@ git checkout v0.X.0  # Last known good version
 
 **Symptom**: CI/CD pipeline fails
 **Solution**:
+
 1. Check CI logs for error message
 2. Verify all tests pass locally
 3. Ensure dependencies are locked
@@ -462,6 +486,7 @@ git checkout v0.X.0  # Last known good version
 
 **Symptom**: Service crashes on startup
 **Solution**:
+
 1. Check logs: `journalctl -u project-chrono -n 100`
 2. Verify configuration files present
 3. Check database connectivity
@@ -471,6 +496,7 @@ git checkout v0.X.0  # Last known good version
 
 **Symptom**: Migration script errors
 **Solution**:
+
 1. Check migration SQL for syntax errors
 2. Verify database permissions
 3. Rollback failed migration

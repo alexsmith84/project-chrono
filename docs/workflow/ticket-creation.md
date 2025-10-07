@@ -19,6 +19,7 @@ This guide explains how to create well-specified tickets for Project Chrono usin
 ### Step 1: Identify the Need
 
 Determine:
+
 - What problem needs solving?
 - What feature is required?
 - Which epic does this belong to?
@@ -42,6 +43,7 @@ cp docs/specs/SPEC-TEMPLATE.md docs/specs/CHRONO-XXX-description.md
 ```
 
 **Key Principles**:
+
 - Be comprehensive but concise
 - Include code examples for clarity
 - Define clear success criteria
@@ -62,6 +64,7 @@ cp docs/implementation/IMPL-TEMPLATE.md docs/implementation/CHRONO-XXX-guide.md
 ```
 
 **Key Principles**:
+
 - Assume reader has basic knowledge only
 - Break complex tasks into small steps
 - Include verification steps after each phase
@@ -81,6 +84,7 @@ cp docs/tests/TEST-TEMPLATE.md docs/tests/CHRONO-XXX-tests.md
 ```
 
 **Key Principles**:
+
 - Every requirement needs a test
 - Include success criteria for each test
 - Provide test data setup/cleanup scripts
@@ -101,6 +105,7 @@ gh issue create \
 ```
 
 **Fill in the template**:
+
 - Summary (2-3 sentences)
 - Epic & Classification (epic, role, supply cost, priority)
 - Documentation links (to the three docs you created)

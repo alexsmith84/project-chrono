@@ -17,17 +17,20 @@ This guide covers setting up Project Chrono's production environment on a Mac Mi
 ## Prerequisites
 
 ### Hardware
+
 - Mac Mini M4 Pro (10-core CPU, 16GB RAM minimum)
 - Reliable internet connection (>=100 Mbps)
 - UPS for power protection
 - External SSD for backups (optional but recommended)
 
 ### Accounts
+
 - GitHub account with access to project-chrono repository
 - Cloudflare account (for Workers)
 - Flare Network wallet with FLR for FTSO submissions
 
 ### Knowledge
+
 - Basic macOS terminal usage
 - Understanding of git and deployment workflows
 - Familiarity with database administration
@@ -180,6 +183,7 @@ nano .env.production
 ```
 
 **Required environment variables:**
+
 ```bash
 # Database
 DATABASE_URL=postgresql://chrono:password@localhost/project_chrono_prod
@@ -296,6 +300,7 @@ Create systemd-style launch agents for macOS:
 ```
 
 **Load service:**
+
 ```bash
 launchctl load ~/Library/LaunchAgents/com.projectchrono.oracle.plist
 launchctl start com.projectchrono.oracle
@@ -341,6 +346,7 @@ templar.hayven.xyz {
 ```
 
 **Start Caddy:**
+
 ```bash
 sudo brew services start caddy
 ```
@@ -360,6 +366,7 @@ nano /usr/local/etc/prometheus.yml
 ```
 
 **Basic Prometheus config:**
+
 ```yaml
 global:
   scrape_interval: 15s
@@ -371,6 +378,7 @@ scrape_configs:
 ```
 
 **Start Prometheus:**
+
 ```bash
 brew services start prometheus
 ```
@@ -408,6 +416,7 @@ bunx wrangler deploy
 ### Step 2: Configure Routes
 
 In Cloudflare dashboard:
+
 - Set up routes for `probe.hayven.xyz`
 - Configure worker triggers
 - Set environment variables
@@ -427,6 +436,7 @@ crontab -e
 ```
 
 **Crontab entry:**
+
 ```
 0 */6 * * * /Users/alex/projects/project-chrono/scripts/deployment/backup-database.sh
 ```
@@ -471,7 +481,7 @@ tail -f logs/oracle.log
 
 ### Step 3: Monitoring Verification
 
-- Open Grafana: http://localhost:3001
+- Open Grafana: <http://localhost:3001>
 - Verify metrics being collected
 - Set up alert rules
 - Test alert notifications
@@ -511,16 +521,19 @@ tail -f logs/oracle.log
 ### Regular Tasks
 
 **Daily:**
+
 - Check service health
 - Review error logs
 - Monitor FTSO submission success rate
 
 **Weekly:**
+
 - Review system resources (CPU, memory, disk)
 - Check backup integrity
 - Update dependencies (security patches)
 
 **Monthly:**
+
 - Review and rotate logs
 - Test disaster recovery procedures
 - Update documentation

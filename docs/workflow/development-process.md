@@ -23,12 +23,14 @@
 ### 1. Ticket Selection
 
 **From Project Board:**
+
 - View [Main Board](https://github.com/users/alexsmith84/projects/5) Kanban view
 - Look in "Ready" column for well-specified tickets
 - Check Supply Cost matches available time
 - Assign ticket to yourself
 
 **Ticket should have:**
+
 - Spec document (`docs/specs/CHRONO-XXX-*.md`)
 - Implementation guide (`docs/implementation/CHRONO-XXX-guide.md`)
 - Test specification (`docs/tests/CHRONO-XXX-tests.md`)
@@ -50,6 +52,7 @@ git checkout -b warp-in/CHRONO-XXX-short-description
 ```
 
 **Branch naming:**
+
 - `warp-in/CHRONO-XXX-description` - Feature branches
 - `recall/hotfix-description` - Emergency hotfixes
 
@@ -58,12 +61,14 @@ git checkout -b warp-in/CHRONO-XXX-short-description
 ### 3. Read Documentation
 
 **Before coding:**
+
 1. Read spec thoroughly (`docs/specs/CHRONO-XXX-*.md`)
 2. Review implementation guide step-by-step
 3. Understand test requirements (`docs/tests/CHRONO-XXX-tests.md`)
 4. Note any dependencies or blockers
 
 **Ask questions:**
+
 - Create GitHub discussion if spec is unclear
 - Update spec if requirements change
 - Document decisions in commit messages
@@ -73,11 +78,13 @@ git checkout -b warp-in/CHRONO-XXX-short-description
 ### 4. Implementation
 
 **Follow implementation guide:**
+
 - Work through steps sequentially
 - Check off items as you complete them
 - Make atomic commits (one logical change per commit)
 
 **Commit message format:**
+
 ```
 Short description (50 chars or less)
 
@@ -93,6 +100,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 **Best practices:**
+
 - Commit frequently (every logical unit of work)
 - Write descriptive commit messages
 - Keep commits focused (single responsibility)
@@ -103,6 +111,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ### 5. Testing
 
 **Run tests locally:**
+
 ```bash
 # Run all tests
 ./scripts/helpers/run-tests.sh
@@ -116,11 +125,13 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 **Manual testing:**
+
 - Follow test spec (`docs/tests/CHRONO-XXX-tests.md`)
 - Verify all acceptance criteria met
 - Test edge cases
 
 **Before pushing:**
+
 - [ ] All tests pass
 - [ ] No linting errors
 - [ ] Documentation updated
@@ -141,6 +152,7 @@ gh pr create --base forge \
 ```
 
 **PR should include:**
+
 - Link to spec document
 - Summary of changes
 - Testing performed
@@ -153,18 +165,21 @@ gh pr create --base forge \
 ### 7. Code Review
 
 **Self-review first:**
+
 - Read your own PR diff
 - Check for debug code, console.logs, TODOs
 - Verify documentation is up to date
 - Run tests one more time
 
 **Reviewer responsibilities:**
+
 - Check code quality and style
 - Verify tests are sufficient
 - Confirm spec requirements met
 - Test locally if complex changes
 
 **Address feedback:**
+
 - Make requested changes
 - Push new commits to same branch
 - Respond to comments
@@ -175,11 +190,13 @@ gh pr create --base forge \
 ### 8. Merge to Forge
 
 **After approval:**
+
 - Ensure CI passes (GitHub Actions)
 - Squash commits if many small fixes
 - Merge PR to `forge`
 
 **Post-merge:**
+
 - Delete feature branch
 - Move ticket to "Done" on project board
 - Update `IMPLEMENTATION_LOG.md`
@@ -203,31 +220,37 @@ warp-in/CHRONO-XXX (features) ← work here
 ### Branch Purposes
 
 **`khala`** - Production/Main
+
 - Only production-ready code
 - Merge via release branches
 - Protected branch (no direct pushes)
 
 **`gateway`** - Staging
+
 - Final verification before production
 - Merge from `forge` when ready for release
 - Deploy to staging environment
 
 **`forge`** - Development
+
 - Integration branch for features
 - All feature branches merge here first
 - Should always be in working state
 
 **`warp-in/*`** - Feature Branches
+
 - Individual ticket implementation
 - Branch from `forge`
 - Merge back to `forge` via PR
 
 **`recall/*`** - Hotfix Branches
+
 - Emergency production fixes
 - Branch from `khala`
 - Merge to `khala`, `gateway`, and `forge`
 
 **`archives/*`** - Release Branches
+
 - Version snapshots (e.g., `archives/v0.2.0`)
 - Created from `gateway`
 - Merged to `khala` for production release
@@ -237,12 +260,14 @@ warp-in/CHRONO-XXX (features) ← work here
 ## Development Tools
 
 ### Primary Tool: Claude Code
+
 - Full ticket implementation from specs
 - Complex refactoring
 - Test writing
 - Git commits
 
 ### Helper Scripts
+
 ```bash
 # Create new ticket (spec + docs)
 ./scripts/helpers/new-ticket.sh CHRONO-XXX "Title"
@@ -255,6 +280,7 @@ warp-in/CHRONO-XXX (features) ← work here
 ```
 
 ### GitHub CLI
+
 ```bash
 # Create PR
 gh pr create --base forge
@@ -271,6 +297,7 @@ gh issue view 16
 ## Common Workflows
 
 ### Starting New Ticket
+
 ```bash
 git checkout forge
 git pull
@@ -283,6 +310,7 @@ gh pr create --base forge
 ```
 
 ### Updating from Forge
+
 ```bash
 # Your feature branch is behind forge
 git checkout warp-in/CHRONO-XXX-description
@@ -293,6 +321,7 @@ git push --force-with-lease
 ```
 
 ### Hotfix Workflow
+
 ```bash
 # Critical bug in production
 git checkout khala
@@ -330,12 +359,14 @@ git push
 ### Moving Tickets
 
 **Manual moves:**
+
 - Backlog → Ready: When spec is complete
 - Ready → In Progress: When you start working
 - In Progress → In Review: When PR is created
 - In Review → Done: When PR is merged (may auto-transition)
 
 **Automation:**
+
 - New issues auto-add to "Backlog"
 - Closed issues auto-move to "Done"
 - PR merge may auto-close linked issue
@@ -345,24 +376,28 @@ git push
 ## Code Style Guidelines
 
 ### General Principles
+
 - **Clarity over cleverness**
 - **Consistent formatting** (enforced by tooling)
 - **Self-documenting code** (good names > comments)
 - **StarCraft theme** only where it adds value
 
 ### Rust
+
 - Use `rustfmt` (auto-formats on save)
 - Run `clippy` before committing
 - Document public APIs
 - Write unit tests inline
 
 ### TypeScript
+
 - Use Prettier (auto-formats on save)
 - Prefer functional style
 - Type everything (no `any`)
 - Use async/await over promises
 
 ### Documentation
+
 - Use Markdown
 - Include code examples
 - Link to related docs
@@ -373,6 +408,7 @@ git push
 ## Troubleshooting
 
 ### Tests Failing Locally
+
 ```bash
 # Clean and rebuild
 cargo clean && cargo build
@@ -383,6 +419,7 @@ rm -rf node_modules && bun install
 ```
 
 ### Branch Out of Sync
+
 ```bash
 # Rebase onto forge
 git fetch origin
@@ -393,6 +430,7 @@ git rebase --continue
 ```
 
 ### CI Failing but Local Passes
+
 - Check CI logs for environment differences
 - Verify all dependencies in `package.json` / `Cargo.toml`
 - Ensure tests don't depend on local state

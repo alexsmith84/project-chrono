@@ -45,6 +45,7 @@ This document details how data flows through Project Chrono's architecture, from
 ### Data Transformation
 
 **Worker Output**:
+
 ```json
 {
   "symbol": "BTC/USD",
@@ -56,6 +57,7 @@ This document details how data flows through Project Chrono's architecture, from
 ```
 
 **After API Enrichment**:
+
 ```json
 {
   "id": "uuid-here",
@@ -109,6 +111,7 @@ This document details how data flows through Project Chrono's architecture, from
 ### Aggregation Algorithm
 
 **Input** (from PostgreSQL):
+
 ```json
 [
   { "source": "coinbase", "price": 45120, "volume": 100, "timestamp": "12:00:00" },
@@ -118,6 +121,7 @@ This document details how data flows through Project Chrono's architecture, from
 ```
 
 **Rust Processing**:
+
 ```rust
 // VWAP Calculation
 total_value = Σ(price × volume) = (45120×100) + (45125×150) + (45118×80)
@@ -132,6 +136,7 @@ consensus_price = weighted_vote([vwap, twap, median])
 ```
 
 **Output**:
+
 ```json
 {
   "symbol": "BTC/USD",
@@ -183,6 +188,7 @@ consensus_price = weighted_vote([vwap, twap, median])
 ### Transaction Flow
 
 **FTSO Submission Payload**:
+
 ```rust
 struct FTSOSubmission {
     epoch_id: u64,
@@ -200,6 +206,7 @@ struct PriceData {
 ```
 
 **Gas Optimization**:
+
 - Batch multiple symbols in one transaction
 - Dynamic gas price based on network congestion
 - Target: <$0.10 per submission
@@ -235,6 +242,7 @@ struct PriceData {
 ### WebSocket Message Protocol
 
 **Client → Server**:
+
 ```json
 {
   "action": "subscribe",
@@ -244,6 +252,7 @@ struct PriceData {
 ```
 
 **Server → Client** (Price Update):
+
 ```json
 {
   "type": "price_update",
@@ -257,6 +266,7 @@ struct PriceData {
 ```
 
 **Server → Client** (FTSO Submission):
+
 ```json
 {
   "type": "ftso_submission",
@@ -329,19 +339,23 @@ struct PriceData {
 ## Data Storage Strategy
 
 ### Hot Data (Redis - 5 min TTL)
+
 - Latest aggregated prices
 - Active WebSocket sessions
 - Rate limit counters
 
 ### Warm Data (PostgreSQL - Recent)
+
 - Last 7 days: Uncompressed, fast queries
 - Used for real-time aggregation
 
 ### Cold Data (PostgreSQL + TimescaleDB - Compressed)
+
 - 7 days to 2 years: Compressed, slower queries
 - Used for historical analysis, backtesting
 
 ### Archive (Future - S3-compatible)
+>
 - >2 years: Compressed archives
 - Used for long-term analysis only
 

@@ -5,6 +5,7 @@ Track progress, learnings, and decisions as we build Project Chrono.
 ## How to Use This Log
 
 After completing each ticket:
+
 1. Add entry with ticket number and title
 2. Note key learnings and challenges
 3. Document any deviations from spec
@@ -15,6 +16,7 @@ After completing each ticket:
 ## Repository Setup
 
 ### Initial Structure (Current)
+
 - **Date**: [Current Date]
 - **Status**: In Progress
 - **Actions**:
@@ -28,6 +30,7 @@ After completing each ticket:
 ## Tickets
 
 ### CHRONO-001: GitHub Projects Setup
+
 - **Started**: October 4, 2025
 - **Completed**: October 4, 2025
 - **Status**: ✅ Complete
@@ -41,6 +44,7 @@ After completing each ticket:
 - **Learnings**: GitHub Projects v2 GraphQL API is powerful but requires careful setup
 
 ### CHRONO-002: Repo Structure & Templates
+
 - **Started**: October 7, 2025
 - **Completed**: October 7, 2025
 - **Status**: ✅ Complete
@@ -65,6 +69,7 @@ After completing each ticket:
 ## Decisions Log
 
 ### Repository Setup Decisions
+
 - **[Date]**: Chose `khala` as main branch name (Protoss theme)
 - **[Date]**: Selected function-first organization with language subdirs
 - **[Date]**: Decided on modular documentation structure (Option B)
@@ -72,6 +77,7 @@ After completing each ticket:
 - **[Date]**: Primary development tool: Claude Code
 
 ### Architecture Decisions
+
 - **[Date]**: Hybrid edge (Cloudflare) + self-hosted (Mac Mini) approach
 - **[Date]**: Multi-language stack: Rust + TypeScript + Deno + SvelteKit
 - **[Date]**: PostgreSQL + TimescaleDB over ClickHouse for MVP
@@ -82,6 +88,7 @@ After completing each ticket:
 ## Velocity Tracking
 
 ### Week 1 (October 4-7, 2025)
+
 - **Supply Points Committed**: 5 (CHRONO-001: 2, CHRONO-002: 3)
 - **Supply Points Completed**: 5
 - **Completion Rate**: 100%
@@ -100,12 +107,15 @@ After completing each ticket:
 ## Technical Learnings
 
 ### Development Environment
+
 - [Add learnings about Mac Mini setup, tools, etc.]
 
 ### Architecture
+
 - [Add insights about system design decisions]
 
 ### Performance
+
 - [Add performance optimization discoveries]
 
 ---

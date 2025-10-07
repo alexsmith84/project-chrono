@@ -55,22 +55,26 @@ We are committed to providing a welcoming and inspiring community for all. We pl
 1. **Fork the repository** on GitHub
 
 2. **Clone your fork**
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/project-chrono.git
    cd project-chrono
    ```
 
 3. **Add upstream remote**
+
    ```bash
    git remote add upstream https://github.com/alexsmith84/project-chrono.git
    ```
 
 4. **Run development setup**
+
    ```bash
    ./scripts/helpers/dev-setup.sh
    ```
 
 5. **Verify installation**
+
    ```bash
    cargo --version
    bun --version
@@ -100,6 +104,7 @@ git checkout -b warp-in/CHRONO-XXX-short-description
 ```
 
 **Branch naming conventions:**
+
 - `warp-in/CHRONO-XXX-description` - New features
 - `recall/hotfix-description` - Emergency hotfixes
 - `archives/vX.Y.Z` - Release branches (maintainers only)
@@ -109,6 +114,7 @@ git checkout -b warp-in/CHRONO-XXX-short-description
 Follow the implementation guide in `docs/implementation/CHRONO-XXX-guide.md`.
 
 **Development principles:**
+
 - Write clean, readable code
 - Add tests for new functionality
 - Update documentation as you go
@@ -160,6 +166,7 @@ gh pr create --base forge \
 - Prefer iterators over explicit loops
 
 **Example:**
+
 ```rust
 /// Calculates the weighted median price from multiple sources
 ///
@@ -187,6 +194,7 @@ pub fn calculate_weighted_median(prices: Vec<(f64, f64)>) -> Option<f64> {
 - No `any` types - use proper typing
 
 **Example:**
+
 ```typescript
 /**
  * Fetches price data from exchange API
@@ -234,6 +242,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ### Good Commit Examples
 
 ✅ **Good:**
+
 ```
 Add VWAP calculation to price aggregator
 
@@ -244,11 +253,13 @@ Closes #23
 ```
 
 ❌ **Bad:**
+
 ```
 fixed stuff
 ```
 
 ❌ **Bad:**
+
 ```
 Updated files, changed some functions, fixed bugs, added features
 ```
@@ -279,6 +290,7 @@ Updated files, changed some functions, fixed bugs, added features
    - Code comments (for complex logic)
 
 3. **Run final checks**
+
    ```bash
    cargo fmt --check
    cargo clippy -- -D warnings
@@ -289,6 +301,7 @@ Updated files, changed some functions, fixed bugs, added features
 ### PR Template
 
 Our PR template will guide you through providing:
+
 - Summary of changes
 - Related issue link
 - Type of change (feature, bugfix, etc.)
@@ -311,6 +324,7 @@ Our PR template will guide you through providing:
 - **Rebase and merge** - For clean, atomic commits
 
 After merge:
+
 - Delete feature branch
 - Update project board (move ticket to "Done")
 - Update `IMPLEMENTATION_LOG.md`
@@ -328,6 +342,7 @@ After merge:
 ### Bug Reports
 
 Use the bug report template and include:
+
 - Clear title describing the issue
 - Steps to reproduce
 - Expected behavior
@@ -337,6 +352,7 @@ Use the bug report template and include:
 - Possible solution (if you have ideas)
 
 **Example:**
+
 ```markdown
 **Title:** Price aggregation fails with empty data sources
 
@@ -360,6 +376,7 @@ Use the bug report template and include:
 ### Feature Requests
 
 Use the feature request template and include:
+
 - Problem statement (what need does this address?)
 - Proposed solution
 - Alternative solutions considered
@@ -440,6 +457,7 @@ bun test
 ## Recognition
 
 Contributors will be:
+
 - Listed in `CONTRIBUTORS.md`
 - Acknowledged in release notes
 - Co-authors on commits (if using Claude Code)
