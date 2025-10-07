@@ -17,15 +17,19 @@
 - Short and memorable
 **Consequences**: All feature branches merge to `khala`, not `main`
 
-### Decision 002: Branch Naming Strategy
-**Date**: October 2025  
-**Status**: Accepted  
-**Decision**: Use themed branch prefixes:
-- `forge/` for feature development
-- `gateway/` for staging
-- `hotfix/` for emergency fixes
-**Rationale**: Maintains StarCraft theme, clear purpose per prefix
-**Consequences**: Team must learn new convention vs standard `feature/`, `release/`
+### Decision 002: Git-Flow Branch Strategy
+**Date**: October 2025
+**Status**: Accepted
+**Decision**: Use StarCraft-themed git-flow branch structure:
+- `khala` - Production/main branch
+- `gateway` - Staging branch (portal to production for final verification)
+- `forge` - Development branch (where features are crafted and integrated)
+- `warp-in/CHRONO-XXX-description` - Feature branches
+- `recall/hotfix-description` - Hotfix branches
+- `archives/vX.X.X` - Release branches
+**Rationale**: Maintains StarCraft theme while following professional git-flow pattern for release management
+**Branch Flow**: warp-in/* → forge → gateway → archives/vX.X.X → khala
+**Consequences**: More complex than simplified workflow, but provides professional release management even for solo developer
 
 ### Decision 003: Monorepo Structure
 **Date**: October 2025  
@@ -231,12 +235,52 @@ src/oracle/typescript/
 **Timeline**: 4-6 months to MVP (not 3 months)
 
 ### Decision 021: Profitability Reality Check
-**Date**: October 2025  
-**Status**: Accepted  
-**Decision**: Build for learning + future upside, not immediate profit  
-**Context**: At $0.021 FLR, need 50-100M delegated to break even  
-**Rationale**: Market conditions may improve, meanwhile gain Rust + FTSO expertise  
+**Date**: October 2025
+**Status**: Accepted
+**Decision**: Build for learning + future upside, not immediate profit
+**Context**: At $0.021 FLR, need 50-100M delegated to break even
+**Rationale**: Market conditions may improve, meanwhile gain Rust + FTSO expertise
 **Success Metrics**: Learning > Immediate revenue
+
+### Decision 022: GitHub Projects Configuration
+**Date**: 2025-10-07
+**Status**: Accepted
+**Decision**: Use single GitHub Project v2 board with Kanban workflow
+**Project**: [Project Chrono - Oracle Development](https://github.com/users/alexsmith84/projects/5)
+**Workflow**: Kanban (continuous flow, no time-boxed sprints)
+
+**Custom Fields**:
+- **Supply Cost** (Single Select): 1-Trivial, 2-Small, 3-Medium, 5-Large, 8-Epic
+- **Priority** (Single Select): Critical Mission, Main Objective, Side Quest, Research
+- **Epic** (Single Select): Nexus Construction, Chrono Boost Network, Khala Connection, Warp Gate Portal, Protoss Fleet
+- **Role** (Single Select): Oracle, Zealot, Templar, Marine, Overlord, Observer
+- **Created at** (Date): For table view sorting
+
+**Workflow States**: Backlog → Ready → In Progress → In Review → Done
+
+**Views**:
+- Main Board: Kanban flow showing all work by Status
+- Backlog: Grouped by Epic/Priority for planning
+- All Issues: Table view sorted by Created at
+- Optional Epic-specific filtered views
+
+**Automation**:
+- Auto-add new issues to project (Status: Backlog)
+- Auto-close issue when status → Done
+- Auto-complete when PR merged → Done
+- Auto-add sub-issues to project
+
+**Estimation Policy**: Tasks estimated >8 supply must be decomposed into smaller, manageable tickets
+
+**Rationale**:
+- Kanban better suited for part-time solo development (5-10 hrs/week)
+- Single Select for Supply Cost enforces valid values, prevents estimation drift
+- Private visibility allows development without public scrutiny until launch-ready
+- Comprehensive automation reduces manual overhead
+
+**Consequences**:
+- Must manually move items between In Progress and In Review states (limited GitHub automation)
+- May need GitHub Actions for more advanced automation later
 
 ---
 
