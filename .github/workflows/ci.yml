@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [forge, gateway, master]
+  push:
+    branches: [forge]
+
+jobs:
+  lint-and-test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy, rustfmt
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Check Rust formatting
+        run: |
+          if [ -d "src" ] && [ -f "Cargo.toml" ]; then
+            cargo fmt -- --check
+          else
+            echo "No Rust code found, skipping formatting check"
+          fi
+
+      - name: Run Clippy
+        run: |
+          if [ -d "src" ] && [ -f "Cargo.toml" ]; then
+            cargo clippy -- -D warnings
+          else
+            echo "No Rust code found, skipping Clippy"
+          fi
+
+      - name: Install Bun dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            bun install
+          else
+            echo "No package.json found, skipping Bun dependencies"
+          fi
+
+      - name: Run TypeScript/JavaScript tests
+        run: |
+          if [ -f "package.json" ] && [ -n "$(jq -r '.scripts.test // empty' package.json)" ]; then
+            bun test
+          else
+            echo "No tests configured in package.json, skipping"
+          fi
+
+      - name: Run Rust tests
+        run: |
+          if [ -d "src" ] && [ -f "Cargo.toml" ]; then
+            cargo test
+          else
+            echo "No Rust code found, skipping tests"
+          fi
+
+      - name: Build check - Rust
+        run: |
+          if [ -d "src" ] && [ -f "Cargo.toml" ]; then
+            cargo build --release
+          else
+            echo "No Rust code found, skipping build"
+          fi
+
+      - name: Build check - TypeScript/JavaScript
+        run: |
+          if [ -f "package.json" ] && [ -n "$(jq -r '.scripts.build // empty' package.json)" ]; then
+            bun run build
+          else
+            echo "No build script configured in package.json, skipping"
+          fi
+
+  markdown-lint:
+    name: Markdown Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint Markdown files
+        uses: DavidAnson/markdownlint-cli2-action@v18
+        with:
+          globs: |
+            **/*.md
+            !node_modules/**
+            !target/**
+
+  status-check:
+    name: All Checks Passed
+    runs-on: ubuntu-latest
+    needs: [lint-and-test, markdown-lint]
+    if: always()
+
+    steps:
+      - name: Check all jobs
+        run: |
+          if [ "${{ needs.lint-and-test.result }}" != "success" ] || [ "${{ needs.markdown-lint.result }}" != "success" ]; then
+            echo "One or more checks failed"
+            exit 1
+          fi
+          echo "All checks passed! 🎉"

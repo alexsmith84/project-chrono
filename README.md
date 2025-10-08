@@ -59,30 +59,35 @@ graph TB
 ## 🎯 StarCraft 2 Themed Components
 
 ### 🏗️ Nexus Construction (Core Infrastructure)
+
 - **Mac Mini M4 Pro**: The command center powering all operations
 - **Multi-Language Runtime**: Rust + TypeScript + Bun + Deno toolchain
 - **Database Cluster**: PostgreSQL with TimescaleDB + Redis cache
 - **Security Systems**: Advanced hardening and monitoring
 
 ### ⚡ Chrono Boost Network (Data Collection)
+
 - **Cloudflare Workers**: Edge-distributed price collection
 - **Exchange Integration**: Coinbase, Binance, Kraken, Bybit, OKX
 - **Data Validation**: Real-time outlier detection and filtering
 - **Rate Management**: Smart quota and error handling
 
 ### 🧠 Khala Connection (ML & Analytics)
+
 - **Rust Core Engine**: High-performance price aggregation
 - **ML Pipeline**: Anomaly detection and market prediction
 - **Consensus Algorithm**: Multi-source truth determination
 - **Performance Optimization**: Zero-copy operations and SIMD
 
 ### 🌐 Warp Gate Portal (User Interface)
+
 - **SvelteKit Dashboard**: Modern, reactive user interface
 - **Real-Time Updates**: WebSocket price feeds and notifications
 - **Wallet Integration**: MetaMask, WalletConnect support
 - **Analytics**: Performance metrics and delegation tracking
 
 ### ⚔️ Protoss Fleet (Flare Integration)
+
 - **FTSO Submission**: Automated price oracle submissions
 - **Smart Contracts**: Delegation and reward management
 - **Reward Distribution**: Automatic FLR reward calculations
@@ -92,36 +97,51 @@ graph TB
 
 ### Prerequisites
 
-- macOS (for Mac Mini M4 Pro setup)
-- Homebrew package manager
-- GitHub CLI (`gh`) for project management
+- macOS (Mac Mini M4 Pro recommended)
+- Internet connection for downloading packages
 
-### Installation
+### Development Environment Setup (15-20 minutes)
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/your-username/project-chrono.git
+   git clone https://github.com/alexsmith84/project-chrono.git
    cd project-chrono
    ```
 
-2. **Run the setup script**
+2. **Run the automated setup script**
+
    ```bash
-   chmod +x setup-project-chrono.sh
-   ./setup-project-chrono.sh
+   ./scripts/helpers/dev-setup-auto.sh
    ```
 
-3. **Install development dependencies**
+   This will automatically install:
+   - Homebrew (if not present)
+   - Rust toolchain (rustc, cargo, clippy, rustfmt)
+   - Bun runtime (JavaScript/TypeScript)
+   - PostgreSQL 16 with TimescaleDB
+   - Redis cache
+   - Development tools (git, gh, jq)
+
+3. **Verify installation**
+
    ```bash
-   # This will be automated via tickets
-   brew install rust nodejs postgresql redis
-   curl -fsSL https://bun.sh/install | bash
+   rustc --version    # Should show 1.90+
+   bun --version      # Should show 1.2+
+   psql --version     # Should show 16.10+
+   redis-cli ping     # Should return PONG
    ```
 
-4. **Start core services**
+4. **Install project dependencies**
+
    ```bash
-   # Services will be configured via infrastructure tickets
-   ./scripts/start-services.sh
+   bun install
    ```
+
+**For detailed setup instructions, see:**
+- Automated Setup: `docs/implementation/CHRONO-003-guide.md`
+- Manual Setup: `docs/setup/mac-mini-setup.md` (production hardening)
+- Verification: `docs/tests/CHRONO-003-tests.md`
 
 ## 🔗 Live Deployment
 
@@ -155,12 +175,14 @@ When deployed, Project Chrono will be accessible at:
 ## 🎫 Development Workflow
 
 ### Project Management
+
 - **GitHub Projects**: Roadmap view with StarCraft-themed epics
 - **Issue Tracking**: Comprehensive tickets with supply cost estimation
 - **CI/CD Pipeline**: Multi-language testing and deployment
 - **Quality Gates**: Code coverage, security scanning, performance tests
 
 ### Supply Cost Estimation (StarCraft Style)
+
 - **1 Supply** (XS) - Marine/Zealot level tasks
 - **2 Supply** (S) - Stalker/Marauder level features  
 - **3 Supply** (M) - High Templar/Ghost level complexity
@@ -170,12 +192,14 @@ When deployed, Project Chrono will be accessible at:
 ## 📈 Business Model
 
 ### Revenue Streams
+
 - **FTSO Rewards**: Earn FLR tokens for accurate price submissions
 - **Delegation Fees**: 10-20% fee from user delegations
 - **API Services**: Premium access for DeFi applications
 - **Consulting**: FTSO setup and optimization services
 
 ### Target Metrics
+
 - **Delegation Goal**: 100M+ FLR tokens delegated
 - **Accuracy Target**: Top 25% of FTSO providers
 - **Uptime Goal**: 99.9% availability
@@ -199,7 +223,7 @@ When deployed, Project Chrono will be accessible at:
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Please read our [Contributing Guidelines](docs/CONTRIBUTING.md) and follow the Protoss Code of Honor:
+We welcome contributions from the community! Please read our [Contributing Guidelines](CONTRIBUTING.md) and follow the Protoss Code of Honor:
 
 1. **Write clean, efficient code** - Optimize for performance and readability
 2. **Test thoroughly** - All code must have comprehensive tests
