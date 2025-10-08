@@ -5,13 +5,7 @@
   "description": "StarCraft 2 themed Flare Time Series Oracle (FTSO)",
   "author": "alexsmith84",
   "license": "MIT",
-  "workspaces": [
-    "src/api/typescript",
-    "src/oracle/typescript",
-    "src/workers/typescript",
-    "src/shared/typescript",
-    "apps/dashboard"
-  ],
+  "workspaces": [],
   "scripts": {
     "dev": "bun run --filter '*' dev",
     "build": "bun run --filter '*' build",
