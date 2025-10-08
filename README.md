@@ -97,40 +97,51 @@ graph TB
 
 ### Prerequisites
 
-- macOS (for Mac Mini M4 Pro setup)
-- Homebrew package manager
-- GitHub CLI (`gh`) for project management
+- macOS (Mac Mini M4 Pro recommended)
+- Internet connection for downloading packages
 
-### Installation
+### Development Environment Setup (15-20 minutes)
 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/your-username/project-chrono.git
+   git clone https://github.com/alexsmith84/project-chrono.git
    cd project-chrono
    ```
 
-2. **Run the setup script**
+2. **Run the automated setup script**
 
    ```bash
-   chmod +x setup-project-chrono.sh
-   ./setup-project-chrono.sh
+   ./scripts/helpers/dev-setup-auto.sh
    ```
 
-3. **Install development dependencies**
+   This will automatically install:
+   - Homebrew (if not present)
+   - Rust toolchain (rustc, cargo, clippy, rustfmt)
+   - Bun runtime (JavaScript/TypeScript)
+   - PostgreSQL 16 with TimescaleDB
+   - Redis cache
+   - Development tools (git, gh, jq)
+
+3. **Verify installation**
 
    ```bash
-   # This will be automated via tickets
-   brew install rust nodejs postgresql redis
-   curl -fsSL https://bun.sh/install | bash
+   rustc --version    # Should show 1.90+
+   bun --version      # Should show 1.2+
+   psql --version     # Should show 16.10+
+   redis-cli ping     # Should return PONG
    ```
 
-4. **Start core services**
+4. **Install project dependencies**
 
    ```bash
-   # Services will be configured via infrastructure tickets
-   ./scripts/start-services.sh
+   bun install
    ```
+
+**For detailed setup instructions, see:**
+- Automated Setup: `docs/implementation/CHRONO-003-guide.md`
+- Manual Setup: `docs/setup/mac-mini-setup.md` (production hardening)
+- Verification: `docs/tests/CHRONO-003-tests.md`
 
 ## 🔗 Live Deployment
 
