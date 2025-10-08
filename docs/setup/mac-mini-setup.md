@@ -16,7 +16,39 @@ This guide walks through complete Mac Mini M4 Pro configuration for Project Chro
 - 512GB+ SSD
 - 500 Mbps internet connection
 
-**Estimated Setup Time**: 4-6 hours
+**Estimated Setup Time**: 4-6 hours (full guide) OR **15-20 minutes** (automated development setup)
+
+---
+
+## Quick Start: Automated Development Setup
+
+**For development environment only** (not for production), use our automated setup script:
+
+```bash
+# Clone the repository
+git clone https://github.com/alexsmith84/project-chrono.git
+cd project-chrono
+
+# Run automated setup (installs Rust, Bun, PostgreSQL, Redis)
+./scripts/helpers/dev-setup-auto.sh
+```
+
+**What it installs**:
+- Homebrew (if not present)
+- Rust via rustup (stable toolchain)
+- Bun runtime
+- PostgreSQL 16 with TimescaleDB
+- Redis
+- Development tools (git, gh, jq)
+- Rust components (clippy, rustfmt)
+- Configures services to auto-start
+
+**Documentation**:
+- Specification: `docs/specs/CHRONO-003-mac-mini-m4-pro-setup.md`
+- Implementation Guide: `docs/implementation/CHRONO-003-guide.md`
+- Test Verification: `docs/tests/CHRONO-003-tests.md`
+
+**Note**: For production deployment with full security hardening, monitoring, and networking setup, continue with the phases below.
 
 ---
 
