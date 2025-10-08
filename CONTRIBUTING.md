@@ -73,7 +73,15 @@ We are committed to providing a welcoming and inspiring community for all. We pl
    ./scripts/helpers/dev-setup.sh
    ```
 
-5. **Verify installation**
+5. **Install dependencies (sets up pre-commit hooks)**
+
+   ```bash
+   bun install
+   ```
+
+   This automatically installs git hooks that will auto-fix markdown and code formatting on commit.
+
+6. **Verify installation**
 
    ```bash
    cargo --version
@@ -81,6 +89,24 @@ We are committed to providing a welcoming and inspiring community for all. We pl
    psql --version
    redis-cli --version
    ```
+
+---
+
+## Code Quality Automation
+
+This project uses automated code quality checks. See [Code Quality Automation Guide](docs/workflow/code-quality-automation.md) for details.
+
+**Pre-commit hooks** automatically:
+
+- Fix markdown formatting
+- Fix TypeScript linting errors
+- Format code with Prettier
+
+**To bypass hooks** (use sparingly):
+
+```bash
+git commit --no-verify -m "Message"
+```
 
 ---
 
