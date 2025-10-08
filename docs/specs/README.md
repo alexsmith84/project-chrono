@@ -24,6 +24,7 @@ Each ticket has a corresponding specification file: `CHRONO-XXX-[description].md
 ## For Implementing Agents
 
 Read the entire spec before starting implementation. The spec provides:
+
 - Complete context for the feature
 - Technical details and constraints
 - Error handling scenarios

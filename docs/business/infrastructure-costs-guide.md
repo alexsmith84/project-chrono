@@ -76,6 +76,7 @@ Detailed cost breakdown and scaling scenarios for Project Chrono infrastructure.
 ### Self-Hosted (Current Approach)
 
 **Total Cost** (3 years):
+
 - Hardware: $2,199 (one-time)
 - Operating: $816/year × 3 = $2,448
 - **Total: $4,647** ($129/month avg)
@@ -83,6 +84,7 @@ Detailed cost breakdown and scaling scenarios for Project Chrono infrastructure.
 ### Cloud Alternative (AWS/GCP)
 
 **Monthly Costs**:
+
 - EC2 instances (3×): $200
 - RDS PostgreSQL: $150
 - ElastiCache Redis: $50
@@ -99,6 +101,7 @@ Detailed cost breakdown and scaling scenarios for Project Chrono infrastructure.
 ### Break-Even on Hardware
 
 Mac Mini pays for itself when:
+
 ```
 Monthly Savings = $550 (cloud) - $68 (self-hosted) = $482
 Break-even time = $2,199 / $482 = 4.6 months

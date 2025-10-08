@@ -39,12 +39,15 @@ yarn-debug.log*
 yarn-error.log*
 
 # IDE
-.vscode/
+# .vscode/ - Kept in repo for consistent dev experience
 .idea/
 *.swp
 *.swo
 *~
 .DS_Store
+
+# Husky
+.husky/_
 
 # OS
 .DS_Store

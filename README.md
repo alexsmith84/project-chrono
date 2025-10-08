@@ -59,30 +59,35 @@ graph TB
 ## 🎯 StarCraft 2 Themed Components
 
 ### 🏗️ Nexus Construction (Core Infrastructure)
+
 - **Mac Mini M4 Pro**: The command center powering all operations
 - **Multi-Language Runtime**: Rust + TypeScript + Bun + Deno toolchain
 - **Database Cluster**: PostgreSQL with TimescaleDB + Redis cache
 - **Security Systems**: Advanced hardening and monitoring
 
 ### ⚡ Chrono Boost Network (Data Collection)
+
 - **Cloudflare Workers**: Edge-distributed price collection
 - **Exchange Integration**: Coinbase, Binance, Kraken, Bybit, OKX
 - **Data Validation**: Real-time outlier detection and filtering
 - **Rate Management**: Smart quota and error handling
 
 ### 🧠 Khala Connection (ML & Analytics)
+
 - **Rust Core Engine**: High-performance price aggregation
 - **ML Pipeline**: Anomaly detection and market prediction
 - **Consensus Algorithm**: Multi-source truth determination
 - **Performance Optimization**: Zero-copy operations and SIMD
 
 ### 🌐 Warp Gate Portal (User Interface)
+
 - **SvelteKit Dashboard**: Modern, reactive user interface
 - **Real-Time Updates**: WebSocket price feeds and notifications
 - **Wallet Integration**: MetaMask, WalletConnect support
 - **Analytics**: Performance metrics and delegation tracking
 
 ### ⚔️ Protoss Fleet (Flare Integration)
+
 - **FTSO Submission**: Automated price oracle submissions
 - **Smart Contracts**: Delegation and reward management
 - **Reward Distribution**: Automatic FLR reward calculations
@@ -99,18 +104,21 @@ graph TB
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/your-username/project-chrono.git
    cd project-chrono
    ```
 
 2. **Run the setup script**
+
    ```bash
    chmod +x setup-project-chrono.sh
    ./setup-project-chrono.sh
    ```
 
 3. **Install development dependencies**
+
    ```bash
    # This will be automated via tickets
    brew install rust nodejs postgresql redis
@@ -118,6 +126,7 @@ graph TB
    ```
 
 4. **Start core services**
+
    ```bash
    # Services will be configured via infrastructure tickets
    ./scripts/start-services.sh
@@ -155,12 +164,14 @@ When deployed, Project Chrono will be accessible at:
 ## 🎫 Development Workflow
 
 ### Project Management
+
 - **GitHub Projects**: Roadmap view with StarCraft-themed epics
 - **Issue Tracking**: Comprehensive tickets with supply cost estimation
 - **CI/CD Pipeline**: Multi-language testing and deployment
 - **Quality Gates**: Code coverage, security scanning, performance tests
 
 ### Supply Cost Estimation (StarCraft Style)
+
 - **1 Supply** (XS) - Marine/Zealot level tasks
 - **2 Supply** (S) - Stalker/Marauder level features  
 - **3 Supply** (M) - High Templar/Ghost level complexity
@@ -170,12 +181,14 @@ When deployed, Project Chrono will be accessible at:
 ## 📈 Business Model
 
 ### Revenue Streams
+
 - **FTSO Rewards**: Earn FLR tokens for accurate price submissions
 - **Delegation Fees**: 10-20% fee from user delegations
 - **API Services**: Premium access for DeFi applications
 - **Consulting**: FTSO setup and optimization services
 
 ### Target Metrics
+
 - **Delegation Goal**: 100M+ FLR tokens delegated
 - **Accuracy Target**: Top 25% of FTSO providers
 - **Uptime Goal**: 99.9% availability
@@ -199,7 +212,7 @@ When deployed, Project Chrono will be accessible at:
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Please read our [Contributing Guidelines](docs/CONTRIBUTING.md) and follow the Protoss Code of Honor:
+We welcome contributions from the community! Please read our [Contributing Guidelines](CONTRIBUTING.md) and follow the Protoss Code of Honor:
 
 1. **Write clean, efficient code** - Optimize for performance and readability
 2. **Test thoroughly** - All code must have comprehensive tests

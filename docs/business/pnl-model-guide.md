@@ -29,6 +29,7 @@ This guide explains how to build the P&L (Profit & Loss) projection model for Pr
 ### Sheet 2: Revenue Projections
 
 **Columns:**
+
 - FLR Price Scenario ($0.02, $0.05, $0.10, $0.50, $1.00)
 - Delegation Amount (10M, 50M, 100M, 500M FLR)
 - Annual FTSO Rewards (FLR)
@@ -37,6 +38,7 @@ This guide explains how to build the P&L (Profit & Loss) projection model for Pr
 - Monthly Revenue (USD)
 
 **Formula Example:**
+
 ```
 Annual Rewards (FLR) = Delegation × Reward Rate (3%)
 Annual Rewards (USD) = Annual Rewards (FLR) × FLR Price
@@ -59,11 +61,13 @@ Monthly Revenue = Our Fee / 12
 | **Total** | **$70** | **$70** | **$140** |
 
 **Growth Phase** (add):
+
 - Additional storage: $20/month
 - Backup services: $10/month
 - **Total Growth**: $100/month
 
 **Scale Phase** (add):
+
 - Second Mac Mini: $30/month (power)
 - Premium API tiers: $50/month
 - **Total Scale**: $180/month
@@ -71,6 +75,7 @@ Monthly Revenue = Our Fee / 12
 ### Sheet 4: Break-Even Analysis
 
 **Break-Even Formula:**
+
 ```
 Break-Even Delegation (FLR) = Monthly Costs / (FLR Price × Annual Reward Rate × Fee % / 12)
 ```
@@ -87,6 +92,7 @@ Break-Even Delegation (FLR) = Monthly Costs / (FLR Price × Annual Reward Rate �
 ### Sheet 5: Scenario Analysis
 
 **Best Case** (Bull Market):
+
 - FLR Price: $0.50
 - Delegation: 100M FLR
 - Monthly Revenue: $1,875
@@ -94,6 +100,7 @@ Break-Even Delegation (FLR) = Monthly Costs / (FLR Price × Annual Reward Rate �
 - **Monthly Profit: $1,775**
 
 **Base Case** (Current Market):
+
 - FLR Price: $0.05
 - Delegation: 50M FLR
 - Monthly Revenue: $313
@@ -101,6 +108,7 @@ Break-Even Delegation (FLR) = Monthly Costs / (FLR Price × Annual Reward Rate �
 - **Monthly Profit: $243**
 
 **Worst Case** (Bear Market):
+
 - FLR Price: $0.02
 - Delegation: 20M FLR
 - Monthly Revenue: $75

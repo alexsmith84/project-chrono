@@ -1,4 +1,5 @@
 # PROJECT CHRONO - COMPREHENSIVE BLUEPRINT
+
 ## Core Architecture & Structure
 
 *"En Taro Tassadar! The Khala guides our development journey."*
@@ -10,14 +11,17 @@
 Project Chrono is a high-performance Flare Time Series Oracle (FTSO) implementation featuring a StarCraft 2 Protoss theme and a hybrid edge + self-hosted architecture. Built as a part-time passion project (5-10 hours/week), it combines Rust's performance with TypeScript's ecosystem to deliver accurate cryptocurrency price data to the Flare Network.
 
 ### Reality Check
+
 Current FLR token price (~$0.021) means FTSO operations aren't immediately profitable. Break-even requires 50-100M FLR delegated to cover $225-525/month in costs. **This is a learning project** with potential future upside if FLR price recovers or significant market share is achieved.
 
 ### Project Goals
+
 - **Primary**: Build production-grade FTSO infrastructure and learn Rust + advanced TypeScript
 - **Secondary**: Achieve profitability if FLR market conditions improve
 - **Tertiary**: Create reusable oracle patterns for other blockchain networks
 
 ### Key Metrics
+
 - **Target Delegation**: 100M+ FLR tokens
 - **Accuracy Goal**: Top 25% of FTSO providers
 - **Uptime Target**: 99.9% availability
@@ -32,6 +36,7 @@ Current FLR token price (~$0.021) means FTSO operations aren't immediately profi
 **Decision**: Cloudflare Workers for data collection + Mac Mini M4 Pro for core processing
 
 **Rationale**:
+
 - **Cost Optimization**: $70-220/month (MVP) vs $375-1,250/month (pure cloud)
 - **Performance**: Native execution on Mac Mini (40% faster than Docker)
 - **Geographic Distribution**: Edge workers bypass API geo-restrictions
@@ -42,6 +47,7 @@ Current FLR token price (~$0.021) means FTSO operations aren't immediately profi
 **Languages**: Rust + TypeScript/Bun + Deno + SvelteKit
 
 **Division of Labor**:
+
 - **Rust**: Price aggregation (VWAP, TWAP), ML inference, consensus algorithms, blockchain interface
 - **TypeScript/Bun**: API server, WebSocket real-time updates, Web3 integrations
 - **Deno**: Secure configuration management, sandboxed API calls
@@ -54,12 +60,14 @@ Current FLR token price (~$0.021) means FTSO operations aren't immediately profi
 **Primary**: PostgreSQL 15 + TimescaleDB extension
 
 **Rationale**:
+
 - **Purpose-Built for Time Series**: 100-1000x faster for time-based queries
 - **Compression**: 10-20x better storage efficiency
 - **Built-in Policies**: Automated retention and compression
 - **Ecosystem**: Better tooling than ClickHouse for initial development
 
 **Schema Optimizations**:
+
 - Hypertables with 1-hour chunks for price_feeds table
 - Compression after 7 days, 2-year retention policy
 - Indexes optimized for (symbol, timestamp) queries
@@ -69,6 +77,7 @@ Current FLR token price (~$0.021) means FTSO operations aren't immediately profi
 ### 4. Security-First Approach
 
 **Core Principles**:
+
 - SSH key-only authentication (no passwords)
 - macOS firewall + advanced packet filter (PF) rules
 - PostgreSQL SSL connections required
@@ -79,6 +88,7 @@ Current FLR token price (~$0.021) means FTSO operations aren't immediately profi
 ### 5. Monitoring Philosophy
 
 **Metrics Tracked**:
+
 - **System**: CPU, memory, disk, network utilization
 - **FTSO-Specific**: Submission success rate, accuracy score, rewards earned
 - **Business**: Delegation amounts, market share, competition tracking
@@ -236,6 +246,7 @@ project-chrono/
 **Reorganization Flexibility**: Can easily switch to language-first organization later if Rust dominates. Just move directories - import paths change but module boundaries stay clean.
 
 **Monorepo Benefits**:
+
 - Shared types between Rust and TypeScript
 - Coordinated version bumps across components
 - Simplified dependency management
@@ -285,12 +296,14 @@ cd project-chrono
 ### Primary Development Tool
 
 **Claude Code** (included in Claude Pro subscription):
+
 - Full ticket implementation from specs
 - Complex refactoring and optimization
 - Test writing and debugging
 - Git commits and iteration
 
 **Fallback Tools**:
+
 - Ollama + Qwen3-Coder for offline/simple tasks
 - Claude Chat for planning and architecture decisions
 
@@ -325,11 +338,13 @@ Project Chrono will be deployed across multiple subdomains for service separatio
 Project Chrono is organized into **5 major epics**, each representing a critical system component. Epics are tracked via GitHub Projects Custom Fields and labels.
 
 ### 🏗️ Epic 1: Nexus Construction
+
 **Core Infrastructure & Development Environment**
 
 The foundation of Project Chrono - setting up the command center that powers all operations.
 
 **Scope**:
+
 - Mac Mini M4 Pro development environment setup
 - Multi-language runtime installation (Rust, Bun, Deno, Node.js)
 - Database cluster (PostgreSQL + TimescaleDB, Redis)
@@ -339,6 +354,7 @@ The foundation of Project Chrono - setting up the command center that powers all
 - Backup and disaster recovery systems
 
 **Key Deliverables**:
+
 - Fully configured development environment
 - Production-ready database with time-series optimizations
 - Automated backup systems (15-minute RTO)
@@ -352,11 +368,13 @@ The foundation of Project Chrono - setting up the command center that powers all
 ---
 
 ### ⚡ Epic 2: Chrono Boost Network
+
 **Data Collection & Edge Processing**
 
 The resource gathering system - like Probes collecting minerals, these workers collect price data from exchanges.
 
 **Scope**:
+
 - Cloudflare Workers deployment infrastructure
 - Exchange API integrations (Coinbase, Binance, Kraken, Bybit, OKX)
 - Real-time data validation and filtering
@@ -366,6 +384,7 @@ The resource gathering system - like Probes collecting minerals, these workers c
 - WebSocket connection management for exchanges
 
 **Key Deliverables**:
+
 - Edge-distributed price collection across 5+ exchanges
 - Real-time outlier detection (99.9% accuracy on data quality)
 - Smart rate limiting (stay within free tier quotas)
@@ -379,11 +398,13 @@ The resource gathering system - like Probes collecting minerals, these workers c
 ---
 
 ### 🧠 Epic 3: Khala Connection
+
 **ML & Analytics Pipeline**
 
 The collective consciousness - connecting all data points to determine truth through advanced analytics and machine learning.
 
 **Scope**:
+
 - Rust-based price aggregation engine (VWAP, TWAP, weighted median)
 - ML anomaly detection pipeline
 - Multi-source consensus algorithms
@@ -392,6 +413,7 @@ The collective consciousness - connecting all data points to determine truth thr
 - Market prediction models (optional, Growth Phase)
 
 **Key Deliverables**:
+
 - Sub-10ms price aggregation calculations
 - ML-powered outlier detection (catches flash crashes, manipulation)
 - Consensus algorithm (determines "truth" from multiple sources)
@@ -405,11 +427,13 @@ The collective consciousness - connecting all data points to determine truth thr
 ---
 
 ### 🌐 Epic 4: Warp Gate Portal
+
 **User Interface & Public API**
 
 The gateway for user interaction - first contact with delegators and developers.
 
 **Scope**:
+
 - SvelteKit delegation dashboard
 - Real-time WebSocket price feeds
 - Wallet integration (MetaMask, WalletConnect)
@@ -419,6 +443,7 @@ The gateway for user interaction - first contact with delegators and developers.
 - Rate limiting and API key management
 
 **Key Deliverables**:
+
 - Modern, responsive delegation dashboard
 - Real-time price updates (<50ms WebSocket latency)
 - Seamless wallet connection experience
@@ -432,11 +457,13 @@ The gateway for user interaction - first contact with delegators and developers.
 ---
 
 ### ⚔️ Epic 5: Protoss Fleet
+
 **Flare Network Integration**
 
 The battle fleet - powerful blockchain operations that submit prices and manage rewards.
 
 **Scope**:
+
 - FTSO price submission automation
 - Flare RPC client (Rust)
 - Smart contract interactions (delegation, rewards)
@@ -446,6 +473,7 @@ The battle fleet - powerful blockchain operations that submit prices and manage 
 - Gas optimization strategies
 
 **Key Deliverables**:
+
 - Automated FTSO submissions (every epoch, 99.9% success rate)
 - Secure transaction signing (hardware wallet support)
 - Automatic reward claiming and distribution
@@ -463,9 +491,11 @@ The battle fleet - powerful blockchain operations that submit prices and manage 
 Tickets are tagged with **roles** indicating the type of work and skill set required. This helps with organization and filtering.
 
 ### 🔮 Oracle (Data Engineering)
+
 **Gathers price data from the future**
 
 **Responsibilities**:
+
 - Exchange API integration and data collection
 - Data normalization and validation
 - Real-time streaming data pipelines
@@ -481,9 +511,11 @@ Tickets are tagged with **roles** indicating the type of work and skill set requ
 ---
 
 ### 🔵 Zealot (Frontend Development)
+
 **First contact with users**
 
 **Responsibilities**:
+
 - SvelteKit UI components
 - User experience design
 - Real-time data visualization
@@ -499,9 +531,11 @@ Tickets are tagged with **roles** indicating the type of work and skill set requ
 ---
 
 ### 🔴 High Templar (Blockchain Development)
+
 **Powerful, specialized Web3 abilities**
 
 **Responsibilities**:
+
 - Flare Network integration
 - Smart contract interactions
 - Transaction signing and management
@@ -517,9 +551,11 @@ Tickets are tagged with **roles** indicating the type of work and skill set requ
 ---
 
 ### 🟢 Marine (DevOps & Infrastructure)
+
 **Reliable backbone that holds the line**
 
 **Responsibilities**:
+
 - Server setup and configuration
 - CI/CD pipeline management
 - Monitoring and alerting
@@ -536,9 +572,11 @@ Tickets are tagged with **roles** indicating the type of work and skill set requ
 ---
 
 ### 🟣 Overlord (Backend Development)
+
 **Oversees system architecture**
 
 **Responsibilities**:
+
 - REST/WebSocket API development
 - Database schema design
 - Business logic implementation
@@ -554,9 +592,11 @@ Tickets are tagged with **roles** indicating the type of work and skill set requ
 ---
 
 ### 👁️ Observer (QA & Testing)
+
 **Detects hidden bugs in the codebase**
 
 **Responsibilities**:
+
 - Test specification writing
 - Unit and integration test implementation
 - Performance benchmarking
@@ -605,6 +645,7 @@ Tickets are prioritized using mission-critical language:
 ### Git-Flow Branch Strategy
 
 **Branch Structure** (StarCraft-themed):
+
 - `khala` - Production/main branch (the psychic link binding all Protoss)
 - `gateway` - Staging branch (portal to production for final verification)
 - `forge` - Development branch (where features are crafted and integrated)
@@ -613,6 +654,7 @@ Tickets are prioritized using mission-critical language:
 - `archives/vX.X.X` - Release branches (Templar Archives preserving versions)
 
 **Branch Flow**:
+
 ```
 khala (production)
   ↑
@@ -624,6 +666,7 @@ warp-in/CHRONO-XXX (features) ← work here
 ```
 
 **Workflow**:
+
 1. Create feature branch: `git checkout -b warp-in/CHRONO-XXX-description forge`
 2. Implement and commit on feature branch
 3. Create PR: `warp-in/CHRONO-XXX` → `forge`
@@ -659,12 +702,14 @@ warp-in/CHRONO-XXX (features) ← work here
 ### GitHub Projects Setup
 
 **Custom Fields**:
+
 - **Epic** (Single Select): Nexus Construction, Chrono Boost Network, Khala Connection, Warp Gate Portal, Protoss Fleet
 - **Role** (Single Select): Oracle, Zealot, Templar, Marine, Overlord, Observer
 - **Supply Cost** (Number): 1, 2, 3, 5, 8
 - **Priority** (Single Select): Critical Mission, Main Objective, Side Quest, Research
 
 **Columns** (Kanban):
+
 1. **Backlog** - Prioritized work queue
 2. **Ready** - Fully specified, ready to implement
 3. **In Progress** - Actively being worked
@@ -673,6 +718,7 @@ warp-in/CHRONO-XXX (features) ← work here
 6. **Done** - Completed and verified
 
 **Views**:
+
 - **By Epic** - Group by Epic field
 - **By Priority** - Filter Critical Mission and Main Objective
 - **Timeline** - Gantt-style view for planning
@@ -682,28 +728,33 @@ warp-in/CHRONO-XXX (features) ← work here
 ## Documentation Reference
 
 ### Architecture Documentation
+
 - `docs/architecture/system-design.md` - Complete system architecture
 - `docs/architecture/networking.md` - Caddy configuration, domain routing
 - `docs/architecture/data-flow.md` - How data moves through the system
 - `docs/architecture/decisions/` - Architecture Decision Records (ADRs)
 
 ### Workflow Documentation
+
 - `docs/workflow/ticket-creation.md` - How to create and specify tickets
 - `docs/workflow/development-process.md` - Step-by-step development guide
 - `docs/workflow/deployment.md` - Production deployment procedures
 
 ### Setup Documentation
+
 - `docs/setup/mac-mini-setup.md` - Complete Mac Mini configuration
 - `docs/setup/cloudflare-workers.md` - Edge worker deployment
 - `docs/setup/production-deployment.md` - Production environment setup
 
 ### Template Documentation
+
 - `docs/specs/SPEC-TEMPLATE.md` - Standard spec format
 - `docs/implementation/IMPL-TEMPLATE.md` - Implementation guide template
 - `docs/tests/TEST-TEMPLATE.md` - Test specification template
 - `.github/ISSUE_TEMPLATE/feature-ticket.md` - GitHub issue template
 
 ### Business Documentation
+
 - `docs/business/README.md` - Business model overview
 - `docs/business/pnl-model.xlsx` - P&L projections and scenarios
 - `docs/business/infrastructure-costs.xlsx` - Cost modeling and scaling
@@ -715,6 +766,7 @@ warp-in/CHRONO-XXX (features) ← work here
 ## First Four Tickets
 
 ### CHRONO-001: GitHub Projects Setup
+
 - **Epic**: Nexus Construction
 - **Role**: Marine (DevOps)
 - **Supply Cost**: 2 (Stalker)
@@ -722,6 +774,7 @@ warp-in/CHRONO-XXX (features) ← work here
 - **Scope**: Configure GitHub Projects board with custom fields, columns, views
 
 ### CHRONO-002: Repo Structure & Templates
+
 - **Epic**: Nexus Construction
 - **Role**: Marine (DevOps)
 - **Supply Cost**: 3 (High Templar)
@@ -729,6 +782,7 @@ warp-in/CHRONO-XXX (features) ← work here
 - **Scope**: Create all directories, templates, helper scripts
 
 ### CHRONO-003: Mac Mini Infrastructure Setup
+
 - **Epic**: Nexus Construction
 - **Role**: Marine (DevOps)
 - **Supply Cost**: 5 (Colossus)
@@ -736,6 +790,7 @@ warp-in/CHRONO-XXX (features) ← work here
 - **Scope**: Install Rust, Bun, PostgreSQL, Redis, Caddy, configure services
 
 ### CHRONO-004: Database Schema Design
+
 - **Epic**: Nexus Construction
 - **Role**: Overlord (Backend)
 - **Supply Cost**: 5 (Colossus)
@@ -771,6 +826,7 @@ warp-in/CHRONO-XXX (features) ← work here
 ## Success Criteria
 
 ### MVP Phase (Months 1-4)
+
 - ✅ Infrastructure operational (Mac Mini, database, monitoring)
 - ✅ 3-5 exchange integrations working
 - ✅ Basic price aggregation (VWAP, TWAP)
@@ -778,6 +834,7 @@ warp-in/CHRONO-XXX (features) ← work here
 - ✅ Simple delegation dashboard live
 
 ### Growth Phase (Months 5-8)
+
 - ✅ ML anomaly detection operational
 - ✅ 10+ exchange integrations
 - ✅ Advanced analytics dashboard
@@ -785,6 +842,7 @@ warp-in/CHRONO-XXX (features) ← work here
 - ✅ 10M+ FLR delegated
 
 ### Scale Phase (Months 9-12)
+
 - ✅ 100M+ FLR delegated (break-even)
 - ✅ Top 25% accuracy ranking
 - ✅ Revenue positive operations

@@ -17,6 +17,7 @@ Track delegator information, delegation amounts, and growth metrics to understan
 ### Main Tracking Sheet
 
 **Columns**:
+
 | Wallet Address | First Delegated | Current Amount | Peak Amount | Status | Tier |
 |---------------|-----------------|----------------|-------------|--------|------|
 | 0x1a2b... | 2025-09-15 | 500,000 | 750,000 | Active | Gold |
@@ -26,6 +27,7 @@ Track delegator information, delegation amounts, and growth metrics to understan
 ### Delegator Tiers
 
 **Classification**:
+
 - **Whale**: 10M+ FLR (top 1%)
 - **Gold**: 1M-10M FLR
 - **Silver**: 100K-1M FLR
@@ -35,12 +37,14 @@ Track delegator information, delegation amounts, and growth metrics to understan
 ### Growth Metrics
 
 **Weekly Summary**:
+
 | Week | New Delegators | Total Delegators | Churned | Net Change | Total Delegation |
 |------|---------------|------------------|---------|------------|------------------|
 | Oct 1 | 8 | 45 | 2 | +6 | 15.2M FLR |
 | Sep 24 | 12 | 37 | 1 | +11 | 13.5M FLR |
 
 **Monthly Goals**:
+
 - New delegators: 30+ per month
 - Churn rate: <5%
 - Total delegation growth: 20% MoM
@@ -52,6 +56,7 @@ Track delegator information, delegation amounts, and growth metrics to understan
 ### Tracking Channels
 
 **Source Column** (how they found us):
+
 - Twitter/X Marketing
 - Flare Community Forum
 - Reddit r/FlareNetworks
@@ -59,6 +64,7 @@ Track delegator information, delegation amounts, and growth metrics to understan
 - Direct (found our API)
 
 **Channel Performance**:
+
 | Source | Delegators | Avg Delegation | Total FLR |
 |--------|-----------|---------------|-----------|
 | Twitter | 18 | 280K | 5.0M |
@@ -100,12 +106,14 @@ Track why delegators leave:
 **Our Fee Structure**: 15% of FTSO rewards
 
 **Revenue by Delegator**:
+
 | Wallet | Delegation | Est. Annual Rewards | Our Fee (15%) | Monthly Revenue |
-|--------|-----------|--------------------|--------------|-----------------| 
+|--------|-----------|--------------------|--------------|-----------------|
 | 0x1a2b... | 5M FLR | 150K FLR ($7,500) | 22.5K FLR ($1,125) | $94 |
 | 0x3c4d... | 2M FLR | 60K FLR ($3,000) | 9K FLR ($450) | $38 |
 
 **Top Revenue Contributors** (80/20 rule):
+
 - Track which delegators contribute 80% of revenue
 - Focus retention efforts on high-value users
 
@@ -116,6 +124,7 @@ Track why delegators leave:
 ### Campaign Tracking
 
 **Twitter Campaign Example**:
+
 | Metric | Value |
 |--------|-------|
 | Ad spend | $100 |
@@ -133,6 +142,7 @@ Track why delegators leave:
 ### Smart Contract Events
 
 Monitor delegation events:
+
 ```javascript
 // Listen for delegation changes
 contract.on('DelegationChanged', (delegator, amount, timestamp) => {
@@ -162,12 +172,14 @@ psql -d project_chrono -c "COPY (
 ## Action Items Based on Data
 
 **Weekly Reviews**:
+
 1. Identify new whales (10M+ FLR) → personal outreach
 2. Contact churned delegators → understand why
 3. Reward top delegators → exclusive updates, perks
 4. Analyze low-performing channels → adjust marketing
 
 **Monthly Planning**:
+
 1. Set growth targets based on trends
 2. Allocate marketing budget to high-ROI channels
 3. Plan retention campaigns for at-risk cohorts
