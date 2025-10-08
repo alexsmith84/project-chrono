@@ -9,6 +9,7 @@
 Cloudflare Workers provide edge-distributed price collection for Project Chrono. This guide covers setup, deployment, and management of data collection workers.
 
 **Architecture**:
+
 - Workers deployed globally across Cloudflare's network
 - Each worker collects from specific exchanges
 - Data forwarded to Mac Mini core processing
@@ -29,7 +30,7 @@ Cloudflare Workers provide edge-distributed price collection for Project Chrono.
 
 ### Step 1: Create Cloudflare Account
 
-1. Go to https://dash.cloudflare.com/sign-up
+1. Go to <https://dash.cloudflare.com/sign-up>
 2. Create account with email
 3. Verify email address
 
@@ -374,6 +375,7 @@ function sleep(ms: number): Promise<void> {
 ### Worker Metrics Dashboard
 
 Access via Cloudflare Dashboard:
+
 1. Dashboard → Workers & Pages
 2. Select worker
 3. View metrics:
@@ -423,11 +425,13 @@ chmod +x scripts/check-workers.sh
 ### Cloudflare Workers Pricing
 
 **Free Tier**:
+
 - 100,000 requests/day
 - 10ms CPU time per request
 - Sufficient for MVP
 
 **Cost Calculation**:
+
 ```
 Workers: 5 (one per exchange)
 Schedule: Every 30 seconds = 2,880 runs/day per worker
@@ -439,6 +443,7 @@ Status: Well within free tier ✓
 ```
 
 **Paid Tier** ($5/month if needed):
+
 - 10 million requests/month
 - First 50ms CPU time free per request
 
@@ -656,15 +661,18 @@ wrangler deploy
 ### Regular Tasks
 
 **Daily**:
+
 - Check worker status: `./scripts/check-workers.sh`
 - Review error logs: `wrangler tail [worker] --status=error`
 
 **Weekly**:
+
 - Verify ingestion rates
 - Check KV storage usage
 - Review API quota usage
 
 **Monthly**:
+
 - Update dependencies: `npm update -g wrangler`
 - Review and optimize worker code
 - Check Cloudflare billing (if on paid tier)
@@ -713,6 +721,7 @@ vars = { CORE_API_URL = "https://nexus.hayven.xyz" }
 ```
 
 Deploy to specific environment:
+
 ```bash
 wrangler deploy --env staging
 wrangler deploy --env production

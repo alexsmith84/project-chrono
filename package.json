@@ -5,24 +5,35 @@
   "description": "StarCraft 2 themed Flare Time Series Oracle (FTSO)",
   "author": "alexsmith84",
   "license": "MIT",
-  "workspaces": [
-    "src/api/typescript",
-    "src/oracle/typescript",
-    "src/workers/typescript",
-    "src/shared/typescript",
-    "apps/dashboard"
-  ],
+  "workspaces": [],
   "scripts": {
     "dev": "bun run --filter '*' dev",
     "build": "bun run --filter '*' build",
     "test": "bun test",
     "lint": "eslint . --ext .ts,.tsx",
-    "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#target\"",
+    "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#target\"",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "prepare": "husky || true"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "typescript": "^5.3.0",
-    "prettier": "^3.1.0"
+    "prettier": "^3.1.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.0",
+    "markdownlint-cli2": "^0.18.1"
+  },
+  "lint-staged": {
+    "*.md": [
+      "markdownlint-cli2 --fix"
+    ],
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ],
+    "*.{ts,tsx,json,md}": [
+      "prettier --write"
+    ]
   },
   "engines": {
     "node": ">=18.0.0",

@@ -45,6 +45,7 @@ Frontend (SvelteKit Dashboard)
 **Technology**: TypeScript/JavaScript (Cloudflare Workers runtime)
 
 **Responsibilities**:
+
 - Collect price data from exchange APIs
 - Normalize data to common format
 - Handle rate limiting and quotas
@@ -62,6 +63,7 @@ Frontend (SvelteKit Dashboard)
 **Technology**: Rust 1.75+, Tokio async runtime, Actix-web
 
 **Responsibilities**:
+
 - VWAP (Volume-Weighted Average Price) calculation
 - TWAP (Time-Weighted Average Price) calculation
 - Weighted median calculation
@@ -70,6 +72,7 @@ Frontend (SvelteKit Dashboard)
 - Performance-critical blockchain operations
 
 **Performance Targets**:
+
 - Aggregation: <10ms for 1000 data points
 - Memory: <500MB under normal load
 - Throughput: 10,000+ calculations/second
@@ -85,6 +88,7 @@ Frontend (SvelteKit Dashboard)
 **Technology**: Bun 1.0+, Hono framework, ws library, ethers.js
 
 **Responsibilities**:
+
 - REST API for external consumers
 - WebSocket server for real-time price feeds
 - Orchestrate Rust engine calls
@@ -93,6 +97,7 @@ Frontend (SvelteKit Dashboard)
 - Rate limiting and API key management
 
 **Performance Targets**:
+
 - API Response: P95 <200ms, P99 <500ms
 - WebSocket Latency: <50ms for price updates
 - Concurrent Connections: 1000+ WebSocket clients
@@ -110,6 +115,7 @@ Frontend (SvelteKit Dashboard)
 **Technology**: PostgreSQL 15, TimescaleDB 2.13+
 
 **Key Features**:
+
 - Hypertables with 1-hour chunks for price_feeds
 - Compression after 7 days (10-20x storage savings)
 - 2-year retention policy
@@ -125,6 +131,7 @@ Frontend (SvelteKit Dashboard)
 **Technology**: Redis 7.2+, Redis Streams
 
 **Usage Patterns**:
+
 - Cache recent prices (5-minute TTL)
 - Pub/Sub for real-time updates
 - Rate limiting (sliding window)
@@ -141,6 +148,7 @@ Frontend (SvelteKit Dashboard)
 **Technology**: Rust, ethers-rs, Hardware wallet support (Ledger)
 
 **Responsibilities**:
+
 - Connect to Flare RPC nodes
 - Sign and submit price data transactions
 - Monitor transaction status
@@ -160,6 +168,7 @@ Frontend (SvelteKit Dashboard)
 **Technology**: SvelteKit 2.0+, Tailwind CSS, Chart.js, ethers.js
 
 **Responsibilities**:
+
 - Display real-time price feeds
 - Show delegation statistics
 - Wallet connection (MetaMask, WalletConnect)
@@ -212,21 +221,25 @@ Frontend (SvelteKit Dashboard)
 ### Multi-Layer Defense
 
 **Layer 1: Network** (Caddy + macOS Firewall)
+
 - HTTPS only (automatic Let's Encrypt)
 - Rate limiting (100 req/min per IP)
 - DDoS protection (Cloudflare)
 
 **Layer 2: Application** (API + Authentication)
+
 - API key authentication
 - JWT tokens (15-minute expiry)
 - Role-based access control (RBAC)
 
 **Layer 3: Data** (Encryption)
+
 - PostgreSQL SSL connections required
 - Redis AUTH enabled
 - Secrets in environment variables
 
 **Layer 4: Blockchain** (Hardware Wallet)
+
 - Private keys on Ledger device
 - Transaction signing requires physical confirmation
 - Multi-sig for high-value operations (future)
@@ -246,6 +259,7 @@ Frontend (SvelteKit Dashboard)
 ### Visualization (Grafana)
 
 **Dashboards**:
+
 1. System Health (infrastructure metrics)
 2. API Performance (response times, error rates)
 3. FTSO Operations (submissions, accuracy, rewards)

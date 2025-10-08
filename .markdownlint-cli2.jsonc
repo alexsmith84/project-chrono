@@ -1,0 +1,48 @@
+// Configuration for markdownlint-cli2
+// https://github.com/DavidAnson/markdownlint-cli2
+{
+  "config": {
+    // MD013/line-length - Allow longer lines for readability
+    "MD013": {
+      "line_length": 120,
+      "heading_line_length": 120,
+      "code_block_line_length": 120,
+      "code_blocks": false,
+      "tables": false,
+      "headings": true,
+      "strict": false,
+      "stern": false
+    },
+
+    // MD033/no-inline-html - Allow HTML for flexibility
+    "MD033": false,
+
+    // MD041/first-line-heading - Allow templates to start with H2
+    "MD041": false,
+
+    // MD036/no-emphasis-as-heading - Allow emphasized text (StarCraft quotes)
+    "MD036": false,
+
+    // MD024/no-duplicate-heading - Allow duplicate headings in different sections
+    "MD024": {
+      "siblings_only": true
+    },
+
+    // MD046/code-block-style - Prefer fenced code blocks
+    "MD046": {
+      "style": "fenced"
+    }
+  },
+
+  // Glob patterns for files to lint
+  "globs": [
+    "**/*.md"
+  ],
+
+  // Files to ignore
+  "ignores": [
+    "node_modules/**",
+    "target/**",
+    ".git/**"
+  ]
+}

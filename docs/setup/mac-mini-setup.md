@@ -9,13 +9,46 @@
 This guide walks through complete Mac Mini M4 Pro configuration for Project Chrono, from initial unboxing to production-ready FTSO oracle.
 
 **Hardware Specs**:
+
 - Mac Mini M4 Pro
 - 14-core CPU (10 performance + 4 efficiency)
 - 48GB RAM
 - 512GB+ SSD
 - 500 Mbps internet connection
 
-**Estimated Setup Time**: 4-6 hours
+**Estimated Setup Time**: 4-6 hours (full guide) OR **15-20 minutes** (automated development setup)
+
+---
+
+## Quick Start: Automated Development Setup
+
+**For development environment only** (not for production), use our automated setup script:
+
+```bash
+# Clone the repository
+git clone https://github.com/alexsmith84/project-chrono.git
+cd project-chrono
+
+# Run automated setup (installs Rust, Bun, PostgreSQL, Redis)
+./scripts/helpers/dev-setup-auto.sh
+```
+
+**What it installs**:
+- Homebrew (if not present)
+- Rust via rustup (stable toolchain)
+- Bun runtime
+- PostgreSQL 16 with TimescaleDB
+- Redis
+- Development tools (git, gh, jq)
+- Rust components (clippy, rustfmt)
+- Configures services to auto-start
+
+**Documentation**:
+- Specification: `docs/specs/CHRONO-003-mac-mini-m4-pro-setup.md`
+- Implementation Guide: `docs/implementation/CHRONO-003-guide.md`
+- Test Verification: `docs/tests/CHRONO-003-tests.md`
+
+**Note**: For production deployment with full security hardening, monitoring, and networking setup, continue with the phases below.
 
 ---
 
@@ -54,8 +87,9 @@ pmset -g
 ```
 
 **System Settings**:
+
 - **Energy Saver**: Never sleep, prevent automatic restart
-- **Sharing**: 
+- **Sharing**:
   - Enable "Remote Login" (SSH)
   - Computer name: `project-chrono-nexus`
 - **Security**:
@@ -66,6 +100,7 @@ pmset -g
 ### Step 3: Network Configuration
 
 **Static IP (Recommended)**:
+
 1. System Settings → Network → Ethernet (or WiFi)
 2. Click "Details"
 3. TCP/IP tab → Configure IPv4: Manually
@@ -75,6 +110,7 @@ pmset -g
 7. DNS: `1.1.1.1, 1.0.0.1` (Cloudflare DNS)
 
 **Port Forwarding (on your router)**:
+
 - Forward ports 80, 443 → Mac Mini IP (192.168.1.100)
 
 ---
@@ -117,6 +153,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 ### Step 3: Install Language Runtimes
 
 **Rust**:
+
 ```bash
 # Install Rust via rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -133,6 +170,7 @@ cargo install cargo-watch cargo-edit
 ```
 
 **Bun** (TypeScript runtime):
+
 ```bash
 # Install Bun
 curl -fsSL https://bun.sh/install | bash
@@ -146,6 +184,7 @@ bun --version
 ```
 
 **Deno** (for secure configs):
+
 ```bash
 # Install Deno
 curl -fsSL https://deno.land/install.sh | sh
@@ -160,6 +199,7 @@ deno --version
 ```
 
 **Node.js** (backup/compatibility):
+
 ```bash
 # Install via Homebrew
 brew install node
@@ -206,6 +246,7 @@ psql -d project_chrono -c "SELECT extname, extversion FROM pg_extension WHERE ex
 ```
 
 **PostgreSQL Configuration** (`/opt/homebrew/var/postgresql@15/postgresql.conf`):
+
 ```conf
 # Connection settings
 max_connections = 100
@@ -247,6 +288,7 @@ redis-cli -a your-strong-redis-password ping
 ```
 
 **Redis Configuration** (`/opt/homebrew/etc/redis.conf`):
+
 ```conf
 # Security
 requirepass your-strong-redis-password
@@ -316,6 +358,7 @@ sudo nano /etc/ssh/sshd_config
 ```
 
 **SSH Config** (`/etc/ssh/sshd_config`):
+
 ```conf
 # Disable password authentication (key-only)
 PasswordAuthentication no
@@ -545,6 +588,7 @@ brew install --cask ledger-live
 ```
 
 **Security Notes**:
+
 - Never store seed phrase digitally
 - Keep recovery phrase in secure physical location (safe, safety deposit box)
 - Use device PIN protection
@@ -600,6 +644,7 @@ chmod +x ~/scripts/backup-chrono.sh
 **RPO (Recovery Point Objective)**: 24 hours (daily backups)
 
 **Recovery Steps**:
+
 1. Restore from Time Machine or backups
 2. Restore PostgreSQL: `gunzip < postgres_YYYYMMDD.sql.gz | psql project_chrono`
 3. Restore Redis: Copy .rdb file to `/opt/homebrew/var/db/redis/dump.rdb`
@@ -664,16 +709,19 @@ brew outdated
 ## Maintenance Checklist
 
 ### Daily
+
 - [ ] Check FTSO submission success rate
 - [ ] Monitor Grafana dashboards
 - [ ] Review error logs
 
 ### Weekly
+
 - [ ] Review backup logs
 - [ ] Check disk space usage
 - [ ] Update dependencies (`brew upgrade`, `cargo update`)
 
 ### Monthly
+
 - [ ] macOS security updates
 - [ ] Review and rotate logs
 - [ ] Database vacuum and analyze
@@ -684,6 +732,7 @@ brew outdated
 ## Troubleshooting
 
 ### Issue: Service won't start
+
 ```bash
 # Check logs
 brew services list
@@ -692,6 +741,7 @@ tail -f /opt/homebrew/var/log/redis.log
 ```
 
 ### Issue: Can't connect to database
+
 ```bash
 # Check if PostgreSQL is running
 brew services info postgresql@15
@@ -704,6 +754,7 @@ brew services restart postgresql@15
 ```
 
 ### Issue: Out of disk space
+
 ```bash
 # Check usage
 df -h

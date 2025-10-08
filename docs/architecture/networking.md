@@ -264,6 +264,7 @@ templar.hayven.xyz {
 ### Environment-Specific Configs
 
 **Development** (`Caddyfile.dev`):
+
 ```caddy
 # Development - No HTTPS, localhost only
 http://localhost:3000 {
@@ -276,6 +277,7 @@ http://localhost:5173 {
 ```
 
 **Staging** (`Caddyfile.staging`):
+
 ```caddy
 # Staging - Use staging subdomains
 staging-nexus.hayven.xyz {
@@ -370,6 +372,7 @@ block in quick from <bruteforce>
 ```
 
 **Enable PF**:
+
 ```bash
 # Load rules
 sudo pfctl -f /etc/pf.conf
@@ -404,6 +407,7 @@ caddy reload --config /usr/local/etc/Caddyfile
 ### Certificate Locations
 
 Caddy stores certificates at:
+
 - **macOS**: `~/Library/Application Support/Caddy/certificates/`
 - **Linux**: `~/.local/share/caddy/certificates/`
 
@@ -452,6 +456,7 @@ Caddy stores certificates at:
 ```
 
 **Service Commands**:
+
 ```bash
 # Load service (start on boot)
 sudo launchctl load /Library/LaunchDaemons/com.caddyserver.caddy.plist
@@ -476,6 +481,7 @@ sudo launchctl list | grep caddy
 ### Access Logs
 
 Caddy logs to `/var/log/caddy/`:
+
 - `nexus-access.log` - Main API traffic
 - `probe-access.log` - Worker status requests
 - `forge-access.log` - Analytics queries
@@ -483,6 +489,7 @@ Caddy logs to `/var/log/caddy/`:
 - `templar-access.log` - Dashboard access
 
 **Log Format** (JSON):
+
 ```json
 {
   "ts": 1234567890.123,
@@ -561,6 +568,7 @@ sudo sysctl -w net.inet.tcp.recvspace=65536
 ### Common Issues
 
 #### Issue 1: Certificate Renewal Fails
+
 ```bash
 # Check Caddy logs
 tail -f /var/log/caddy/stderr.log
@@ -573,6 +581,7 @@ caddy reload --config /usr/local/etc/Caddyfile
 ```
 
 #### Issue 2: Port Already in Use
+
 ```bash
 # Find process using port 80 or 443
 sudo lsof -i :80
@@ -583,6 +592,7 @@ sudo kill -9 [PID]
 ```
 
 #### Issue 3: Reverse Proxy Not Working
+
 ```bash
 # Test backend directly
 curl http://localhost:3000/api/health
