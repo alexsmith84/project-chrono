@@ -25,9 +25,32 @@ app.post('/', async (c) => {
   try {
     // Parse and validate request body
     const body = await c.req.json();
-    const validated = ingestRequestSchema.parse(body);
+    const validationResult = ingestRequestSchema.safeParse(body);
 
-    const { worker_id, feeds } = validated;
+    // Handle validation errors explicitly
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0];
+      return c.json(
+        {
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
+            details: {
+              field: firstError.path.join('.'),
+              errors: validationResult.error.errors.map((e) => ({
+                path: e.path.join('.'),
+                message: e.message,
+              })),
+            },
+            request_id: requestId,
+          },
+          status: 400,
+        },
+        400
+      );
+    }
+
+    const { worker_id, feeds } = validationResult.data;
 
     logger.info(
       {

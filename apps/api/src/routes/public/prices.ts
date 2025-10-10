@@ -35,8 +35,31 @@ app.get('/latest', async (c) => {
   const requestId = c.get('requestId') as string;
 
   // Validate query parameters
-  const query = latestPricesQuerySchema.parse(c.req.query());
-  const { symbols } = query;
+  const validationResult = latestPricesQuerySchema.safeParse(c.req.query());
+
+  if (!validationResult.success) {
+    const firstError = validationResult.error.errors[0];
+    return c.json(
+      {
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
+          details: {
+            field: firstError.path.join('.'),
+            errors: validationResult.error.errors.map((e) => ({
+              path: e.path.join('.'),
+              message: e.message,
+            })),
+          },
+          request_id: requestId,
+        },
+        status: 400,
+      },
+      400
+    );
+  }
+
+  const { symbols } = validationResult.data;
 
   logger.debug({ symbols, request_id: requestId }, 'Fetching latest prices');
 
@@ -101,8 +124,31 @@ app.get('/range', async (c) => {
   const requestId = c.get('requestId') as string;
 
   // Validate query parameters
-  const query = priceRangeQuerySchema.parse(c.req.query());
-  const { symbol, from, to, interval, source, limit } = query;
+  const validationResult = priceRangeQuerySchema.safeParse(c.req.query());
+
+  if (!validationResult.success) {
+    const firstError = validationResult.error.errors[0];
+    return c.json(
+      {
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
+          details: {
+            field: firstError.path.join('.'),
+            errors: validationResult.error.errors.map((e) => ({
+              path: e.path.join('.'),
+              message: e.message,
+            })),
+          },
+          request_id: requestId,
+        },
+        status: 400,
+      },
+      400
+    );
+  }
+
+  const { symbol, from, to, interval, source, limit } = validationResult.data;
 
   const fromDate = new Date(from);
   const toDate = new Date(to);

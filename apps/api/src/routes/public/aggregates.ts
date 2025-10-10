@@ -24,8 +24,31 @@ app.get('/consensus', async (c) => {
   const requestId = c.get('requestId') as string;
 
   // Validate query parameters
-  const query = consensusPricesQuerySchema.parse(c.req.query());
-  const { symbols, timestamp } = query;
+  const validationResult = consensusPricesQuerySchema.safeParse(c.req.query());
+
+  if (!validationResult.success) {
+    const firstError = validationResult.error.errors[0];
+    return c.json(
+      {
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
+          details: {
+            field: firstError.path.join('.'),
+            errors: validationResult.error.errors.map((e) => ({
+              path: e.path.join('.'),
+              message: e.message,
+            })),
+          },
+          request_id: requestId,
+        },
+        status: 400,
+      },
+      400
+    );
+  }
+
+  const { symbols, timestamp } = validationResult.data;
 
   logger.debug(
     {
