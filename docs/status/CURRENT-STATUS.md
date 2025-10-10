@@ -113,46 +113,65 @@ No known issues at this time. All validation errors are properly handled and ret
 
 ---
 
-## 📋 Next Steps (In Order)
+## 📋 Next Pull Requests (In Order)
 
-### Immediate (Next Session)
+⚠️ **IMPORTANT**: Each section below represents a SEPARATE PR. Complete and merge one before starting the next.
 
-1. **WebSocket Server** (~3-4 hours)
-   - `WS /stream` endpoint for real-time price updates
-   - Subscribe/unsubscribe to symbols
-   - Redis pub/sub integration (already built)
-   - Heartbeat messages (30s interval)
-   - Connection limit (10K max)
-   - WebSocket integration tests
+---
 
-### Short Term (This Week)
+### ✅ PR #21: CHRONO-007 REST API - MERGED
+**Status**: Complete and merged to `khala`
+- REST API endpoints (ingest, prices, aggregates, health)
+- Authentication and rate limiting
+- 50 integration tests passing
 
-2. **Load Testing** (~1-2 hours)
-   - k6 load test scripts
-   - Test ingestion throughput (target: 1000 feeds/sec)
-   - Test API latency (target: P95 <200ms)
-   - Test WebSocket scalability
+---
 
-3. **Documentation** (~1 hour)
-   - OpenAPI/Swagger spec
-   - API usage examples
-   - Performance benchmarks
+### ✅ PR #22: CHRONO-008 WebSocket Streaming - MERGED
+**Status**: Complete and merged to `khala`
+- WebSocket `/stream` endpoint
+- Subscribe/unsubscribe functionality
+- 12 WebSocket tests (62 total tests)
 
-### Medium Term (This Month)
+---
 
-4. **Create Pull Request**
-   - Merge `feature/chrono-007-api-layer` → `khala`
-   - Get review, address feedback
-   - Merge to main branch
+### 🔄 Next PR: CHRONO-009 Load Testing
+**Status**: Not started
+**Branch**: Create `warp-in/CHRONO-009-load-testing` from updated `forge`
 
-5. **CHRONO-006: Exchange Data Collection**
-   - Build workers to fetch prices from exchanges
-   - Use POST /internal/ingest endpoint
-   - Schedule with cron or workers
+**Scope** (~1-2 hours):
+- k6 load test scripts for ingestion endpoint
+- k6 scripts for API query endpoints
+- k6 scripts for WebSocket scalability
+- Performance baseline documentation
 
-6. **CHRONO-005: Rust Engine Foundation**
-   - VWAP/TWAP calculations
-   - Called via Bun N-API or future Elixir NIFs
+**⚠️ CREATE THIS PR BEFORE STARTING DOCUMENTATION**
+
+---
+
+### 📋 Future PR: CHRONO-010 API Documentation
+**Status**: Not started
+**Branch**: Create `warp-in/CHRONO-010-api-docs` from updated `forge`
+
+**Scope** (~1 hour):
+- OpenAPI/Swagger spec with Scalar UI
+- API usage examples and authentication guide
+- WebSocket protocol documentation
+
+**⚠️ WAIT FOR PR #23 (CHRONO-009) TO MERGE FIRST**
+
+---
+
+### 🚀 Long Term
+
+**CHRONO-006: Exchange Data Collection**
+- Build workers to fetch prices from exchanges
+- Use POST /internal/ingest endpoint
+- Schedule with cron or workers
+
+**CHRONO-005: Rust Engine Foundation**
+- VWAP/TWAP calculations
+- Called via Bun N-API or future Elixir NIFs
 
 ---
 
@@ -246,35 +265,41 @@ curl "http://localhost:3000/prices/latest?symbols=BTC/USD" \
 
 ## 💡 Context for Next Session
 
-**When you ask "What's next?"**, here's the plan:
+**When you ask "What's next?"**, check the "Next Pull Requests" section above.
 
-1. **First Priority**: Implement WebSocket server (~3-4 hours)
-   - `WS /stream` endpoint for real-time price updates
-   - Subscribe/unsubscribe to symbols
-   - Redis pub/sub integration (already built and tested)
-   - Heartbeat messages (30s interval)
-   - Connection limit (10K max)
-   - WebSocket integration tests
+### ⚠️ Critical Workflow Reminder
 
-2. **Second Priority**: Load testing
-   - k6 load test scripts
-   - Test ingestion throughput, API latency, WebSocket scalability
+**ALWAYS follow this pattern:**
 
-3. **Third Priority**: Documentation
-   - OpenAPI/Swagger spec
-   - API usage examples
+1. Check which PR we're working on (CHRONO-XXX)
+2. Complete the feature
+3. **CREATE PR IMMEDIATELY** - Don't continue to next feature
+4. Wait for merge
+5. Pull updated base branch
+6. Create NEW branch for next PR
+7. Start next feature
 
-**Current Branch**: `feature/chrono-007-api-layer` (DO NOT commit to `khala` directly!)
+**Never mix multiple CHRONO numbers on the same branch!**
 
-**API Status**: ✅ Fully functional with comprehensive test coverage (50/50 tests passing)
+### Current Status
 
-**What Changed This Session**:
-- ✅ Fixed Zod validation error handling using `safeParse()` instead of `parse()`
-- ✅ All routes now properly return 400 for validation errors
-- ✅ Completed integration tests for all endpoints (ingestion, prices, aggregates, health/metrics)
-- ✅ 50 tests covering authentication, validation, caching, error handling, and edge cases
-- ✅ Updated all route handlers in: `ingest.ts`, `prices.ts`, `aggregates.ts`
+**Latest Merged PRs**:
+- ✅ PR #21: CHRONO-007 REST API (merged to `khala`)
+- ✅ PR #22: CHRONO-008 WebSocket (merged to `khala`)
+
+**Current Branch**: Should be on `khala` or `forge`, NOT on a feature branch
+
+**Next Work**: CHRONO-009 Load Testing (create new branch: `warp-in/CHRONO-009-load-testing`)
+
+**API Status**: ✅ Fully functional with 62 integration tests passing
+
+**What Was Completed Last Session**:
+- ✅ Fixed Zod validation error handling
+- ✅ Completed REST API integration tests (50 tests)
+- ✅ Implemented WebSocket streaming (12 tests)
+- ✅ Created proper PRs for CHRONO-007 and CHRONO-008
+- ✅ Both PRs merged to `khala`
 
 ---
 
-*"The API is battle-tested. All systems green. WebSocket awaits. En Taro Tassadar!"*
+*"The workflow is clear. One feature, one branch, one PR. En Taro Tassadar!"*
