@@ -29,10 +29,52 @@ import healthRoute from './routes/health';
 export function createApp() {
   const app = new Hono();
 
+  // Hono onError handler (catches all errors)
+  app.onError((error, c) => {
+    const requestId = c.get('requestId') as string;
+
+    // Import ZodError dynamically to avoid circular deps
+    const { ZodError } = require('zod');
+
+    if (error instanceof ZodError) {
+      const firstError = error.errors[0];
+      return c.json(
+        {
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
+            details: {
+              field: firstError.path.join('.'),
+              errors: error.errors.map((e: any) => ({
+                path: e.path.join('.'),
+                message: e.message,
+              })),
+            },
+            request_id: requestId,
+          },
+          status: 400,
+        },
+        400
+      );
+    }
+
+    // Default error response
+    return c.json(
+      {
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: error instanceof Error ? error.message : 'An unexpected error occurred',
+          request_id: requestId,
+        },
+        status: 500,
+      },
+      500
+    );
+  });
+
   // Global middleware (applied to all routes)
   app.use('*', corsMiddleware);
   app.use('*', requestIdMiddleware);
-  app.use('*', errorHandlerMiddleware);
   app.use('*', timingMiddleware);
 
   // Welcome route (no auth required)

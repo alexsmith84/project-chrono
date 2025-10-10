@@ -22,33 +22,32 @@ app.post('/', async (c) => {
   const startTime = Date.now();
   const requestId = c.get('requestId') as string;
 
-  // Parse and validate request body
-  const body = await c.req.json();
-  const validated = ingestRequestSchema.parse(body);
-
-  const { worker_id, feeds } = validated;
-
-  logger.info(
-    {
-      worker_id,
-      feed_count: feeds.length,
-      request_id: requestId,
-    },
-    'Processing price feed ingestion'
-  );
-
-  // Convert to database insert format
-  const feedsToInsert: PriceFeedInsert[] = feeds.map((feed) => ({
-    symbol: feed.symbol,
-    price: feed.price,
-    volume: feed.volume ?? null,
-    timestamp: new Date(feed.timestamp),
-    source: feed.source,
-    worker_id,
-    metadata: feed.metadata ?? null,
-  }));
-
   try {
+    // Parse and validate request body
+    const body = await c.req.json();
+    const validated = ingestRequestSchema.parse(body);
+
+    const { worker_id, feeds } = validated;
+
+    logger.info(
+      {
+        worker_id,
+        feed_count: feeds.length,
+        request_id: requestId,
+      },
+      'Processing price feed ingestion'
+    );
+
+    // Convert to database insert format
+    const feedsToInsert: PriceFeedInsert[] = feeds.map((feed) => ({
+      symbol: feed.symbol,
+      price: feed.price,
+      volume: feed.volume ?? null,
+      timestamp: new Date(feed.timestamp),
+      source: feed.source,
+      worker_id,
+      metadata: feed.metadata ?? null,
+    }));
     // Insert into database (batch insert, max 100 per request)
     const insertedCount = await insertPriceFeeds(feedsToInsert);
 
@@ -99,27 +98,8 @@ app.post('/', async (c) => {
 
     return c.json(response, 200);
   } catch (error) {
-    const latency = Date.now() - startTime;
-
-    logger.error(
-      {
-        err: error,
-        worker_id,
-        feed_count: feeds.length,
-        request_id: requestId,
-      },
-      'Failed to ingest price feeds'
-    );
-
-    const response: IngestResponse = {
-      status: 'error',
-      ingested: 0,
-      failed: feeds.length,
-      latency_ms: latency,
-      message: error instanceof Error ? error.message : 'Ingestion failed',
-    };
-
-    return c.json(response, 500);
+    // Let error handler middleware handle validation and other errors
+    throw error;
   }
 });
 

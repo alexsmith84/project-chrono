@@ -62,6 +62,16 @@ export async function errorHandlerMiddleware(c: Context, next: Next) {
   } catch (error) {
     const requestId = c.get('requestId') as string;
 
+    // Debug: log error type
+    logger.debug(
+      {
+        error_name: error instanceof Error ? error.constructor.name : typeof error,
+        is_zod: error instanceof ZodError,
+        request_id: requestId,
+      },
+      'Error caught in middleware'
+    );
+
     // Zod validation error
     if (error instanceof ZodError) {
       const firstError = error.errors[0];
