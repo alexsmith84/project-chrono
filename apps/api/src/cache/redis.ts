@@ -23,9 +23,21 @@ export const redis = new Redis(config.REDIS_URL, {
 });
 
 /**
- * Redis pub/sub client (separate connection)
+ * Redis pub/sub subscriber client (separate connection for receiving)
  */
 export const redisPubSub = new Redis(config.REDIS_URL, {
+  maxRetriesPerRequest: 3,
+  retryStrategy(times) {
+    const delay = Math.min(times * 50, 2000);
+    return delay;
+  },
+});
+
+/**
+ * Redis publisher client (separate connection for sending)
+ * Required because subscriber connections cannot publish
+ */
+export const redisPublisher = new Redis(config.REDIS_URL, {
   maxRetriesPerRequest: 3,
   retryStrategy(times) {
     const delay = Math.min(times * 50, 2000);
@@ -52,6 +64,14 @@ redisPubSub.on('error', (error) => {
   logCacheError(error, 'Redis pub/sub connection');
 });
 
+redisPublisher.on('connect', () => {
+  logger.info('Redis publisher connected');
+});
+
+redisPublisher.on('error', (error) => {
+  logCacheError(error, 'Redis publisher connection');
+});
+
 /**
  * Health check for Redis connection
  */
@@ -72,6 +92,7 @@ export async function closeRedisConnection(): Promise<void> {
   try {
     await redis.quit();
     await redisPubSub.quit();
+    await redisPublisher.quit();
     logger.info('Redis connections closed');
   } catch (error) {
     logCacheError(error as Error, 'Connection close');

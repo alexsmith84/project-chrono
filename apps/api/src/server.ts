@@ -22,6 +22,8 @@ import ingestRoute from './routes/internal/ingest';
 import pricesRoute from './routes/public/prices';
 import aggregatesRoute from './routes/public/aggregates';
 import healthRoute from './routes/health';
+import { websocketHandlers, getConnectionStats, type ConnectionData } from './routes/websocket';
+import type { ServerWebSocket } from 'bun';
 
 /**
  * Create and configure Hono app
@@ -86,6 +88,7 @@ export function createApp() {
       endpoints: {
         health: 'GET /health',
         metrics: 'GET /metrics',
+        stream: 'WS /stream',
         internal: {
           ingest: 'POST /internal/ingest',
         },
@@ -139,14 +142,39 @@ export function createApp() {
 }
 
 /**
- * Start HTTP server
+ * Start HTTP + WebSocket server
  */
 export function startServer() {
   const app = createApp();
 
-  const server = Bun.serve({
+  const server = Bun.serve<ConnectionData>({
     port: config.PORT,
-    fetch: app.fetch,
+    fetch(req, server) {
+      const url = new URL(req.url);
+
+      // Handle WebSocket upgrade for /stream endpoint
+      if (url.pathname === '/stream') {
+        const connectionId = crypto.randomUUID();
+
+        const upgraded = server.upgrade(req, {
+          data: {
+            id: connectionId,
+            subscribedSymbols: new Set(),
+            createdAt: new Date(),
+          },
+        });
+
+        if (upgraded) {
+          return undefined; // Connection upgraded successfully
+        }
+
+        return new Response('WebSocket upgrade failed', { status: 500 });
+      }
+
+      // Pass all other requests to Hono
+      return app.fetch(req, server);
+    },
+    websocket: websocketHandlers,
   });
 
   logger.info(
@@ -155,6 +183,8 @@ export function startServer() {
       env: config.NODE_ENV,
       database_pool_size: config.DATABASE_POOL_SIZE,
       redis_cache_ttl: config.REDIS_CACHE_TTL,
+      ws_heartbeat_interval: config.WS_HEARTBEAT_INTERVAL,
+      ws_max_connections: config.WS_MAX_CONNECTIONS,
     },
     `🚀 Project Chrono API server started on port ${config.PORT}`
   );

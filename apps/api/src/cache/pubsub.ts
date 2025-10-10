@@ -3,7 +3,7 @@
  * Enables horizontal scaling of WebSocket servers
  */
 
-import { redisPubSub } from './redis';
+import { redisPubSub, redisPublisher } from './redis';
 import { logger } from '../utils/logger';
 import type { PriceFeed } from '../db/types';
 
@@ -52,11 +52,11 @@ export async function publishPriceUpdate(price: PriceFeed): Promise<void> {
 
     // Publish to symbol-specific channel
     const symbolChannel = PubSubChannels.priceUpdate(price.symbol);
-    await redisPubSub.publish(symbolChannel, messageStr);
+    await redisPublisher.publish(symbolChannel, messageStr);
 
     // Publish to global channel
     const globalChannel = PubSubChannels.priceUpdateAll();
-    await redisPubSub.publish(globalChannel, messageStr);
+    await redisPublisher.publish(globalChannel, messageStr);
 
     logger.debug(
       { symbol: price.symbol, channel: symbolChannel },
