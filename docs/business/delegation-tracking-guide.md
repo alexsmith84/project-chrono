@@ -1,6 +1,6 @@
 # Delegation Tracking Guide - Project Chrono
 
-*"Every warrior counts. Track all who pledge their power."*
+_"Every warrior counts. Track all who pledge their power."_
 
 ---
 
@@ -18,11 +18,11 @@ Track delegator information, delegation amounts, and growth metrics to understan
 
 **Columns**:
 
-| Wallet Address | First Delegated | Current Amount | Peak Amount | Status | Tier |
-|---------------|-----------------|----------------|-------------|--------|------|
-| 0x1a2b... | 2025-09-15 | 500,000 | 750,000 | Active | Gold |
-| 0x3c4d... | 2025-09-20 | 150,000 | 150,000 | Active | Silver |
-| 0x5e6f... | 2025-09-18 | 0 | 100,000 | Churned | - |
+| Wallet Address | First Delegated | Current Amount | Peak Amount | Status  | Tier   |
+| -------------- | --------------- | -------------- | ----------- | ------- | ------ |
+| 0x1a2b...      | 2025-09-15      | 500,000        | 750,000     | Active  | Gold   |
+| 0x3c4d...      | 2025-09-20      | 150,000        | 150,000     | Active  | Silver |
+| 0x5e6f...      | 2025-09-18      | 0              | 100,000     | Churned | -      |
 
 ### Delegator Tiers
 
@@ -38,10 +38,10 @@ Track delegator information, delegation amounts, and growth metrics to understan
 
 **Weekly Summary**:
 
-| Week | New Delegators | Total Delegators | Churned | Net Change | Total Delegation |
-|------|---------------|------------------|---------|------------|------------------|
-| Oct 1 | 8 | 45 | 2 | +6 | 15.2M FLR |
-| Sep 24 | 12 | 37 | 1 | +11 | 13.5M FLR |
+| Week   | New Delegators | Total Delegators | Churned | Net Change | Total Delegation |
+| ------ | -------------- | ---------------- | ------- | ---------- | ---------------- |
+| Oct 1  | 8              | 45               | 2       | +6         | 15.2M FLR        |
+| Sep 24 | 12             | 37               | 1       | +11        | 13.5M FLR        |
 
 **Monthly Goals**:
 
@@ -65,12 +65,12 @@ Track delegator information, delegation amounts, and growth metrics to understan
 
 **Channel Performance**:
 
-| Source | Delegators | Avg Delegation | Total FLR |
-|--------|-----------|---------------|-----------|
-| Twitter | 18 | 280K | 5.0M |
-| Forum | 12 | 450K | 5.4M |
-| Reddit | 8 | 200K | 1.6M |
-| Referral | 7 | 450K | 3.2M |
+| Source   | Delegators | Avg Delegation | Total FLR |
+| -------- | ---------- | -------------- | --------- |
+| Twitter  | 18         | 280K           | 5.0M      |
+| Forum    | 12         | 450K           | 5.4M      |
+| Reddit   | 8          | 200K           | 1.6M      |
+| Referral | 7          | 450K           | 3.2M      |
 
 ---
 
@@ -81,21 +81,21 @@ Track delegator information, delegation amounts, and growth metrics to understan
 Track retention by signup month:
 
 | Signup Month | Initial Count | Month 1 | Month 2 | Month 3 |
-|-------------|--------------|---------|---------|---------|
-| July 2025 | 15 | 93% | 87% | 80% |
-| Aug 2025 | 22 | 95% | 91% | - |
-| Sep 2025 | 45 | 96% | - | - |
+| ------------ | ------------- | ------- | ------- | ------- |
+| July 2025    | 15            | 93%     | 87%     | 80%     |
+| Aug 2025     | 22            | 95%     | 91%     | -       |
+| Sep 2025     | 45            | 96%     | -       | -       |
 
 ### Churn Reasons
 
 Track why delegators leave:
 
-| Reason | Count | % |
-|--------|-------|---|
-| Better rate elsewhere | 3 | 40% |
-| Moved to own oracle | 2 | 27% |
-| Exited FLR | 2 | 27% |
-| Unknown | 1 | 6% |
+| Reason                | Count | %   |
+| --------------------- | ----- | --- |
+| Better rate elsewhere | 3     | 40% |
+| Moved to own oracle   | 2     | 27% |
+| Exited FLR            | 2     | 27% |
+| Unknown               | 1     | 6%  |
 
 ---
 
@@ -107,10 +107,10 @@ Track why delegators leave:
 
 **Revenue by Delegator**:
 
-| Wallet | Delegation | Est. Annual Rewards | Our Fee (15%) | Monthly Revenue |
-|--------|-----------|--------------------|--------------|-----------------|
-| 0x1a2b... | 5M FLR | 150K FLR ($7,500) | 22.5K FLR ($1,125) | $94 |
-| 0x3c4d... | 2M FLR | 60K FLR ($3,000) | 9K FLR ($450) | $38 |
+| Wallet    | Delegation | Est. Annual Rewards | Our Fee (15%)      | Monthly Revenue |
+| --------- | ---------- | ------------------- | ------------------ | --------------- |
+| 0x1a2b... | 5M FLR     | 150K FLR ($7,500)   | 22.5K FLR ($1,125) | $94             |
+| 0x3c4d... | 2M FLR     | 60K FLR ($3,000)    | 9K FLR ($450)      | $38             |
 
 **Top Revenue Contributors** (80/20 rule):
 
@@ -125,15 +125,15 @@ Track why delegators leave:
 
 **Twitter Campaign Example**:
 
-| Metric | Value |
-|--------|-------|
-| Ad spend | $100 |
-| Reach | 50,000 |
-| Clicks | 250 |
-| New delegators | 8 |
-| Total delegated | 2.2M FLR |
-| Est. annual revenue | $413 |
-| **ROI** | **313%** |
+| Metric              | Value    |
+| ------------------- | -------- |
+| Ad spend            | $100     |
+| Reach               | 50,000   |
+| Clicks              | 250      |
+| New delegators      | 8        |
+| Total delegated     | 2.2M FLR |
+| Est. annual revenue | $413     |
+| **ROI**             | **313%** |
 
 ---
 
@@ -145,7 +145,7 @@ Monitor delegation events:
 
 ```javascript
 // Listen for delegation changes
-contract.on('DelegationChanged', (delegator, amount, timestamp) => {
+contract.on("DelegationChanged", (delegator, amount, timestamp) => {
   // Update spreadsheet or database
   updateDelegatorRecord(delegator, amount, timestamp);
 });
@@ -156,7 +156,7 @@ contract.on('DelegationChanged', (delegator, amount, timestamp) => {
 ```bash
 # Export delegator data
 psql -d project_chrono -c "COPY (
-  SELECT 
+  SELECT
     wallet_address,
     first_delegated,
     current_amount,
@@ -186,4 +186,4 @@ psql -d project_chrono -c "COPY (
 
 ---
 
-*"Every ally tracked. Every resource accounted for. The Khala knows all."*
+_"Every ally tracked. Every resource accounted for. The Khala knows all."_

@@ -18,4 +18,4 @@ This directory contains comprehensive architecture documentation for Project Chr
 
 ---
 
-*"The architecture of the Protoss, refined over millennia."*
+_"The architecture of the Protoss, refined over millennia."_

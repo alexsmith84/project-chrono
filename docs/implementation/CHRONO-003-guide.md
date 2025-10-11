@@ -1,6 +1,6 @@
 # Implementation Guide: CHRONO-003
 
-*"The path is illuminated. Execute these commands to construct the Nexus."*
+_"The path is illuminated. Execute these commands to construct the Nexus."_
 
 ---
 
@@ -274,6 +274,7 @@ bun install
 ```
 
 **Expected output**:
+
 - Installs TypeScript, Prettier, Husky, lint-staged, markdownlint-cli2
 - Creates `bun.lock` file
 - Installs Husky git hooks
@@ -456,4 +457,4 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ---
 
-*"The Nexus stands ready. All systems operational. En Taro Tassadar!"*
+_"The Nexus stands ready. All systems operational. En Taro Tassadar!"_

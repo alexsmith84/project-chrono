@@ -1,6 +1,6 @@
 # Code Quality Automation - Project Chrono
 
-*"Automation is the path to perfection. Let the machines handle the mundane."*
+_"Automation is the path to perfection. Let the machines handle the mundane."_
 
 ---
 
@@ -117,11 +117,11 @@ npx lint-staged
 
 ## Tool Comparison
 
-| Tool | When | Speed | Auto-fix | Scope |
-|------|------|-------|----------|-------|
-| **VSCode** | On save | Instant | Yes | Single file |
-| **Pre-commit Hook** | On commit | Fast (1-3s) | Yes | Staged files only |
-| **GitHub Actions** | On push/PR | Slow (20-60s) | No | All files |
+| Tool                | When       | Speed         | Auto-fix | Scope             |
+| ------------------- | ---------- | ------------- | -------- | ----------------- |
+| **VSCode**          | On save    | Instant       | Yes      | Single file       |
+| **Pre-commit Hook** | On commit  | Fast (1-3s)   | Yes      | Staged files only |
+| **GitHub Actions**  | On push/PR | Slow (20-60s) | No       | All files         |
 
 ---
 
@@ -180,7 +180,9 @@ Some markdown structures can't be auto-fixed. Add exceptions:
 
 ```markdown
 <!-- markdownlint-disable MD013 -->
+
 | Very long table row that exceeds 120 characters but should stay as-is |
+
 <!-- markdownlint-enable MD013 -->
 ```
 
@@ -192,9 +194,9 @@ Edit `.markdownlint-cli2.jsonc`:
 {
   "config": {
     "MD013": {
-      "line_length": 100  // Change from 120 to 100
-    }
-  }
+      "line_length": 100, // Change from 120 to 100
+    },
+  },
 }
 ```
 
@@ -262,4 +264,4 @@ docs/api/generated/**
 
 ---
 
-*"Quality is not an accident. It is the result of systematic automation. En Taro Tassadar!"*
+_"Quality is not an accident. It is the result of systematic automation. En Taro Tassadar!"_

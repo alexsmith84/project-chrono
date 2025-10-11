@@ -3,10 +3,10 @@
  * Manages test database, Redis, and server lifecycle
  */
 
-import { sql } from '../../src/db/client';
-import { redis } from '../../src/cache/redis';
-import { createApp } from '../../src/server';
-import type { Hono } from 'hono';
+import { sql } from "../../src/db/client";
+import { redis } from "../../src/cache/redis";
+import { createApp } from "../../src/server";
+import type { Hono } from "hono";
 
 /**
  * Clean up test data from database
@@ -61,7 +61,7 @@ export async function teardownTests() {
 export function createAuthHeaders(apiKey: string) {
   return {
     Authorization: `Bearer ${apiKey}`,
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 }
 
@@ -69,9 +69,9 @@ export function createAuthHeaders(apiKey: string) {
  * Test API keys (from .env.example)
  */
 export const TEST_API_KEYS = {
-  internal: 'chrono_internal_dev_key_001',
-  public: 'chrono_public_dev_key_001',
-  admin: 'chrono_admin_dev_key_001',
+  internal: "chrono_internal_dev_key_001",
+  public: "chrono_public_dev_key_001",
+  admin: "chrono_admin_dev_key_001",
 };
 
 /**
@@ -80,7 +80,7 @@ export const TEST_API_KEYS = {
 export async function waitFor(
   condition: () => Promise<boolean>,
   timeout = 5000,
-  interval = 100
+  interval = 100,
 ): Promise<void> {
   const startTime = Date.now();
 

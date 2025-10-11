@@ -3,11 +3,11 @@
  * Adds request ID, timing, and error handling
  */
 
-import type { Context, Next } from 'hono';
-import { logger } from '../utils/logger';
-import { ZodError } from 'zod';
-import { DatabaseError } from '../db/client';
-import { CacheError } from '../cache/redis';
+import type { Context, Next } from "hono";
+import { logger } from "../utils/logger";
+import { ZodError } from "zod";
+import { DatabaseError } from "../db/client";
+import { CacheError } from "../cache/redis";
 
 /**
  * Generate unique request ID
@@ -22,8 +22,8 @@ function generateRequestId(): string {
  */
 export async function requestIdMiddleware(c: Context, next: Next) {
   const requestId = generateRequestId();
-  c.set('requestId', requestId);
-  c.header('X-Request-ID', requestId);
+  c.set("requestId", requestId);
+  c.header("X-Request-ID", requestId);
 
   await next();
 }
@@ -38,7 +38,7 @@ export async function timingMiddleware(c: Context, next: Next) {
   await next();
 
   const latency = Date.now() - startTime;
-  const requestId = c.get('requestId') as string;
+  const requestId = c.get("requestId") as string;
 
   logger.info(
     {
@@ -48,7 +48,7 @@ export async function timingMiddleware(c: Context, next: Next) {
       latency_ms: latency,
       request_id: requestId,
     },
-    'Request completed'
+    "Request completed",
   );
 }
 
@@ -60,16 +60,17 @@ export async function errorHandlerMiddleware(c: Context, next: Next) {
   try {
     await next();
   } catch (error) {
-    const requestId = c.get('requestId') as string;
+    const requestId = c.get("requestId") as string;
 
     // Debug: log error type
     logger.debug(
       {
-        error_name: error instanceof Error ? error.constructor.name : typeof error,
+        error_name:
+          error instanceof Error ? error.constructor.name : typeof error,
         is_zod: error instanceof ZodError,
         request_id: requestId,
       },
-      'Error caught in middleware'
+      "Error caught in middleware",
     );
 
     // Zod validation error
@@ -78,12 +79,12 @@ export async function errorHandlerMiddleware(c: Context, next: Next) {
       return c.json(
         {
           error: {
-            code: 'VALIDATION_ERROR',
-            message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
+            code: "VALIDATION_ERROR",
+            message: `Validation failed: ${firstError.path.join(".")}: ${firstError.message}`,
             details: {
-              field: firstError.path.join('.'),
+              field: firstError.path.join("."),
               errors: error.errors.map((e) => ({
-                path: e.path.join('.'),
+                path: e.path.join("."),
                 message: e.message,
               })),
             },
@@ -91,7 +92,7 @@ export async function errorHandlerMiddleware(c: Context, next: Next) {
           },
           status: 400,
         },
-        400
+        400,
       );
     }
 
@@ -103,14 +104,14 @@ export async function errorHandlerMiddleware(c: Context, next: Next) {
           query: error.query,
           request_id: requestId,
         },
-        'Database error'
+        "Database error",
       );
 
       return c.json(
         {
           error: {
-            code: 'DATABASE_ERROR',
-            message: 'Database operation failed',
+            code: "DATABASE_ERROR",
+            message: "Database operation failed",
             details: {
               message: error.message,
             },
@@ -118,7 +119,7 @@ export async function errorHandlerMiddleware(c: Context, next: Next) {
           },
           status: 503,
         },
-        503
+        503,
       );
     }
 
@@ -130,15 +131,15 @@ export async function errorHandlerMiddleware(c: Context, next: Next) {
           operation: error.operation,
           request_id: requestId,
         },
-        'Cache error'
+        "Cache error",
       );
 
       // Cache errors are non-fatal - continue without cache
       return c.json(
         {
           error: {
-            code: 'CACHE_ERROR',
-            message: 'Cache operation failed (non-fatal)',
+            code: "CACHE_ERROR",
+            message: "Cache operation failed (non-fatal)",
             details: {
               message: error.message,
               operation: error.operation,
@@ -147,7 +148,7 @@ export async function errorHandlerMiddleware(c: Context, next: Next) {
           },
           status: 503,
         },
-        503
+        503,
       );
     }
 
@@ -157,22 +158,22 @@ export async function errorHandlerMiddleware(c: Context, next: Next) {
         err: error,
         request_id: requestId,
       },
-      'Unhandled error'
+      "Unhandled error",
     );
 
     return c.json(
       {
         error: {
-          code: 'INTERNAL_ERROR',
-          message: 'An unexpected error occurred',
+          code: "INTERNAL_ERROR",
+          message: "An unexpected error occurred",
           details: {
-            message: error instanceof Error ? error.message : 'Unknown error',
+            message: error instanceof Error ? error.message : "Unknown error",
           },
           request_id: requestId,
         },
         status: 500,
       },
-      500
+      500,
     );
   }
 }
@@ -182,14 +183,14 @@ export async function errorHandlerMiddleware(c: Context, next: Next) {
  */
 export async function corsMiddleware(c: Context, next: Next) {
   // Allow all origins in development
-  c.header('Access-Control-Allow-Origin', '*');
-  c.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  c.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  c.header('Access-Control-Max-Age', '86400');
+  c.header("Access-Control-Allow-Origin", "*");
+  c.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  c.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  c.header("Access-Control-Max-Age", "86400");
 
   // Handle preflight requests
-  if (c.req.method === 'OPTIONS') {
-    return c.text('', 204);
+  if (c.req.method === "OPTIONS") {
+    return c.text("", 204);
   }
 
   await next();

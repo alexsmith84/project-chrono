@@ -7,11 +7,13 @@ This directory contains k6 load test scripts for the Project Chrono API.
 ### Install k6
 
 **macOS (Homebrew)**:
+
 ```bash
 brew install k6
 ```
 
 **Linux**:
+
 ```bash
 # Debian/Ubuntu
 sudo gpg -k
@@ -22,6 +24,7 @@ sudo apt-get install k6
 ```
 
 **Windows (Chocolatey)**:
+
 ```powershell
 choco install k6
 ```
@@ -37,17 +40,20 @@ choco install k6
 Tests the `POST /internal/ingest` endpoint performance.
 
 **What it tests**:
+
 - Batch ingestion with varying payload sizes (1-50 feeds)
 - High throughput write operations
 - Database insertion performance
 - API response times under load
 
 **Load profile**:
+
 - Ramps from 10 → 50 → 100 concurrent users
 - Total duration: ~5 minutes
 - Generates realistic price feed data
 
 **Run**:
+
 ```bash
 # Default test
 k6 run apps/api/tests/load/ingestion.load.js
@@ -64,6 +70,7 @@ API_URL=http://api.example.com k6 run apps/api/tests/load/ingestion.load.js
 Tests all query endpoints: `/prices/latest`, `/prices/range`, `/aggregates/consensus`.
 
 **What it tests**:
+
 - Read performance across all query endpoints
 - Cache hit rates (Redis caching)
 - Database query optimization
@@ -71,11 +78,13 @@ Tests all query endpoints: `/prices/latest`, `/prices/range`, `/aggregates/conse
 - Time-range queries with OHLCV aggregation
 
 **Load profile**:
+
 - Ramps from 20 → 100 → 200 concurrent users
 - Total duration: ~7 minutes
 - Mix of different query types
 
 **Run**:
+
 ```bash
 # Default test
 k6 run apps/api/tests/load/queries.load.js
@@ -92,6 +101,7 @@ API_KEY=your_public_key INTERNAL_API_KEY=your_internal_key k6 run apps/api/tests
 Tests the `/stream` WebSocket endpoint scalability.
 
 **What it tests**:
+
 - Concurrent WebSocket connections
 - Message throughput and latency
 - Subscribe/unsubscribe operations
@@ -99,11 +109,13 @@ Tests the `/stream` WebSocket endpoint scalability.
 - Bidirectional communication (ping/pong)
 
 **Load profile**:
+
 - Ramps from 50 → 200 → 500 concurrent connections
 - Total duration: ~10 minutes
 - Each connection stays open 30-60 seconds
 
 **Run**:
+
 ```bash
 # Default test
 k6 run apps/api/tests/load/websocket.load.js
@@ -121,14 +133,15 @@ WS_URL=ws://api.example.com k6 run apps/api/tests/load/websocket.load.js
 
 All tests support these environment variables:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `API_URL` | `http://localhost:3000` | HTTP API base URL |
-| `WS_URL` | `ws://localhost:3000` | WebSocket base URL |
-| `API_KEY` | `chrono_public_dev_key_001` | Public API key |
+| Variable           | Default                       | Description                    |
+| ------------------ | ----------------------------- | ------------------------------ |
+| `API_URL`          | `http://localhost:3000`       | HTTP API base URL              |
+| `WS_URL`           | `ws://localhost:3000`         | WebSocket base URL             |
+| `API_KEY`          | `chrono_public_dev_key_001`   | Public API key                 |
 | `INTERNAL_API_KEY` | `chrono_internal_dev_key_001` | Internal API key (for seeding) |
 
 **Example**:
+
 ```bash
 API_URL=https://api.chrono.dev \
 WS_URL=wss://api.chrono.dev \
@@ -167,17 +180,20 @@ echo "\n✅ All load tests complete!"
 These are the expected performance thresholds defined in the tests:
 
 ### Ingestion Endpoint
+
 - ✅ 95% of requests < 100ms
 - ✅ 99% of requests < 200ms
 - ✅ Error rate < 1%
 
 ### Query Endpoints
+
 - ✅ 95% of requests < 100ms
 - ✅ 99% of requests < 200ms
 - ✅ Cache hit rate > 50%
 - ✅ Error rate < 1%
 
 ### WebSocket
+
 - ✅ 95% connection time < 500ms
 - ✅ 95% message latency < 100ms
 - ✅ Connection error rate < 5%
@@ -190,11 +206,13 @@ These are the expected performance thresholds defined in the tests:
 ### Key Metrics to Watch
 
 **HTTP Metrics**:
+
 - `http_req_duration`: Total request time (target: p95 < 100ms)
 - `http_req_failed`: Failed requests rate (target: < 1%)
 - `http_reqs`: Total requests per second
 
 **Custom Metrics**:
+
 - `cache_hits`: Cache hit rate (target: > 50%)
 - `feeds_ingested`: Total price feeds ingested
 - `queries_executed`: Total queries executed
@@ -225,32 +243,40 @@ vus............................: 50     min=10    max=50
 ## Troubleshooting
 
 ### Test Fails: "API not healthy"
+
 **Cause**: API server is not running or not accessible
 **Fix**: Start API server: `bun run dev` in `apps/api`
 
 ### High Error Rates
+
 **Causes**:
+
 - Database connection pool exhausted
 - Redis connection limits
 - Rate limiting triggered
 - Server resource constraints
 
 **Fix**:
+
 - Check server logs
 - Increase connection pool sizes
 - Monitor system resources (CPU, RAM, connections)
 
 ### Low Cache Hit Rates
+
 **Cause**: Cache TTL too short or cache not working
 **Fix**: Check Redis connection and cache configuration
 
 ### WebSocket Connection Errors
+
 **Causes**:
+
 - Server WebSocket limits reached
 - Firewall/proxy blocking WebSocket upgrades
 - Server resource exhaustion
 
 **Fix**:
+
 - Check server max connections config
 - Monitor server memory/CPU
 - Check network configuration
@@ -264,19 +290,22 @@ After running tests on a local development environment, document your baseline r
 ### Local Development (macOS M1, 16GB RAM)
 
 **Ingestion**:
-- Throughput: ___ requests/sec
-- P95 latency: ___ ms
-- Error rate: ___ %
+
+- Throughput: \_\_\_ requests/sec
+- P95 latency: \_\_\_ ms
+- Error rate: \_\_\_ %
 
 **Queries**:
-- Throughput: ___ requests/sec
-- P95 latency: ___ ms
-- Cache hit rate: ___ %
+
+- Throughput: \_\_\_ requests/sec
+- P95 latency: \_\_\_ ms
+- Cache hit rate: \_\_\_ %
 
 **WebSocket**:
-- Max concurrent connections: ___
-- P95 message latency: ___ ms
-- Connection error rate: ___ %
+
+- Max concurrent connections: \_\_\_
+- P95 message latency: \_\_\_ ms
+- Connection error rate: \_\_\_ %
 
 ### Staging Environment
 
@@ -297,9 +326,9 @@ Create custom load patterns by modifying the `options.stages` array:
 ```javascript
 export const options = {
   stages: [
-    { duration: '1m', target: 100 },  // Ramp-up
-    { duration: '5m', target: 100 },  // Sustained load
-    { duration: '1m', target: 0 },    // Ramp-down
+    { duration: "1m", target: 100 }, // Ramp-up
+    { duration: "5m", target: 100 }, // Sustained load
+    { duration: "1m", target: 0 }, // Ramp-down
   ],
 };
 ```
@@ -345,4 +374,4 @@ Add to GitHub Actions workflow:
 
 ---
 
-*"En Taro Tassadar! May your servers withstand the swarm."*
+_"En Taro Tassadar! May your servers withstand the swarm."_

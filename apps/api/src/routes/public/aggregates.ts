@@ -3,15 +3,15 @@
  * GET /aggregates/consensus - FTSO consensus prices
  */
 
-import { Hono } from 'hono';
-import { consensusPricesQuerySchema } from '../../schemas/queries';
-import type { ConsensusPricesResponse } from '../../schemas/responses';
-import { getConsensusPrices } from '../../db/queries/aggregates';
+import { Hono } from "hono";
+import { consensusPricesQuerySchema } from "../../schemas/queries";
+import type { ConsensusPricesResponse } from "../../schemas/responses";
+import { getConsensusPrices } from "../../db/queries/aggregates";
 import {
   getConsensusPriceFromCache,
   cacheConsensusPrice,
-} from '../../cache/price-cache';
-import { logger } from '../../utils/logger';
+} from "../../cache/price-cache";
+import { logger } from "../../utils/logger";
 
 const app = new Hono();
 
@@ -19,9 +19,9 @@ const app = new Hono();
  * GET /aggregates/consensus?symbols=BTC/USD,ETH/USD&timestamp=...
  * Get FTSO consensus prices (aggregated from multiple sources)
  */
-app.get('/consensus', async (c) => {
+app.get("/consensus", async (c) => {
   const startTime = Date.now();
-  const requestId = c.get('requestId') as string;
+  const requestId = c.get("requestId") as string;
 
   // Validate query parameters
   const validationResult = consensusPricesQuerySchema.safeParse(c.req.query());
@@ -31,12 +31,12 @@ app.get('/consensus', async (c) => {
     return c.json(
       {
         error: {
-          code: 'VALIDATION_ERROR',
-          message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
+          code: "VALIDATION_ERROR",
+          message: `Validation failed: ${firstError.path.join(".")}: ${firstError.message}`,
           details: {
-            field: firstError.path.join('.'),
+            field: firstError.path.join("."),
             errors: validationResult.error.errors.map((e) => ({
-              path: e.path.join('.'),
+              path: e.path.join("."),
               message: e.message,
             })),
           },
@@ -44,7 +44,7 @@ app.get('/consensus', async (c) => {
         },
         status: 400,
       },
-      400
+      400,
     );
   }
 
@@ -56,13 +56,13 @@ app.get('/consensus', async (c) => {
       timestamp: timestamp.toISOString(),
       request_id: requestId,
     },
-    'Fetching consensus prices'
+    "Fetching consensus prices",
   );
 
   try {
     // Try cache for each symbol
     const cachePromises = symbols.map((symbol) =>
-      getConsensusPriceFromCache(symbol, timestamp)
+      getConsensusPriceFromCache(symbol, timestamp),
     );
     const cachedResults = await Promise.all(cachePromises);
 
@@ -87,7 +87,7 @@ app.get('/consensus', async (c) => {
         cacheConsensusPrice(price.symbol, timestamp, price).catch((error) => {
           logger.warn(
             { err: error, symbol: price.symbol, request_id: requestId },
-            'Failed to cache consensus price'
+            "Failed to cache consensus price",
           );
         });
       }
@@ -121,7 +121,7 @@ app.get('/consensus', async (c) => {
         timestamp: timestamp.toISOString(),
         request_id: requestId,
       },
-      'Failed to fetch consensus prices'
+      "Failed to fetch consensus prices",
     );
 
     throw error;

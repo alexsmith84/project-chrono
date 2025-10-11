@@ -1,6 +1,6 @@
 # FTSO Metrics Tracking Guide - Project Chrono
 
-*"Know thy statistics. Victory lies in the data."*
+_"Know thy statistics. Victory lies in the data."_
 
 ---
 
@@ -28,9 +28,9 @@ Track FTSO performance metrics to optimize oracle operations and maximize reward
 
 **Spreadsheet Columns**:
 
-| Date | Attempted | Successful | Failed | Success Rate |
-|------|-----------|-----------|--------|--------------|
-| Oct 1 | 960 | 958 | 2 | 99.79% |
+| Date  | Attempted | Successful | Failed | Success Rate |
+| ----- | --------- | ---------- | ------ | ------------ |
+| Oct 1 | 960       | 958        | 2      | 99.79%       |
 
 ### 2. Price Accuracy Score
 
@@ -44,9 +44,9 @@ Track FTSO performance metrics to optimize oracle operations and maximize reward
 
 **Spreadsheet Columns**:
 
-| Date | Avg Deviation | Network Rank | Accuracy Score |
-|------|---------------|--------------|----------------|
-| Oct 1 | 0.15% | 12/85 | 97.8% |
+| Date  | Avg Deviation | Network Rank | Accuracy Score |
+| ----- | ------------- | ------------ | -------------- |
+| Oct 1 | 0.15%         | 12/85        | 97.8%          |
 
 ### 3. Rewards Earned
 
@@ -60,9 +60,9 @@ Track FTSO performance metrics to optimize oracle operations and maximize reward
 
 **Spreadsheet Columns**:
 
-| Date | FLR Earned | Cumulative (Month) | USD Value |
-|------|-----------|-------------------|-----------|
-| Oct 1 | 125.5 | 125.5 | $6.28 |
+| Date  | FLR Earned | Cumulative (Month) | USD Value |
+| ----- | ---------- | ------------------ | --------- |
+| Oct 1 | 125.5      | 125.5              | $6.28     |
 
 ### 4. Delegation Metrics
 
@@ -77,9 +77,9 @@ Track FTSO performance metrics to optimize oracle operations and maximize reward
 
 **Spreadsheet Columns**:
 
-| Date | Total Delegated | # Delegators | Avg Size | Growth (7d) |
-|------|----------------|--------------|----------|-------------|
-| Oct 1 | 15.2M | 45 | 337K | +12% |
+| Date  | Total Delegated | # Delegators | Avg Size | Growth (7d) |
+| ----- | --------------- | ------------ | -------- | ----------- |
+| Oct 1 | 15.2M           | 45           | 337K     | +12%        |
 
 ### 5. Market Share
 
@@ -94,9 +94,9 @@ Track FTSO performance metrics to optimize oracle operations and maximize reward
 
 **Spreadsheet Columns**:
 
-| Date | Our Power | Network Total | Market Share | Rank |
-|------|-----------|--------------|--------------|------|
-| Oct 1 | 15.2M | 2.8B | 0.54% | 28/85 |
+| Date  | Our Power | Network Total | Market Share | Rank  |
+| ----- | --------- | ------------- | ------------ | ----- |
+| Oct 1 | 15.2M     | 2.8B          | 0.54%        | 28/85 |
 
 ---
 
@@ -127,11 +127,11 @@ Track FTSO performance metrics to optimize oracle operations and maximize reward
 
 **Track Top 10 Providers**:
 
-| Provider | Delegation | Accuracy | Market Share | Our Gap |
-|----------|-----------|----------|--------------|---------|
-| Provider A | 450M | 98.5% | 16% | -434.8M |
-| Provider B | 280M | 97.2% | 10% | -264.8M |
-| **Us** | **15.2M** | **97.8%** | **0.54%** | **-** |
+| Provider   | Delegation | Accuracy  | Market Share | Our Gap |
+| ---------- | ---------- | --------- | ------------ | ------- |
+| Provider A | 450M       | 98.5%     | 16%          | -434.8M |
+| Provider B | 280M       | 97.2%     | 10%          | -264.8M |
+| **Us**     | **15.2M**  | **97.8%** | **0.54%**    | **-**   |
 
 ---
 
@@ -142,7 +142,7 @@ Track FTSO performance metrics to optimize oracle operations and maximize reward
 **Daily Success Rate**:
 
 ```sql
-SELECT 
+SELECT
   DATE(timestamp) as date,
   COUNT(*) as total,
   SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) as successful,
@@ -156,7 +156,7 @@ ORDER BY date DESC;
 **Rewards Summary**:
 
 ```sql
-SELECT 
+SELECT
   DATE(claimed_at) as date,
   SUM(amount_flr) as total_flr,
   SUM(amount_flr * flr_price_usd) as total_usd
@@ -189,4 +189,4 @@ psql -d project_chrono -c "COPY (
 
 ---
 
-*"Metrics monitored. Performance optimized. Victory secured."*
+_"Metrics monitored. Performance optimized. Victory secured."_

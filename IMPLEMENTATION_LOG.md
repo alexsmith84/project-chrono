@@ -172,4 +172,4 @@ After completing each ticket:
 
 ---
 
-*"Knowledge is power. Document everything. En Taro Tassadar!"*
+_"Knowledge is power. Document everything. En Taro Tassadar!"_

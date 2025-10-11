@@ -1,6 +1,6 @@
 # Test Specification: CHRONO-003
 
-*"The Observer sees all. No system shall remain unverified."*
+_"The Observer sees all. No system shall remain unverified."_
 
 ---
 
@@ -42,10 +42,12 @@ brew doctor
 ```
 
 **Expected Result**:
+
 - Version output: Homebrew 4.x.x or later
 - `brew doctor` returns no critical errors (warnings acceptable)
 
 **Actual Result**: ✅ Pass
+
 - Homebrew 4.5.22 installed
 - `brew doctor` shows system ready to brew
 
@@ -65,12 +67,14 @@ rustup component list --installed
 ```
 
 **Expected Result**:
+
 - `rustc`: 1.90.0 or later
 - `cargo`: 1.90.0 or later
 - `rustup`: Latest stable
 - Components: `clippy-aarch64-apple-darwin`, `rustfmt-aarch64-apple-darwin`
 
 **Actual Result**: ✅ Pass
+
 - rustc 1.90.0 (aarch64-apple-darwin)
 - cargo 1.90.0
 - rustup 1.27.1
@@ -91,11 +95,13 @@ echo $BUN_INSTALL
 ```
 
 **Expected Result**:
+
 - Version: 1.2.23 or later
 - Path: `$HOME/.bun/bin/bun`
 - BUN_INSTALL: `$HOME/.bun`
 
 **Actual Result**: ✅ Pass
+
 - bun 1.2.23
 - Located at `/Users/alex/.bun/bin/bun`
 - BUN_INSTALL properly set
@@ -115,11 +121,13 @@ echo $PATH | grep postgresql
 ```
 
 **Expected Result**:
+
 - Version: PostgreSQL 16.10 (aarch64-apple-darwin)
 - Path: `/opt/homebrew/opt/postgresql@16/bin/psql`
 - PATH includes postgresql@16 directory
 
 **Actual Result**: ✅ Pass
+
 - psql (PostgreSQL) 16.10
 - Located at `/opt/homebrew/opt/postgresql@16/bin/psql`
 - PATH correctly configured
@@ -139,11 +147,13 @@ which redis-cli
 ```
 
 **Expected Result**:
+
 - Version: redis-cli 8.2.2 or later
 - Server version: 8.2.2 or later
 - Path: `/opt/homebrew/bin/redis-cli`
 
 **Actual Result**: ✅ Pass
+
 - redis-cli 8.2.2
 - redis-server 8.2.2
 - Located at `/opt/homebrew/bin/redis-cli`
@@ -166,11 +176,13 @@ psql -U $USER -d postgres -c "SELECT version();"
 ```
 
 **Expected Result**:
+
 - Service status: `started` (green)
 - Connection successful
 - Version string returned
 
 **Actual Result**: ✅ Pass
+
 - postgresql@16: started (green)
 - Connection successful
 - PostgreSQL 16.10 version string returned
@@ -190,11 +202,13 @@ redis-cli info server | grep redis_version
 ```
 
 **Expected Result**:
+
 - Service status: `started` (green)
 - PING returns: `PONG`
 - Version: 8.2.2 or later
 
 **Actual Result**: ✅ Pass
+
 - redis: started (green)
 - PING returns PONG
 - redis_version:8.2.2
@@ -217,10 +231,12 @@ psql -U $USER -d project_chrono_dev -c "SELECT current_database();"
 ```
 
 **Expected Result**:
+
 - Database exists
 - Can connect and query
 
 **Actual Result**: ✅ Pass
+
 - Database EXISTS
 - current_database returns `project_chrono_dev`
 
@@ -237,10 +253,12 @@ psql -U $USER -d project_chrono_dev -c "SELECT * FROM pg_available_extensions WH
 ```
 
 **Expected Result**:
+
 - TimescaleDB extension listed (if installed)
 - OR empty result (acceptable, extension is optional)
 
 **Actual Result**: ✅ Pass (Optional)
+
 - TimescaleDB extension available
 - Can be enabled with `CREATE EXTENSION IF NOT EXISTS timescaledb;`
 
@@ -262,11 +280,13 @@ cat ~/.config/zsh/configs/tools/bun.zsh | grep -q "BUN_INSTALL" && echo "CONFIGU
 ```
 
 **Expected Result**:
+
 - File EXISTS
 - Contains BUN_INSTALL export
 - Contains PATH modification
 
 **Actual Result**: ✅ Pass
+
 - File exists at `~/.config/zsh/configs/tools/bun.zsh`
 - Properly configured with BUN_INSTALL and PATH
 
@@ -284,10 +304,12 @@ cat ~/.config/zsh/configs/tools/rust.zsh | grep -q "cargo/env" && echo "CONFIGUR
 ```
 
 **Expected Result**:
+
 - File EXISTS
 - Sources `$HOME/.cargo/env`
 
 **Actual Result**: ✅ Pass
+
 - File exists at `~/.config/zsh/configs/tools/rust.zsh`
 - Properly sources cargo environment
 
@@ -306,11 +328,13 @@ type pg_status | grep -q "alias" && echo "ALIAS WORKS" || echo "ALIAS MISSING"
 ```
 
 **Expected Result**:
+
 - File EXISTS
 - Aliases defined: `pg_start`, `pg_stop`, `pg_restart`, `pg_status`
 - PATH includes PostgreSQL bin directory
 
 **Actual Result**: ✅ Pass
+
 - File exists with all aliases
 - `pg_status` alias functional
 
@@ -329,10 +353,12 @@ type redis_status | grep -q "alias" && echo "ALIAS WORKS" || echo "ALIAS MISSING
 ```
 
 **Expected Result**:
+
 - File EXISTS
 - Aliases defined: `redis_start`, `redis_stop`, `redis_restart`, `redis_status`, `redis_cli`
 
 **Actual Result**: ✅ Pass
+
 - File exists with all aliases
 - `redis_status` alias functional
 
@@ -351,9 +377,11 @@ grep -c "postgresql@16" ~/.config/zsh/.zshrc
 ```
 
 **Expected Result**:
+
 - Each should return `0` (no duplicates in main .zshrc)
 
 **Actual Result**: ✅ Pass
+
 - All counts are 0
 - Tool configs properly isolated in modular files
 
@@ -377,11 +405,13 @@ test -d node_modules && echo "MODULES INSTALLED" || echo "NO MODULES"
 ```
 
 **Expected Result**:
+
 - Install completes without errors
 - `bun.lock` created
 - `node_modules/` directory exists
 
 **Actual Result**: ✅ Pass
+
 - Dependencies installed successfully
 - Lockfile and modules present
 
@@ -400,11 +430,13 @@ cat .husky/pre-commit | grep -q "lint-staged" && echo "CONFIGURED" || echo "MISS
 ```
 
 **Expected Result**:
+
 - `.husky/pre-commit` exists
 - Hook is executable
 - Contains `npx lint-staged` command
 
 **Actual Result**: ✅ Pass
+
 - Hook exists and is executable
 - Properly configured with lint-staged
 
@@ -422,10 +454,12 @@ cat .husky/pre-commit | grep -q "husky.sh" && echo "OLD FORMAT" || echo "NEW FOR
 ```
 
 **Expected Result**:
+
 - Both checks return "NEW FORMAT"
 - No deprecated shebang or husky.sh source line
 
 **Actual Result**: ✅ Pass
+
 - No deprecated boilerplate
 - Uses clean v9+ format
 
@@ -444,12 +478,14 @@ Development environment fully configured and ready for coding.
 **Test Steps**:
 
 1. **Given**: Fresh shell session
+
    ```bash
    # Start new zsh session
    zsh
    ```
 
 2. **When**: Execute common development commands
+
    ```bash
    rustc --version
    cargo --version
@@ -476,11 +512,13 @@ Development environment fully configured and ready for coding.
 **Test Steps**:
 
 1. **Given**: All services running
+
    ```bash
    brew services list
    ```
 
 2. **When**: System reboots
+
    ```bash
    # (Simulated by stopping and starting services)
    brew services restart postgresql@16
@@ -663,7 +701,7 @@ redis-cli DEL test_key
 ./scripts/helpers/verify-chrono-003.sh
 ```
 
-*(Note: Create this script if needed for future automated verification)*
+_(Note: Create this script if needed for future automated verification)_
 
 ### Run Specific Test Suite
 
@@ -686,4 +724,4 @@ Future tickets will have automated tests that depend on this environment being s
 
 ---
 
-*"All systems validated. The Observer confirms: The Nexus is operational. En Taro Tassadar!"*
+_"All systems validated. The Observer confirms: The Nexus is operational. En Taro Tassadar!"_

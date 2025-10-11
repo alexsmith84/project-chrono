@@ -4,25 +4,25 @@
  * GET /prices/range - Price history with optional aggregation
  */
 
-import { Hono } from 'hono';
+import { Hono } from "hono";
 import {
   latestPricesQuerySchema,
   priceRangeQuerySchema,
-} from '../../schemas/queries';
+} from "../../schemas/queries";
 import type {
   LatestPricesResponse,
   PriceRangeResponse,
   OHLCVData,
-} from '../../schemas/responses';
-import { getLatestPrices } from '../../db/queries/price-feeds';
-import { getPriceRange, getPriceStats } from '../../db/queries/price-feeds';
+} from "../../schemas/responses";
+import { getLatestPrices } from "../../db/queries/price-feeds";
+import { getPriceRange, getPriceStats } from "../../db/queries/price-feeds";
 import {
   getLatestPricesFromCache,
   cacheLatestPrices,
   getPriceRangeFromCache,
   cachePriceRange,
-} from '../../cache/price-cache';
-import { logger } from '../../utils/logger';
+} from "../../cache/price-cache";
+import { logger } from "../../utils/logger";
 
 const app = new Hono();
 
@@ -30,9 +30,9 @@ const app = new Hono();
  * GET /prices/latest?symbols=BTC/USD,ETH/USD
  * Get latest prices for specified symbols
  */
-app.get('/latest', async (c) => {
+app.get("/latest", async (c) => {
   const startTime = Date.now();
-  const requestId = c.get('requestId') as string;
+  const requestId = c.get("requestId") as string;
 
   // Validate query parameters
   const validationResult = latestPricesQuerySchema.safeParse(c.req.query());
@@ -42,12 +42,12 @@ app.get('/latest', async (c) => {
     return c.json(
       {
         error: {
-          code: 'VALIDATION_ERROR',
-          message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
+          code: "VALIDATION_ERROR",
+          message: `Validation failed: ${firstError.path.join(".")}: ${firstError.message}`,
           details: {
-            field: firstError.path.join('.'),
+            field: firstError.path.join("."),
             errors: validationResult.error.errors.map((e) => ({
-              path: e.path.join('.'),
+              path: e.path.join("."),
               message: e.message,
             })),
           },
@@ -55,18 +55,20 @@ app.get('/latest', async (c) => {
         },
         status: 400,
       },
-      400
+      400,
     );
   }
 
   const { symbols } = validationResult.data;
 
-  logger.debug({ symbols, request_id: requestId }, 'Fetching latest prices');
+  logger.debug({ symbols, request_id: requestId }, "Fetching latest prices");
 
   try {
     // Try cache first
     const cachedPrices = await getLatestPricesFromCache(symbols);
-    const cacheHits = Array.from(cachedPrices.values()).filter((p) => p !== null);
+    const cacheHits = Array.from(cachedPrices.values()).filter(
+      (p) => p !== null,
+    );
     const cacheMisses = symbols.filter((s) => !cachedPrices.get(s));
 
     let allPrices = cacheHits;
@@ -79,7 +81,10 @@ app.get('/latest', async (c) => {
       // Cache the fetched prices (fire and forget)
       if (dbPrices.length > 0) {
         cacheLatestPrices(dbPrices).catch((error) => {
-          logger.warn({ err: error, request_id: requestId }, 'Failed to cache prices');
+          logger.warn(
+            { err: error, request_id: requestId },
+            "Failed to cache prices",
+          );
         });
       }
     }
@@ -108,7 +113,7 @@ app.get('/latest', async (c) => {
         symbols,
         request_id: requestId,
       },
-      'Failed to fetch latest prices'
+      "Failed to fetch latest prices",
     );
 
     throw error; // Let error handler middleware handle it
@@ -119,9 +124,9 @@ app.get('/latest', async (c) => {
  * GET /prices/range?symbol=BTC/USD&from=...&to=...&interval=1h&limit=1000
  * Get price history for a time range with optional aggregation
  */
-app.get('/range', async (c) => {
+app.get("/range", async (c) => {
   const startTime = Date.now();
-  const requestId = c.get('requestId') as string;
+  const requestId = c.get("requestId") as string;
 
   // Validate query parameters
   const validationResult = priceRangeQuerySchema.safeParse(c.req.query());
@@ -131,12 +136,12 @@ app.get('/range', async (c) => {
     return c.json(
       {
         error: {
-          code: 'VALIDATION_ERROR',
-          message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
+          code: "VALIDATION_ERROR",
+          message: `Validation failed: ${firstError.path.join(".")}: ${firstError.message}`,
           details: {
-            field: firstError.path.join('.'),
+            field: firstError.path.join("."),
             errors: validationResult.error.errors.map((e) => ({
-              path: e.path.join('.'),
+              path: e.path.join("."),
               message: e.message,
             })),
           },
@@ -144,7 +149,7 @@ app.get('/range', async (c) => {
         },
         status: 400,
       },
-      400
+      400,
     );
   }
 
@@ -163,7 +168,7 @@ app.get('/range', async (c) => {
       limit,
       request_id: requestId,
     },
-    'Fetching price range'
+    "Fetching price range",
   );
 
   try {
@@ -172,7 +177,12 @@ app.get('/range', async (c) => {
     // If interval specified, return aggregated OHLCV data
     if (interval) {
       // Try cache first
-      const cached = await getPriceRangeFromCache(symbol, fromDate, toDate, interval);
+      const cached = await getPriceRangeFromCache(
+        symbol,
+        fromDate,
+        toDate,
+        interval,
+      );
 
       if (cached) {
         const latency = Date.now() - startTime;
@@ -209,9 +219,14 @@ app.get('/range', async (c) => {
       }
 
       // Cache the result
-      cachePriceRange(symbol, fromDate, toDate, data, interval).catch((error) => {
-        logger.warn({ err: error, request_id: requestId }, 'Failed to cache price range');
-      });
+      cachePriceRange(symbol, fromDate, toDate, data, interval).catch(
+        (error) => {
+          logger.warn(
+            { err: error, request_id: requestId },
+            "Failed to cache price range",
+          );
+        },
+      );
     } else {
       // No interval - return raw price feeds
       const rawPrices = await getPriceRange({
@@ -229,7 +244,7 @@ app.get('/range', async (c) => {
         high: price.price,
         low: price.price,
         close: price.price,
-        volume: price.volume || '0',
+        volume: price.volume || "0",
         num_feeds: 1,
       }));
     }
@@ -253,7 +268,7 @@ app.get('/range', async (c) => {
         to,
         request_id: requestId,
       },
-      'Failed to fetch price range'
+      "Failed to fetch price range",
     );
 
     throw error;

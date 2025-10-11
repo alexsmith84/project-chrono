@@ -1,6 +1,6 @@
 # CHRONO-004: Core Data Models & Database Schema
 
-*"The foundation upon which all structures rise. Clarity of data brings clarity of purpose."*
+_"The foundation upon which all structures rise. Clarity of data brings clarity of purpose."_
 
 ---
 
@@ -47,6 +47,7 @@ Project Chrono processes time-series price data from multiple exchanges, aggrega
 The database layer sits at the core of Project Chrono, serving as the source of truth for all price data, submissions, and business metrics. It uses PostgreSQL with TimescaleDB for time-series optimization.
 
 **Data Flow**:
+
 1. Edge workers → Bun API → `price_feeds` table (raw data)
 2. Rust engine → Bun API → `aggregated_prices` table (consensus)
 3. Blockchain module → `ftso_submissions` table (on-chain tracking)
@@ -54,6 +55,7 @@ The database layer sits at the core of Project Chrono, serving as the source of 
 5. Reward claims → `ftso_rewards` table
 
 **TimescaleDB Features**:
+
 - Hypertables with 1-hour chunks for `price_feeds` and `aggregated_prices`
 - Automatic compression after 7 days (10-20x savings)
 - Continuous aggregates for pre-computed hourly/daily summaries
@@ -331,7 +333,7 @@ export interface FTSOSubmission {
   submitted_price: number;
   aggregated_price_id?: string;
   tx_hash?: string;
-  status: 'pending' | 'confirmed' | 'failed' | 'reverted';
+  status: "pending" | "confirmed" | "failed" | "reverted";
   gas_used?: number;
   gas_price?: bigint;
   block_number?: number;
@@ -347,8 +349,8 @@ export interface Delegator {
   last_updated_at: Date;
   current_amount: bigint; // FLR with 18 decimals
   peak_amount: bigint;
-  status: 'active' | 'inactive' | 'churned';
-  tier?: 'whale' | 'gold' | 'silver' | 'bronze' | 'starter';
+  status: "active" | "inactive" | "churned";
+  tier?: "whale" | "gold" | "silver" | "bronze" | "starter";
   acquisition_source?: string;
   notes?: string;
 }
@@ -362,7 +364,7 @@ export interface Delegation {
   tx_hash: string;
   block_number: number;
   timestamp: Date;
-  event_type: 'delegate' | 'undelegate' | 'update';
+  event_type: "delegate" | "undelegate" | "update";
 }
 
 export interface FTSOReward {
@@ -445,11 +447,13 @@ pub enum SubmissionStatus {
 ### Migration Strategy
 
 **Initial Setup**:
+
 1. Create database: `project_chrono_dev` (already done in CHRONO-003)
 2. Enable TimescaleDB extension: `CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;`
 3. Run schema creation scripts in order (tables, hypertables, indexes, compression policies)
 
 **Future Migrations**:
+
 - Use timestamped SQL files: `migrations/001_initial_schema.sql`, `002_add_xyz.sql`
 - Track applied migrations in `schema_migrations` table
 - Run with: `psql -d project_chrono_dev -f migrations/XXX_name.sql`
@@ -523,6 +527,7 @@ timescaledb.max_background_workers = 8
 ### Benchmarking
 
 See `docs/tests/CHRONO-004-tests.md` for:
+
 - Load testing with pgbench
 - Query performance benchmarks
 - Compression ratio validation
@@ -603,6 +608,7 @@ See `docs/tests/CHRONO-004-tests.md` for:
 "As a developer, I should be able to insert price feeds, query aggregated prices, and track FTSO submissions with confidence that the data is stored efficiently, queried quickly, and will scale to 2+ years of historical data."
 
 **Verification**:
+
 ```sql
 -- Verify hypertables created
 SELECT * FROM timescaledb_information.hypertables;
@@ -666,6 +672,7 @@ LIMIT 100;
 ### ✅ Completed
 
 **Database Setup**:
+
 - PostgreSQL 17.6 installed and running
 - Database `project_chrono_dev` created
 - All 7 core tables created with indexes
@@ -673,6 +680,7 @@ LIMIT 100;
 - Migration tracking via `schema_migrations` table
 
 **Schema Implementation**:
+
 - All table structures match specification
 - CHECK constraints enforcing data validity
 - Foreign keys establishing referential integrity
@@ -680,6 +688,7 @@ LIMIT 100;
 - TypeScript and Rust type definitions created
 
 **Files Created**:
+
 - `migrations/001_initial_schema.sql` - Complete schema migration
 - `scripts/database/run-migration.sh` - Migration runner tool
 - `docs/setup/timescaledb-setup.md` - Future optimization guide
@@ -691,6 +700,7 @@ LIMIT 100;
 **Why**: TimescaleDB integration with Homebrew PostgreSQL@17 requires complex manual configuration (library symlinking, extension file setup). Since the schema works perfectly with standard PostgreSQL, we've deferred TimescaleDB enablement.
 
 **Impact**:
+
 - ✅ All core functionality works (insert, query, track data)
 - ✅ Performance sufficient for development (50-100 inserts/sec, <200ms queries)
 - ⚠️ No hypertable chunking (table partitioning by time)
@@ -698,6 +708,7 @@ LIMIT 100;
 - ⚠️ No automatic retention policies (manual cleanup required)
 
 **When to Enable TimescaleDB**:
+
 - Storage exceeds 10 GB (compression would save ~90%)
 - Query performance degrades (>200ms for 24h queries)
 - Production deployment (optimize for scale)
@@ -705,11 +716,13 @@ LIMIT 100;
 
 **Migration Path Forward**:
 The schema is **TimescaleDB-ready**. When needed, simply:
+
 1. Enable TimescaleDB extension: `CREATE EXTENSION timescaledb;`
 2. Convert existing tables to hypertables: `SELECT create_hypertable('price_feeds', 'timestamp', ...);`
 3. Enable compression and retention policies (already defined in migration)
 
 **Performance Without TimescaleDB**:
+
 - Insert: 50-100 price feeds/second
 - Query (24h): <200ms for 100K rows
 - Storage: ~10 MB per 100K price feeds
@@ -734,4 +747,4 @@ Original criteria focused on TimescaleDB-specific features. Updated status:
 
 ---
 
-*"The data structure is sound. The foundation is laid. Build upon it with confidence. En Taro Tassadar!"*
+_"The data structure is sound. The foundation is laid. Build upon it with confidence. En Taro Tassadar!"_

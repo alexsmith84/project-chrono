@@ -58,13 +58,11 @@ Edit the hooks or lint-staged config in `package.json`:
 ```json
 {
   "lint-staged": {
-    "*.md": [
-      "markdownlint-cli2 --fix"
-    ]
+    "*.md": ["markdownlint-cli2 --fix"]
   }
 }
 ```
 
 ---
 
-*"The hooks guard our code quality. En Taro Adun!"*
+_"The hooks guard our code quality. En Taro Adun!"_

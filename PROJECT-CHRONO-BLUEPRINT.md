@@ -2,7 +2,7 @@
 
 ## Core Architecture & Structure
 
-*"En Taro Tassadar! The Khala guides our development journey."*
+_"En Taro Tassadar! The Khala guides our development journey."_
 
 ---
 
@@ -313,13 +313,13 @@ cd project-chrono
 
 Project Chrono will be deployed across multiple subdomains for service separation:
 
-| Domain | Service | Technology | Port |
-|--------|---------|------------|------|
-| `nexus.hayven.xyz` | Main FTSO API | TypeScript/Bun | 3000 |
-| `probe.hayven.xyz` | Data collection status | TypeScript/Bun | 3001 |
-| `forge.hayven.xyz` | ML analytics API | Rust | 8080 |
+| Domain               | Service                   | Technology     | Port |
+| -------------------- | ------------------------- | -------------- | ---- |
+| `nexus.hayven.xyz`   | Main FTSO API             | TypeScript/Bun | 3000 |
+| `probe.hayven.xyz`   | Data collection status    | TypeScript/Bun | 3001 |
+| `forge.hayven.xyz`   | ML analytics API          | Rust           | 8080 |
 | `gateway.hayven.xyz` | Public API (rate-limited) | TypeScript/Bun | 3000 |
-| `templar.hayven.xyz` | Admin dashboard | SvelteKit | 5173 |
+| `templar.hayven.xyz` | Admin dashboard           | SvelteKit      | 5173 |
 
 **Web Server**: Caddy 2 with automatic HTTPS and reverse proxy configuration
 
@@ -329,7 +329,7 @@ Project Chrono will be deployed across multiple subdomains for service separatio
 
 ## Epic & Role Definitions, Workflow Reference
 
-*"The Khala connects all knowledge. Access the archive."*
+_"The Khala connects all knowledge. Access the archive."_
 
 ---
 
@@ -615,13 +615,13 @@ Tickets are tagged with **roles** indicating the type of work and skill set requ
 
 Tickets use **StarCraft-inspired supply costs** to estimate complexity:
 
-| Supply | Size | Complexity Level | Example Tasks | Time Estimate |
-|--------|------|------------------|---------------|---------------|
-| **1** | XS | Marine/Zealot | Simple config, docs, minor fixes | 0.5-1 hour |
-| **2** | S | Stalker/Marauder | API endpoint, UI component | 1-2 hours |
-| **3** | M | High Templar/Ghost | Complex feature, algorithm | 2-4 hours |
-| **5** | L | Colossus/Thor | Major system, integration | 4-8 hours |
-| **8** | XL | Carrier/Battlecruiser | Epic implementation, architecture | 8-16 hours |
+| Supply | Size | Complexity Level      | Example Tasks                     | Time Estimate |
+| ------ | ---- | --------------------- | --------------------------------- | ------------- |
+| **1**  | XS   | Marine/Zealot         | Simple config, docs, minor fixes  | 0.5-1 hour    |
+| **2**  | S    | Stalker/Marauder      | API endpoint, UI component        | 1-2 hours     |
+| **3**  | M    | High Templar/Ghost    | Complex feature, algorithm        | 2-4 hours     |
+| **5**  | L    | Colossus/Thor         | Major system, integration         | 4-8 hours     |
+| **8**  | XL   | Carrier/Battlecruiser | Epic implementation, architecture | 8-16 hours    |
 
 **Velocity Tracking**: With 5-10 hours/week, expect 5-15 supply points completed per week.
 
@@ -631,12 +631,12 @@ Tickets use **StarCraft-inspired supply costs** to estimate complexity:
 
 Tickets are prioritized using mission-critical language:
 
-| Priority | Description | Example |
-|----------|-------------|---------|
-| **Critical Mission** | MVP blockers, production issues | Database failure, submission failures |
-| **Main Objective** | Important features for core functionality | Price aggregation, API endpoints |
-| **Side Quest** | Nice-to-have features, improvements | UI polish, additional metrics |
-| **Research** | Exploration, spikes, proof-of-concept | ML model experimentation |
+| Priority             | Description                               | Example                               |
+| -------------------- | ----------------------------------------- | ------------------------------------- |
+| **Critical Mission** | MVP blockers, production issues           | Database failure, submission failures |
+| **Main Objective**   | Important features for core functionality | Price aggregation, API endpoints      |
+| **Side Quest**       | Nice-to-have features, improvements       | UI polish, additional metrics         |
+| **Research**         | Exploration, spikes, proof-of-concept     | ML model experimentation              |
 
 ---
 
@@ -850,6 +850,6 @@ warp-in/CHRONO-XXX (features) ← work here
 
 ---
 
-*"En Taro Tassadar! The blueprint is complete. Now... we build!"* ⚡
+_"En Taro Tassadar! The blueprint is complete. Now... we build!"_ ⚡
 
 **For Aiur... and accurate price feeds!**

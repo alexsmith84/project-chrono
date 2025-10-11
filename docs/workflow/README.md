@@ -23,4 +23,4 @@ Development processes and workflows for Project Chrono.
 
 ---
 
-*"Disciplined warriors. Precise execution. Victory assured."*
+_"Disciplined warriors. Precise execution. Victory assured."_

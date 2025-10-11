@@ -2,9 +2,9 @@
  * Aggregated price queries for FTSO consensus data
  */
 
-import { sql } from '../client';
-import type { AggregatedPrice } from '../types';
-import { DatabaseError } from '../client';
+import { sql } from "../client";
+import type { AggregatedPrice } from "../types";
+import { DatabaseError } from "../client";
 
 /**
  * Get consensus price from aggregated_prices table
@@ -76,8 +76,8 @@ export async function getConsensusPrice(params: {
   } catch (error) {
     throw new DatabaseError(
       `Failed to get consensus price for ${params.symbol}`,
-      'SELECT consensus price',
-      error as Error
+      "SELECT consensus price",
+      error as Error,
     );
   }
 }
@@ -160,8 +160,8 @@ export async function getConsensusPrices(params: {
   } catch (error) {
     throw new DatabaseError(
       `Failed to get consensus prices for ${params.symbols.length} symbols`,
-      'SELECT consensus prices',
-      error as Error
+      "SELECT consensus prices",
+      error as Error,
     );
   }
 }

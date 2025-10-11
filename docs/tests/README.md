@@ -32,4 +32,4 @@ Use `TEST-TEMPLATE.md` for creating new test specifications.
 
 ---
 
-*"The Observer sees all. No defect shall remain cloaked."*
+_"The Observer sees all. No defect shall remain cloaked."_

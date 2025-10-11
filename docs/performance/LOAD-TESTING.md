@@ -11,6 +11,7 @@ Load testing ensures the API can handle expected production traffic and identifi
 **Testing Tool**: [k6](https://k6.io/) - Modern load testing tool with JavaScript DSL
 
 **Test Coverage**:
+
 - ✅ Price feed ingestion (`POST /internal/ingest`)
 - ✅ Price queries (`GET /prices/*`)
 - ✅ Consensus aggregates (`GET /aggregates/*`)
@@ -23,6 +24,7 @@ Load testing ensures the API can handle expected production traffic and identifi
 ### Prerequisites
 
 Install k6:
+
 ```bash
 # macOS
 brew install k6
@@ -71,6 +73,7 @@ bun run dev
 **Scenario**: Simulates Cloudflare Workers ingesting price feeds from exchanges
 
 **Load Pattern**:
+
 ```
 10 users  (30s ramp, 1m sustained)
   ↓
@@ -84,12 +87,14 @@ bun run dev
 **Total Duration**: ~5 minutes
 
 **Test Behavior**:
+
 - Each VU (Virtual User) sends batches of 1-50 price feeds
 - Random symbols: BTC/USD, ETH/USD, XRP/USD, etc.
 - Random sources: coinbase, binance, kraken, etc.
 - 1-3 second delay between requests
 
 **Performance Targets**:
+
 - ✅ P95 latency < 100ms
 - ✅ P99 latency < 200ms
 - ✅ Error rate < 1%
@@ -104,6 +109,7 @@ bun run dev
 **Scenario**: Simulates users and systems querying price data
 
 **Load Pattern**:
+
 ```
 20 users  (30s ramp, 2m sustained)
   ↓
@@ -117,6 +123,7 @@ bun run dev
 **Total Duration**: ~7 minutes
 
 **Test Behavior**:
+
 - Randomly executes different query types:
   - `GET /prices/latest` (single and multi-symbol)
   - `GET /prices/range` (raw data and OHLCV aggregates)
@@ -124,6 +131,7 @@ bun run dev
 - 0.5-2.5 second think time between requests
 
 **Performance Targets**:
+
 - ✅ P95 latency < 100ms
 - ✅ P99 latency < 200ms
 - ✅ Cache hit rate > 50%
@@ -139,6 +147,7 @@ bun run dev
 **Scenario**: Simulates real-time price feed subscribers
 
 **Load Pattern**:
+
 ```
 50 users   (1m ramp, 2m sustained)
   ↓
@@ -152,6 +161,7 @@ bun run dev
 **Total Duration**: ~10 minutes
 
 **Test Behavior**:
+
 - Each VU opens WebSocket connection
 - Subscribes to 1-3 random symbols
 - Maintains connection for 30-60 seconds
@@ -159,6 +169,7 @@ bun run dev
 - 50% gracefully unsubscribe before disconnect
 
 **Performance Targets**:
+
 - ✅ P95 connection time < 500ms
 - ✅ P95 message latency < 100ms
 - ✅ Connection error rate < 5%
@@ -177,13 +188,13 @@ bun run dev
 
 **Status**: 🟡 Baseline pending - run tests to establish
 
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Throughput | 100+ req/s | _TBD_ | - |
-| P95 Latency | < 100ms | _TBD_ | - |
-| P99 Latency | < 200ms | _TBD_ | - |
-| Error Rate | < 1% | _TBD_ | - |
-| Feeds/sec | 1000+ | _TBD_ | - |
+| Metric      | Target     | Actual | Status |
+| ----------- | ---------- | ------ | ------ |
+| Throughput  | 100+ req/s | _TBD_  | -      |
+| P95 Latency | < 100ms    | _TBD_  | -      |
+| P99 Latency | < 200ms    | _TBD_  | -      |
+| Error Rate  | < 1%       | _TBD_  | -      |
+| Feeds/sec   | 1000+      | _TBD_  | -      |
 
 **Notes**: _Document observations here after running tests_
 
@@ -193,13 +204,13 @@ bun run dev
 
 **Status**: 🟡 Baseline pending - run tests to establish
 
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Throughput | 200+ req/s | _TBD_ | - |
-| P95 Latency | < 100ms | _TBD_ | - |
-| P99 Latency | < 200ms | _TBD_ | - |
-| Cache Hit Rate | > 50% | _TBD_ | - |
-| Error Rate | < 1% | _TBD_ | - |
+| Metric         | Target     | Actual | Status |
+| -------------- | ---------- | ------ | ------ |
+| Throughput     | 200+ req/s | _TBD_  | -      |
+| P95 Latency    | < 100ms    | _TBD_  | -      |
+| P99 Latency    | < 200ms    | _TBD_  | -      |
+| Cache Hit Rate | > 50%      | _TBD_  | -      |
+| Error Rate     | < 1%       | _TBD_  | -      |
 
 **Notes**: _Document observations here after running tests_
 
@@ -209,13 +220,13 @@ bun run dev
 
 **Status**: 🟡 Baseline pending - run tests to establish
 
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Max Connections | 500+ | _TBD_ | - |
-| P95 Connect Time | < 500ms | _TBD_ | - |
-| P95 Msg Latency | < 100ms | _TBD_ | - |
-| Connection Errors | < 5% | _TBD_ | - |
-| Message Errors | < 1% | _TBD_ | - |
+| Metric            | Target  | Actual | Status |
+| ----------------- | ------- | ------ | ------ |
+| Max Connections   | 500+    | _TBD_  | -      |
+| P95 Connect Time  | < 500ms | _TBD_  | -      |
+| P95 Msg Latency   | < 100ms | _TBD_  | -      |
+| Connection Errors | < 5%    | _TBD_  | -      |
+| Message Errors    | < 1%    | _TBD_  | -      |
 
 **Notes**: _Document observations here after running tests_
 
@@ -284,10 +295,12 @@ vus_max........................: 100    min=100   max=100
 Our tests also track custom metrics:
 
 **Ingestion**:
+
 - `feeds_ingested`: Total price feeds successfully ingested
 - `ingestion_duration`: Time to ingest each batch
 
 **Queries**:
+
 - `cache_hits`: Percentage of requests served from cache
 - `queries_executed`: Total queries across all endpoints
 - `latest_prices_duration`: Latency for `/prices/latest`
@@ -295,6 +308,7 @@ Our tests also track custom metrics:
 - `consensus_duration`: Latency for `/aggregates/consensus`
 
 **WebSocket**:
+
 - `connections_established`: Total WebSocket connections
 - `messages_received`: Total messages received by clients
 - `ws_connection_duration`: Time to establish connection
@@ -313,11 +327,13 @@ Our tests also track custom metrics:
 **Symptom**: Test script exits with "API not healthy"
 
 **Causes**:
+
 - API server not running
 - Wrong API URL
 - Database not connected
 
 **Solution**:
+
 ```bash
 # Start API server
 cd apps/api
@@ -334,12 +350,14 @@ curl http://localhost:3000/health
 **Symptom**: `http_req_failed` or `errors` metric > 1%
 
 **Causes**:
+
 - Rate limiting triggered
 - Database connection pool exhausted
 - Redis connection limits reached
 - Server resources (CPU/RAM) maxed out
 
 **Solution**:
+
 ```bash
 # Check API logs
 cd apps/api
@@ -362,12 +380,14 @@ top  # or htop
 **Symptom**: `http_req_duration` p(95) exceeds threshold
 
 **Causes**:
+
 - Database queries not optimized
 - Missing indexes
 - Cache not working
 - High CPU/disk I/O
 
 **Solution**:
+
 - Check database query performance (see CURRENT-STATUS.md performance metrics)
 - Verify indexes exist (run migration verification queries)
 - Check Redis cache hit rate
@@ -380,11 +400,13 @@ top  # or htop
 **Symptom**: `cache_hits` metric below 50%
 
 **Causes**:
+
 - Cache TTL too short
 - Redis not running
 - Cache keys not matching
 
 **Solution**:
+
 ```bash
 # Check Redis is running
 redis-cli PING
@@ -403,11 +425,13 @@ redis-cli MONITOR
 **Symptom**: `ws_connection_errors` > 5%
 
 **Causes**:
+
 - Server connection limits
 - Memory exhausted
 - Network/firewall issues
 
 **Solution**:
+
 - Check server logs for WebSocket upgrade failures
 - Monitor server memory usage
 - Increase system file descriptor limits if needed:
@@ -426,6 +450,7 @@ redis-cli MONITOR
    - Recommendation for load testing: 50-100
 
 2. **Indexes**: Verify indexes exist on frequently queried columns
+
    ```sql
    -- Check index usage
    SELECT schemaname, tablename, indexname, idx_scan
@@ -453,6 +478,7 @@ redis-cli MONITOR
 ### Server Configuration
 
 1. **Increase Connection Limits**:
+
    ```typescript
    // apps/api/src/db/client.ts
    export const pool = new Pool({
@@ -461,6 +487,7 @@ redis-cli MONITOR
    ```
 
 2. **Tune Redis**:
+
    ```bash
    # /opt/homebrew/etc/redis.conf
    maxclients 10000
@@ -514,4 +541,4 @@ redis-cli MONITOR
 
 ---
 
-*"Power overwhelming! Your API is ready for the swarm."*
+_"Power overwhelming! Your API is ready for the swarm."_

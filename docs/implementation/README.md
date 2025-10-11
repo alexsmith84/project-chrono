@@ -27,4 +27,4 @@ Use `IMPL-TEMPLATE.md` as the starting point for all implementation guides.
 
 ---
 
-*"The path is illuminated. Follow these steps to victory."*
+_"The path is illuminated. Follow these steps to victory."_

@@ -24,4 +24,4 @@ Infrastructure and environment setup guides.
 
 ---
 
-*"Construct additional infrastructure!"*
+_"Construct additional infrastructure!"_

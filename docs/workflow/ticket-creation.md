@@ -1,6 +1,6 @@
 # Ticket Creation Guide
 
-*"Precise specifications lead to flawless execution."*
+_"Precise specifications lead to flawless execution."_
 
 ---
 
@@ -135,13 +135,13 @@ gh issue create \
 
 ## Supply Cost Guidelines
 
-| Supply | Size | Time | Example |
-|--------|------|------|---------|
-| 1 | XS | 0.5-1h | Config change, doc update |
-| 2 | S | 1-2h | Simple API endpoint, UI component |
-| 3 | M | 2-4h | Complex feature, algorithm |
-| 5 | L | 4-8h | Major system, integration |
-| 8 | XL | 8-16h | Epic implementation |
+| Supply | Size | Time   | Example                           |
+| ------ | ---- | ------ | --------------------------------- |
+| 1      | XS   | 0.5-1h | Config change, doc update         |
+| 2      | S    | 1-2h   | Simple API endpoint, UI component |
+| 3      | M    | 2-4h   | Complex feature, algorithm        |
+| 5      | L    | 4-8h   | Major system, integration         |
+| 8      | XL   | 8-16h  | Epic implementation               |
 
 ---
 
@@ -159,4 +159,4 @@ Before creating the GitHub issue, verify:
 
 ---
 
-*"Specification complete. Ready for implementation. En Taro Tassadar!"*
+_"Specification complete. Ready for implementation. En Taro Tassadar!"_

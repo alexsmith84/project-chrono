@@ -3,9 +3,9 @@
  * Uses the postgres package for high-performance queries
  */
 
-import postgres from 'postgres';
-import { config } from '../utils/config';
-import { logger, logDatabaseError } from '../utils/logger';
+import postgres from "postgres";
+import { config } from "../utils/config";
+import { logger, logDatabaseError } from "../utils/logger";
 
 /**
  * PostgreSQL connection pool
@@ -28,7 +28,7 @@ export async function checkDatabaseHealth(): Promise<boolean> {
     const result = await sql`SELECT 1 as ok`;
     return result.length > 0 && result[0].ok === 1;
   } catch (error) {
-    logDatabaseError(error as Error, 'Health check');
+    logDatabaseError(error as Error, "Health check");
     return false;
   }
 }
@@ -39,9 +39,9 @@ export async function checkDatabaseHealth(): Promise<boolean> {
 export async function closeDatabaseConnection(): Promise<void> {
   try {
     await sql.end();
-    logger.info('Database connection closed');
+    logger.info("Database connection closed");
   } catch (error) {
-    logDatabaseError(error as Error, 'Connection close');
+    logDatabaseError(error as Error, "Connection close");
   }
 }
 
@@ -52,9 +52,9 @@ export class DatabaseError extends Error {
   constructor(
     message: string,
     public readonly query?: string,
-    public readonly originalError?: Error
+    public readonly originalError?: Error,
   ) {
     super(message);
-    this.name = 'DatabaseError';
+    this.name = "DatabaseError";
   }
 }

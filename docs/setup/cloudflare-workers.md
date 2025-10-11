@@ -1,6 +1,6 @@
 # Cloudflare Workers Setup Guide - Project Chrono
 
-*"Deploy the Probes. Gather resources from across the network."*
+_"Deploy the Probes. Gather resources from across the network."_
 
 ---
 
@@ -124,110 +124,111 @@ export default {
   async scheduled(
     event: ScheduledEvent,
     env: Env,
-    ctx: ExecutionContext
+    ctx: ExecutionContext,
   ): Promise<void> {
     try {
-      const symbols = ['BTC-USD', 'ETH-USD', 'FLR-USD'];
-      
+      const symbols = ["BTC-USD", "ETH-USD", "FLR-USD"];
+
       const prices = await Promise.all(
-        symbols.map(symbol => collectPrice(symbol, env))
+        symbols.map((symbol) => collectPrice(symbol, env)),
       );
-      
-      const validPrices = prices.filter(p => p !== null) as PriceData[];
-      
+
+      const validPrices = prices.filter((p) => p !== null) as PriceData[];
+
       if (validPrices.length > 0) {
         await sendToCore(validPrices, env);
       }
-      
-      await env.WORKER_KV.put('last_run', new Date().toISOString());
-      await env.WORKER_KV.put('last_success', JSON.stringify({
-        timestamp: new Date().toISOString(),
-        prices_collected: validPrices.length
-      }));
-      
+
+      await env.WORKER_KV.put("last_run", new Date().toISOString());
+      await env.WORKER_KV.put(
+        "last_success",
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          prices_collected: validPrices.length,
+        }),
+      );
     } catch (error) {
-      console.error('Worker execution failed:', error);
-      await env.WORKER_KV.put('last_error', JSON.stringify({
-        timestamp: new Date().toISOString(),
-        error: error.message
-      }));
+      console.error("Worker execution failed:", error);
+      await env.WORKER_KV.put(
+        "last_error",
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          error: error.message,
+        }),
+      );
     }
   },
-  
+
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    
-    if (url.pathname === '/status') {
-      const lastRun = await env.WORKER_KV.get('last_run');
-      const lastSuccess = await env.WORKER_KV.get('last_success');
-      const lastError = await env.WORKER_KV.get('last_error');
-      
-      return new Response(JSON.stringify({
-        worker: 'coinbase-worker',
-        status: 'operational',
-        last_run: lastRun,
-        last_success: JSON.parse(lastSuccess || '{}'),
-        last_error: JSON.parse(lastError || '{}')
-      }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+
+    if (url.pathname === "/status") {
+      const lastRun = await env.WORKER_KV.get("last_run");
+      const lastSuccess = await env.WORKER_KV.get("last_success");
+      const lastError = await env.WORKER_KV.get("last_error");
+
+      return new Response(
+        JSON.stringify({
+          worker: "coinbase-worker",
+          status: "operational",
+          last_run: lastRun,
+          last_success: JSON.parse(lastSuccess || "{}"),
+          last_error: JSON.parse(lastError || "{}"),
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
-    
-    return new Response('Not Found', { status: 404 });
-  }
+
+    return new Response("Not Found", { status: 404 });
+  },
 };
 
 async function collectPrice(
-  symbol: string, 
-  env: Env
+  symbol: string,
+  env: Env,
 ): Promise<PriceData | null> {
   try {
     const response = await fetch(
       `https://api.coinbase.com/v2/prices/${symbol}/spot`,
       {
         headers: {
-          'CB-ACCESS-KEY': env.COINBASE_API_KEY,
-        }
-      }
+          "CB-ACCESS-KEY": env.COINBASE_API_KEY,
+        },
+      },
     );
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
-    
+
     const data = await response.json();
-    
+
     return {
-      symbol: symbol.replace('-', '/'),
+      symbol: symbol.replace("-", "/"),
       price: parseFloat(data.data.amount),
       volume: 0,
       timestamp: new Date().toISOString(),
-      source: 'coinbase'
+      source: "coinbase",
     };
-    
   } catch (error) {
     console.error(`Failed to collect ${symbol}:`, error);
     return null;
   }
 }
 
-async function sendToCore(
-  prices: PriceData[], 
-  env: Env
-): Promise<void> {
-  const response = await fetch(
-    `${env.CORE_API_URL}/internal/ingest`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': env.CORE_API_KEY,
-        'X-Worker-ID': 'coinbase-worker'
-      },
-      body: JSON.stringify({ prices })
-    }
-  );
-  
+async function sendToCore(prices: PriceData[], env: Env): Promise<void> {
+  const response = await fetch(`${env.CORE_API_URL}/internal/ingest`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": env.CORE_API_KEY,
+      "X-Worker-ID": "coinbase-worker",
+    },
+    body: JSON.stringify({ prices }),
+  });
+
   if (!response.ok) {
     throw new Error(`Core API error: ${response.status}`);
   }
@@ -323,48 +324,47 @@ curl https://coinbase-worker.your-subdomain.workers.dev/status
 
 ### Rate Limit Reference
 
-| Exchange | Free Tier Limit | Worker Schedule | Safety |
-|----------|-----------------|-----------------|--------|
-| Coinbase | 10 req/sec | 30s intervals, 3 symbols | ✓ Safe |
-| Binance | 1200 req/min | 30s intervals, 10 symbols | ✓ Safe |
-| Kraken | 15-20 req/min | 30s intervals, 5 symbols | ✓ Safe |
-| Bybit | 120 req/min | 30s intervals | ✓ Safe |
-| OKX | 20 req/sec | 30s intervals | ✓ Safe |
+| Exchange | Free Tier Limit | Worker Schedule           | Safety |
+| -------- | --------------- | ------------------------- | ------ |
+| Coinbase | 10 req/sec      | 30s intervals, 3 symbols  | ✓ Safe |
+| Binance  | 1200 req/min    | 30s intervals, 10 symbols | ✓ Safe |
+| Kraken   | 15-20 req/min   | 30s intervals, 5 symbols  | ✓ Safe |
+| Bybit    | 120 req/min     | 30s intervals             | ✓ Safe |
+| OKX      | 20 req/sec      | 30s intervals             | ✓ Safe |
 
 ### Retry Logic Implementation
 
 ```typescript
 async function fetchWithRetry(
-  url: string, 
+  url: string,
   options: RequestInit,
-  maxRetries = 3
+  maxRetries = 3,
 ): Promise<Response> {
   for (let i = 0; i < maxRetries; i++) {
     try {
       const response = await fetch(url, options);
-      
+
       if (response.ok) {
         return response;
       }
-      
+
       if (response.status >= 500 && i < maxRetries - 1) {
         await sleep(Math.pow(2, i) * 100);
         continue;
       }
-      
+
       return response;
-      
     } catch (error) {
       if (i === maxRetries - 1) throw error;
       await sleep(Math.pow(2, i) * 100);
     }
   }
-  
-  throw new Error('Max retries exceeded');
+
+  throw new Error("Max retries exceeded");
 }
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 ```
 
@@ -451,14 +451,18 @@ Status: Well within free tier ✓
 
 ```typescript
 // 1. Batch API calls when exchange supports it
-const symbols = ['BTC-USD', 'ETH-USD', 'FLR-USD'];
-const batch = await fetch(`https://api.exchange.com/batch?symbols=${symbols.join(',')}`);
+const symbols = ["BTC-USD", "ETH-USD", "FLR-USD"];
+const batch = await fetch(
+  `https://api.exchange.com/batch?symbols=${symbols.join(",")}`,
+);
 
 // 2. Cache non-critical data in KV
-const config = await env.WORKER_KV.get('config', 'json');
+const config = await env.WORKER_KV.get("config", "json");
 
 // 3. Minimize CPU time
-const { data: { amount } } = await response.json();
+const {
+  data: { amount },
+} = await response.json();
 ```
 
 ---
@@ -566,8 +570,8 @@ sleep 3600
 
 # 4. Check database ingestion
 psql -d project_chrono -c "
-  SELECT source, COUNT(*), MAX(timestamp) 
-  FROM price_feeds 
+  SELECT source, COUNT(*), MAX(timestamp)
+  FROM price_feeds
   WHERE timestamp > NOW() - INTERVAL '1 hour'
   GROUP BY source;
 "
@@ -581,7 +585,7 @@ psql -d project_chrono -c "
 
 # Check price ingestion rate
 psql -d project_chrono -c "
-  SELECT 
+  SELECT
     DATE_TRUNC('minute', timestamp) AS minute,
     COUNT(*) as prices_count
   FROM price_feeds
@@ -729,4 +733,4 @@ wrangler deploy --env production
 
 ---
 
-*"The Probes are deployed. Resource gathering operational. En Taro Tassadar!"*
+_"The Probes are deployed. Resource gathering operational. En Taro Tassadar!"_
