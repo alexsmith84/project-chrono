@@ -3,10 +3,13 @@
  * Cloudflare Workers with Durable Objects for collecting real-time cryptocurrency prices
  */
 
-import type { WorkerConfig, WorkerStatus, PriceFeed, IngestRequest } from './types/index';
+import type { WorkerConfig, WorkerStatus, PriceFeed, IngestRequest, ExchangeAdapter } from './types/index';
 import { Logger } from './lib/logger';
 import { PriceBatcher } from './lib/batcher';
 import { WebSocketManager } from './lib/websocket';
+import { CoinbaseAdapter } from './exchanges/coinbase';
+import { BinanceAdapter } from './exchanges/binance';
+import { KrakenAdapter } from './exchanges/kraken';
 
 /**
  * Durable Object for maintaining persistent WebSocket connections
@@ -18,6 +21,7 @@ export class PriceCollector {
   private logger: Logger | null = null;
   private wsManager: WebSocketManager | null = null;
   private batcher: PriceBatcher | null = null;
+  private adapter: ExchangeAdapter | null = null;
   private startTime: number = Date.now();
 
   constructor(state: DurableObjectState, env: Env) {
@@ -137,8 +141,8 @@ export class PriceCollector {
     const status: WorkerStatus = {
       worker_id: this.config.workerId,
       state: wsStats.state,
-      exchange: 'unknown', // Will be set by exchange adapter in Phase 2
-      symbols: [],
+      exchange: this.adapter?.name || 'unknown',
+      symbols: this.adapter?.symbols || [],
       uptime_seconds: wsStats.uptime_seconds,
       reconnect_attempts: wsStats.reconnect_attempts,
       feeds_collected: batcherStats.feeds_collected,
@@ -153,9 +157,7 @@ export class PriceCollector {
 
   /**
    * Initialize the collector components
-   * Creates batcher and WebSocket manager
-   *
-   * Note: Exchange adapter creation will be added in Phase 2
+   * Creates exchange adapter, batcher, and WebSocket manager
    */
   private async initialize(): Promise<void> {
     if (!this.config || !this.logger) {
@@ -169,13 +171,74 @@ export class PriceCollector {
       (feeds: PriceFeed[]) => this.ingestBatch(feeds)
     );
 
-    // TODO: Phase 2 will add exchange adapter creation here
-    // For now, we'll just log that initialization is complete
-    this.logger.info('Collector initialized (Phase 1 - awaiting exchange adapters)');
+    // Create exchange adapter based on worker ID
+    // Worker ID format: "worker-{exchange}-{region}"
+    // Example: "worker-coinbase-us-east", "worker-binance-global"
+    const exchange = this.extractExchangeFromWorkerId(this.config.workerId);
+    const symbols = ['BTC/USD', 'ETH/USD']; // Default symbols, can be made configurable
 
-    // TODO: Phase 2 will create WebSocketManager with exchange adapter
-    // this.wsManager = new WebSocketManager(adapter, this.logger, ...);
-    // await this.wsManager.connect();
+    this.adapter = this.createExchangeAdapter(exchange, symbols, this.config.workerId);
+    this.logger.info('Created exchange adapter', {
+      exchange: this.adapter.name,
+      symbols: this.adapter.symbols
+    });
+
+    // Create WebSocket manager
+    this.wsManager = new WebSocketManager(
+      this.adapter,
+      this.logger,
+      (feed) => this.batcher!.add(feed),
+      this.config.maxReconnectAttempts
+    );
+
+    // Connect to exchange
+    await this.wsManager.connect();
+    this.logger.info('Collector initialized and connected', {
+      exchange: this.adapter.name,
+      symbols: this.adapter.symbols
+    });
+  }
+
+  /**
+   * Extract exchange name from worker ID
+   * Examples:
+   * - "worker-coinbase-us-east" → "coinbase"
+   * - "worker-binance-global" → "binance"
+   * - "coinbase" → "coinbase"
+   */
+  private extractExchangeFromWorkerId(workerId: string): string {
+    const parts = workerId.toLowerCase().split('-');
+
+    // If worker ID format is "worker-{exchange}-{region}"
+    if (parts.length >= 2 && parts[0] === 'worker') {
+      return parts[1];
+    }
+
+    // Otherwise, assume the entire worker ID is the exchange name
+    return parts[0];
+  }
+
+  /**
+   * Create an exchange adapter based on exchange name
+   */
+  private createExchangeAdapter(
+    exchange: string,
+    symbols: string[],
+    workerId: string
+  ): ExchangeAdapter {
+    switch (exchange.toLowerCase()) {
+      case 'coinbase':
+        return new CoinbaseAdapter(symbols, workerId);
+
+      case 'binance':
+        return new BinanceAdapter(symbols, workerId);
+
+      case 'kraken':
+        return new KrakenAdapter(symbols, workerId);
+
+      default:
+        throw new Error(`Unknown exchange: ${exchange}. Supported: coinbase, binance, kraken`);
+    }
   }
 
   /**
