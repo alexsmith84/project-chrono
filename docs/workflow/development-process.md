@@ -412,6 +412,19 @@ git push
 
 ## Project Board Workflow
 
+**Project Board**: [Project Chrono - Oracle Development](https://github.com/users/alexsmith84/projects/5)
+
+### ⚠️ CRITICAL: Maintain Board Throughout Development
+
+The GitHub Project Board MUST be kept up to date at EVERY step. This is not optional.
+
+**Why This Matters:**
+- Provides real-time visibility into project progress
+- Tracks actual work completed vs planned
+- Helps estimate future work based on supply costs
+- Creates audit trail of development decisions
+- Enables accurate project status reporting
+
 ### Kanban States
 
 1. **Backlog** - Not yet ready to implement
@@ -420,20 +433,210 @@ git push
 4. **In Review** - PR created, awaiting review
 5. **Done** - Merged and complete
 
-### Moving Tickets
+### Complete Issue Lifecycle (Step-by-Step)
 
-**Manual moves:**
+#### Step 1: Creating a New Issue
 
-- Backlog → Ready: When spec is complete
-- Ready → In Progress: When you start working
-- In Progress → In Review: When PR is created
-- In Review → Done: When PR is merged (may auto-transition)
+```bash
+# Create issue via GitHub CLI
+gh issue create \
+  --title "CHRONO-XXX: [Role] Brief description" \
+  --body "See docs/specs/CHRONO-XXX-*.md for full specification" \
+  --label "epic-<epic>,<role>-<type>,<priority>,<supply>-supply" \
+  --assignee @me
 
-**Automation:**
+# Example:
+gh issue create \
+  --title "CHRONO-011: [Overlord] Real-time Price Aggregation" \
+  --body "See docs/specs/CHRONO-011-price-aggregation.md" \
+  --label "epic-khala,overlord-backend,Critical Mission,5-supply" \
+  --assignee alexsmith84
+```
 
-- New issues auto-add to "Backlog"
-- Closed issues auto-move to "Done"
-- PR merge may auto-close linked issue
+**Required Labels (ALL must be present):**
+- **Epic**: `epic-nexus`, `epic-khala`, `epic-chrono`, `epic-warp`, or `epic-fleet`
+- **Role**: `marine-devops`, `overlord-backend`, `oracle-data`, `zealot-frontend`, `templar-blockchain`, or `scv-qa`
+- **Priority**: `Critical Mission`, `Main Objective`, `Side Quest`, or `Research`
+- **Supply**: `1-supply`, `2-supply`, `3-supply`, `5-supply`, or `8-supply`
+
+**Optional Labels:**
+- Type: `enhancement`, `bug`, `documentation`, `database`, etc.
+
+#### Step 2: Add Issue to Project Board
+
+```bash
+# Add to project board
+gh project item-add 5 --owner alexsmith84 \
+  --url "https://github.com/alexsmith84/project-chrono/issues/XXX"
+```
+
+**Issue will default to "Backlog" status**
+
+#### Step 3: Set Project Board Metadata
+
+```bash
+# Get project item ID
+gh project item-list 5 --owner alexsmith84 --format json | \
+  jq -r '.items[] | select(.content.number == XXX) | .id'
+
+# Set Epic, Role, Priority, Supply Cost
+gh project item-edit --project-id PVT_kwHOAA1B-c4BEzsW \
+  --id <ITEM_ID> \
+  --field-id PVTSSF_lAHOAA1B-c4BEzsWzg2Z2PM \
+  --single-select-option-id <EPIC_ID>
+
+# Repeat for Role, Priority, Supply (see field IDs below)
+```
+
+**Field IDs:**
+- Epic: `PVTSSF_lAHOAA1B-c4BEzsWzg2Z2PM`
+- Role: `PVTSSF_lAHOAA1B-c4BEzsWzg2Z2YE`
+- Priority: `PVTSSF_lAHOAA1B-c4BEzsWzg2Z2ew`
+- Supply: `PVTSSF_lAHOAA1B-c4BEzsWzg2Z3zc`
+- Status: `PVTSSF_lAHOAA1B-c4BEzsWzg2U5wg`
+
+**Option IDs:**
+
+Epic:
+- Nexus Construction: `4c2e0f05`
+- Khala Connection: `69572fa2`
+- Chrono Boost: `0b141e0c`
+- Warp Gate: `0aa355fd`
+- Protoss Fleet: `c42a270b`
+
+Role:
+- Oracle (Data): `20cb1e26`
+- Zealot (Frontend): `99af3a81`
+- Templar (Blockchain): `4adc0fd2`
+- Marine (DevOps): `254eb9d9`
+- Overlord (Backend): `8a138c43`
+- Observer (QA): `2568606f`
+
+Priority:
+- Critical Mission: `5c5de61b`
+- Main Objective: `1bf0aaf4`
+- Side Quest: `9eb7939a`
+- Research: `60a8499a`
+
+Supply:
+- 1: `8f2c0327`
+- 2: `7d650237`
+- 3: `4f420d58`
+- 5: `6c38264c`
+- 8: `e52899be`
+
+Status:
+- Backlog: `b89008ea`
+- Ready: `be2c3b40`
+- In Progress: `47fc9ee4`
+- In Review: `be9d724e`
+- Done: `98236657`
+
+#### Step 4: Move to Ready (When Spec Complete)
+
+```bash
+# Manually move to Ready when:
+# - Spec document exists and is complete
+# - Implementation guide is written
+# - Test spec is defined
+# - No blockers exist
+
+gh project item-edit --project-id PVT_kwHOAA1B-c4BEzsW \
+  --id <ITEM_ID> \
+  --field-id PVTSSF_lAHOAA1B-c4BEzsWzg2U5wg \
+  --single-select-option-id be2c3b40
+```
+
+#### Step 5: Move to In Progress (When You Start Work)
+
+```bash
+# Move to In Progress when:
+# - You've created feature branch
+# - You've started implementation
+# - You've assigned ticket to yourself
+
+gh project item-edit --project-id PVT_kwHOAA1B-c4BEzsW \
+  --id <ITEM_ID> \
+  --field-id PVTSSF_lAHOAA1B-c4BEzsWzg2U5wg \
+  --single-select-option-id 47fc9ee4
+```
+
+**⚠️ IMPORTANT**: Only ONE ticket should be "In Progress" at a time!
+
+#### Step 6: Move to In Review (When PR Created)
+
+```bash
+# Move to In Review when:
+# - PR has been created
+# - Tests are passing
+# - Ready for code review
+
+gh project item-edit --project-id PVT_kwHOAA1B-c4BEzsW \
+  --id <ITEM_ID> \
+  --field-id PVTSSF_lAHOAA1B-c4BEzsWzg2U5wg \
+  --single-select-option-id be9d724e
+```
+
+**This is when you link the PR to the issue:**
+
+```bash
+# In PR description, add:
+Closes #XXX
+```
+
+#### Step 7: Move to Done (When PR Merged)
+
+```bash
+# AUTOMATICALLY happens when:
+# - PR is merged
+# - Issue is closed (via "Closes #XXX" in PR)
+
+# OR manually:
+gh issue close XXX --reason completed --comment "✅ Completed via PR #YYY"
+
+# This will auto-update project board to "Done"
+```
+
+### Board Maintenance Checklist
+
+**Daily (or before starting work):**
+- [ ] Check that no tickets are stuck in wrong status
+- [ ] Verify "In Progress" has only YOUR current ticket
+- [ ] Update status if you've moved to next phase
+
+**When creating new issue:**
+- [ ] Add all required labels (epic, role, priority, supply)
+- [ ] Add to project board (#5)
+- [ ] Set Epic, Role, Priority, Supply Cost fields
+- [ ] Assign to yourself
+- [ ] Set status to "Backlog"
+
+**When starting work:**
+- [ ] Move ticket from "Ready" to "In Progress"
+- [ ] Verify only one ticket is "In Progress"
+
+**When creating PR:**
+- [ ] Move ticket to "In Review"
+- [ ] Link PR to issue with "Closes #XXX"
+- [ ] Ensure PR title matches issue format
+
+**When PR merged:**
+- [ ] Verify issue auto-closed
+- [ ] Verify board auto-updated to "Done"
+- [ ] Update IMPLEMENTATION_LOG.md
+
+### Automation
+
+**Auto-transitions:**
+- New issues → Automatically added to "Backlog"
+- Closed issues → Automatically moved to "Done"
+- PR merge with "Closes #XXX" → Auto-closes issue → Auto-moves to Done
+
+**Manual updates required:**
+- Backlog → Ready (when spec complete)
+- Ready → In Progress (when work starts)
+- In Progress → In Review (when PR created)
+- Setting Epic, Role, Priority, Supply (on issue creation)
 
 ---
 

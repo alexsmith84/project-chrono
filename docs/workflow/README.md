@@ -6,7 +6,17 @@ Development processes and workflows for Project Chrono.
 
 - `ticket-creation.md` - How to create and specify tickets
 - `development-process.md` - Step-by-step development workflow
+- `PROJECT-BOARD-QUICK-REF.md` - Quick reference for GitHub Project Board management ⭐
+- `code-quality-automation.md` - Code quality and automation standards
 - `deployment.md` - Production deployment procedures
+
+## Quick Start
+
+**New to the workflow?** Start here:
+
+1. 📋 [Project Board Quick Ref](./PROJECT-BOARD-QUICK-REF.md) - Learn board management
+2. 📝 [Development Process](./development-process.md) - Full workflow guide
+3. 🎫 [Ticket Creation](./ticket-creation.md) - How to create specs
 
 ## Standard Workflow
 
