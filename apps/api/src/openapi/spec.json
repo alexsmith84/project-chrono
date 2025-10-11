@@ -1,0 +1,661 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Project Chrono API",
+    "version": "1.0.0",
+    "description": "FTSO Price Feed Aggregation and Consensus API\n\nProject Chrono provides real-time and historical cryptocurrency price data with multi-source consensus algorithms.",
+    "contact": {
+      "name": "Project Chrono Team"
+    },
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    },
+    {
+      "url": "https://api-staging.chrono.dev",
+      "description": "Staging server"
+    },
+    {
+      "url": "https://api.chrono.dev",
+      "description": "Production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Prices",
+      "description": "Query endpoints for current and historical price data"
+    },
+    {
+      "name": "Aggregates",
+      "description": "Consensus price calculations across multiple exchanges"
+    },
+    {
+      "name": "Internal",
+      "description": "Internal endpoints for data ingestion (restricted access)"
+    },
+    {
+      "name": "System",
+      "description": "Health monitoring and metrics endpoints"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Health check",
+        "description": "Check API server health and status of dependent services (PostgreSQL, Redis). No authentication required.",
+        "responses": {
+          "200": {
+            "description": "Service health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Prometheus metrics",
+        "description": "Prometheus-compatible metrics endpoint for monitoring and observability. No authentication required.",
+        "responses": {
+          "200": {
+            "description": "Prometheus metrics in text format",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "# HELP http_requests_total Total HTTP requests\\n# TYPE http_requests_total counter\\nhttp_requests_total{method=\"GET\",path=\"/health\",status=\"200\"} 1234"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prices/latest": {
+      "get": {
+        "tags": ["Prices"],
+        "summary": "Get latest prices",
+        "description": "Retrieve the most recent price for one or more trading pairs. Results are cached for 2 seconds.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "BTC/USD,ETH/USD"
+            },
+            "description": "Comma-separated list of trading pair symbols"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest price data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LatestPricesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prices/range": {
+      "get": {
+        "tags": ["Prices"],
+        "summary": "Get price history",
+        "description": "Retrieve historical price data for a trading pair within a time range. Optionally aggregate into OHLCV candles using the interval parameter.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "BTC/USD"
+            },
+            "description": "Trading pair symbol"
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2025-10-10T00:00:00Z"
+            },
+            "description": "Start timestamp (ISO 8601)"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2025-10-10T23:59:59Z"
+            },
+            "description": "End timestamp (ISO 8601)"
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["1m", "5m", "15m", "30m", "1h", "4h", "1d"],
+              "example": "5m"
+            },
+            "description": "OHLCV aggregation interval (optional, returns raw data if omitted)"
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "coinbase"
+            },
+            "description": "Filter by specific exchange source (optional)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "example": 100
+            },
+            "description": "Maximum number of results (default: 100, max: 1000)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historical price data (raw or OHLCV)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PriceRangeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggregates/consensus": {
+      "get": {
+        "tags": ["Aggregates"],
+        "summary": "Get consensus prices",
+        "description": "Calculate consensus prices for one or more trading pairs using VWAP, TWAP, and weighted median algorithms across multiple exchange sources.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "BTC/USD,ETH/USD"
+            },
+            "description": "Comma-separated list of trading pair symbols"
+          },
+          {
+            "name": "timestamp",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2025-10-10T14:30:00Z"
+            },
+            "description": "Timestamp for consensus calculation (default: current time)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Consensus price data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsensusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/ingest": {
+      "post": {
+        "tags": ["Internal"],
+        "summary": "Ingest price feeds",
+        "description": "Batch ingestion endpoint for Cloudflare Workers to submit price data from exchanges. Requires internal API key.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IngestRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully ingested price feeds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngestResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions (requires internal API key)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key",
+        "description": "API key authentication using Bearer token. Format: `chrono_{type}_{env}_key_{id}` where type is internal/public/admin."
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "degraded", "unhealthy"],
+            "example": "healthy"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-10-10T14:30:00Z"
+          },
+          "uptime": {
+            "type": "number",
+            "description": "Server uptime in seconds",
+            "example": 3600.5
+          },
+          "services": {
+            "type": "object",
+            "properties": {
+              "database": {
+                "type": "string",
+                "enum": ["healthy", "unhealthy"],
+                "example": "healthy"
+              },
+              "redis": {
+                "type": "string",
+                "enum": ["healthy", "unhealthy"],
+                "example": "healthy"
+              }
+            }
+          }
+        }
+      },
+      "PriceData": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "example": "BTC/USD"
+          },
+          "price": {
+            "type": "number",
+            "example": 45123.5
+          },
+          "volume": {
+            "type": "number",
+            "nullable": true,
+            "example": 1234567.89
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-10-10T14:30:00Z"
+          },
+          "source": {
+            "type": "string",
+            "example": "coinbase"
+          }
+        }
+      },
+      "LatestPricesResponse": {
+        "type": "object",
+        "properties": {
+          "prices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceData"
+            }
+          }
+        }
+      },
+      "OHLCVData": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-10-10T14:30:00Z"
+          },
+          "open": {
+            "type": "number",
+            "example": 45000.0
+          },
+          "high": {
+            "type": "number",
+            "example": 45200.0
+          },
+          "low": {
+            "type": "number",
+            "example": 44900.0
+          },
+          "close": {
+            "type": "number",
+            "example": 45100.0
+          },
+          "volume": {
+            "type": "number",
+            "example": 1500000.0
+          },
+          "count": {
+            "type": "integer",
+            "example": 125
+          }
+        }
+      },
+      "PriceRangeResponse": {
+        "type": "object",
+        "properties": {
+          "prices": {
+            "type": "array",
+            "description": "Array of price data (raw or OHLCV depending on interval parameter)",
+            "items": {
+              "oneOf": [
+                { "$ref": "#/components/schemas/PriceData" },
+                { "$ref": "#/components/schemas/OHLCVData" }
+              ]
+            }
+          }
+        }
+      },
+      "ConsensusPrice": {
+        "type": "object",
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "example": "BTC/USD"
+          },
+          "consensus_price": {
+            "type": "number",
+            "example": 45123.5
+          },
+          "vwap": {
+            "type": "number",
+            "nullable": true,
+            "example": 45125.3
+          },
+          "twap": {
+            "type": "number",
+            "nullable": true,
+            "example": 45120.1
+          },
+          "weighted_median": {
+            "type": "number",
+            "nullable": true,
+            "example": 45123.0
+          },
+          "confidence": {
+            "type": "number",
+            "nullable": true,
+            "example": 0.95
+          },
+          "sources_used": {
+            "type": "integer",
+            "example": 3
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-10-10T14:30:00Z"
+          }
+        }
+      },
+      "ConsensusResponse": {
+        "type": "object",
+        "properties": {
+          "prices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConsensusPrice"
+            }
+          }
+        }
+      },
+      "PriceFeed": {
+        "type": "object",
+        "required": ["symbol", "price", "timestamp", "source"],
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Trading pair symbol (e.g., BTC/USD, ETH/USD)",
+            "example": "BTC/USD"
+          },
+          "price": {
+            "type": "number",
+            "description": "Asset price (must be positive)",
+            "example": 45123.5,
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "volume": {
+            "type": "number",
+            "description": "Trading volume (optional)",
+            "example": 1234567.89,
+            "minimum": 0
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Price timestamp in ISO 8601 format",
+            "example": "2025-10-10T14:30:00Z"
+          },
+          "source": {
+            "type": "string",
+            "description": "Exchange source identifier",
+            "example": "coinbase"
+          },
+          "worker_id": {
+            "type": "string",
+            "description": "Worker ID that collected this data",
+            "example": "worker-us-east-1"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional exchange-specific metadata",
+            "additionalProperties": true
+          }
+        }
+      },
+      "IngestRequest": {
+        "type": "object",
+        "required": ["feeds"],
+        "properties": {
+          "feeds": {
+            "type": "array",
+            "description": "Array of price feed data (1-100 feeds per batch)",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/PriceFeed"
+            }
+          }
+        }
+      },
+      "IngestResponse": {
+        "type": "object",
+        "properties": {
+          "ingested": {
+            "type": "integer",
+            "description": "Number of price feeds successfully ingested"
+          },
+          "message": {
+            "type": "string",
+            "description": "Success message"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "details": {
+            "description": "Additional error details"
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Full API documentation and guides",
+    "url": "https://github.com/alexsmith84/project-chrono/tree/main/docs/api"
+  }
+}

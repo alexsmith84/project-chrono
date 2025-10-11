@@ -1,6 +1,6 @@
 # Deployment Procedures - Project Chrono
 
-*"Deploy with precision. The Khala tolerates no errors."*
+_"Deploy with precision. The Khala tolerates no errors."_
 
 ---
 
@@ -514,4 +514,4 @@ git checkout v0.X.0  # Last known good version
 
 ---
 
-*"Deploy with confidence. The Khala protects those who prepare. En Taro Adun!"*
+_"Deploy with confidence. The Khala protects those who prepare. En Taro Adun!"_

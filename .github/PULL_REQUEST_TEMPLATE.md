@@ -1,4 +1,5 @@
 ## Summary
+
 <!-- Brief description of what this PR accomplishes -->
 
 ## Related Issue
@@ -18,6 +19,7 @@ Closes #<!-- issue number -->
 - [ ] ✅ Test (adding or updating tests)
 
 ## Test Plan
+
 <!-- Describe how you tested these changes -->
 
 **Unit tests:**
@@ -55,15 +57,19 @@ Closes #<!-- issue number -->
 - [ ] API documentation updated (if applicable)
 
 ## Screenshots (if applicable)
+
 <!-- Add screenshots for UI changes or visual verification -->
 
 ## Performance Impact
+
 <!-- Describe any performance implications, positive or negative -->
 
 ## Deployment Notes
+
 <!-- Special deployment considerations, database migrations, environment variables, etc. -->
 
 ## Additional Context
+
 <!-- Any additional context or notes for reviewers -->
 
 ---

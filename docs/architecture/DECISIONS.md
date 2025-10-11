@@ -1,6 +1,6 @@
 # Architecture Decisions - Project Chrono
 
-*"Every choice shapes our destiny. These decisions define our path."*
+_"Every choice shapes our destiny. These decisions define our path."_
 
 ---
 
@@ -17,7 +17,7 @@
 - Represents unified source of truth (like the Khala unites Protoss)
 - Thematically perfect for StarCraft 2 project
 - Short and memorable
-**Consequences**: All feature branches merge to `khala`, not `main`
+  **Consequences**: All feature branches merge to `khala`, not `main`
 
 ### Decision 002: Git-Flow Branch Strategy
 
@@ -31,9 +31,9 @@
 - `warp-in/CHRONO-XXX-description` - Feature branches
 - `recall/hotfix-description` - Hotfix branches
 - `archives/vX.X.X` - Release branches
-**Rationale**: Maintains StarCraft theme while following professional git-flow pattern for release management
-**Branch Flow**: warp-in/* → forge → gateway → archives/vX.X.X → khala
-**Consequences**: More complex than simplified workflow, but provides professional release management even for solo developer
+  **Rationale**: Maintains StarCraft theme while following professional git-flow pattern for release management
+  **Branch Flow**: warp-in/\* → forge → gateway → archives/vX.X.X → khala
+  **Consequences**: More complex than simplified workflow, but provides professional release management even for solo developer
 
 ### Decision 003: Monorepo Structure
 
@@ -89,7 +89,7 @@ src/oracle/typescript/
 - Custom Field "Epic" for visual organization
 - Labels (`epic:nexus`, `epic:chrono-boost`, etc.) for CLI filtering
 - NO GitHub Milestones (reserved for version releases)
-**Rationale**: Best of both worlds - visual board + command-line filtering
+  **Rationale**: Best of both worlds - visual board + command-line filtering
 
 ### Decision 007: Documentation Structure
 
@@ -101,8 +101,8 @@ src/oracle/typescript/
 - Separate files for specs, implementation guides, tests
 - Blueprint links to detailed docs
 - Each doc 1500-3000 words max
-**Rationale**: Claude Code can load only what it needs, token efficiency  
-**Consequences**: More files to manage, but better for AI agent context
+  **Rationale**: Claude Code can load only what it needs, token efficiency  
+  **Consequences**: More files to manage, but better for AI agent context
 
 ### Decision 008: Test Specs for All Tickets
 
@@ -125,8 +125,8 @@ src/oracle/typescript/
 
 - Hybrid: $70-220/month (MVP)
 - Pure Cloud: $375-1,250/month
-**Rationale**: 60-70% cost savings while maintaining performance  
-**Trade-offs**: Self-hosting complexity vs cost savings
+  **Rationale**: 60-70% cost savings while maintaining performance  
+  **Trade-offs**: Self-hosting complexity vs cost savings
 
 ### Decision 010: Multi-Language Stack
 
@@ -139,8 +139,8 @@ src/oracle/typescript/
 - **TypeScript/Bun**: API server, WebSocket, orchestration
 - **Deno**: Secure config, sandboxed API calls
 - **SvelteKit**: Frontend dashboard
-**Rationale**: Performance where needed (Rust), ecosystem where helpful (TypeScript)  
-**Consequences**: Multi-language complexity, but achieves <10ms aggregation target
+  **Rationale**: Performance where needed (Rust), ecosystem where helpful (TypeScript)  
+  **Consequences**: Multi-language complexity, but achieves <10ms aggregation target
 
 ### Decision 011: Database Choice
 
@@ -153,7 +153,7 @@ src/oracle/typescript/
 - TimescaleDB: 100-1000x faster for time queries vs vanilla PostgreSQL
 - Better tooling ecosystem than ClickHouse
 - 80% of benefits with lower complexity
-**Future**: Add ClickHouse in Growth Phase only if TimescaleDB insufficient
+  **Future**: Add ClickHouse in Growth Phase only if TimescaleDB insufficient
 
 ### Decision 012: TypeScript Runtime
 
@@ -166,7 +166,7 @@ src/oracle/typescript/
 - Native TypeScript support
 - Built-in WebSocket
 - Single executable, simple deployment
-**Trade-offs**: Newer ecosystem, fewer packages, but performance gains worth it
+  **Trade-offs**: Newer ecosystem, fewer packages, but performance gains worth it
 
 ### Decision 013: Frontend Framework
 
@@ -179,7 +179,7 @@ src/oracle/typescript/
 - Fastest runtime performance
 - Excellent developer experience
 - SSR + client hydration out of the box
-**Consequences**: Smaller talent pool, but solo developer project
+  **Consequences**: Smaller talent pool, but solo developer project
 
 ---
 
@@ -195,7 +195,7 @@ src/oracle/typescript/
 - Included in Claude Pro subscription (no extra cost)
 - Terminal integration, git commits, file navigation
 - Can iterate quickly on implementation
-**Fallbacks**: Ollama + Qwen3-Coder for offline/simple tasks
+  **Fallbacks**: Ollama + Qwen3-Coder for offline/simple tasks
 
 ### Decision 015: Ticket Specification Approach
 
@@ -209,7 +209,7 @@ src/oracle/typescript/
 - Avoids bash escaping nightmares
 - Prevents hitting token/length limits
 - Implementation belongs in code files, not issue bodies
-**Key Learning**: Embedding 200+ line code blocks in GitHub issues = bad time
+  **Key Learning**: Embedding 200+ line code blocks in GitHub issues = bad time
 
 ### Decision 016: Spec Granularity
 
@@ -222,7 +222,7 @@ src/oracle/typescript/
   - CHRONO-020: Implement basic VWAP
   - CHRONO-021: Add SIMD optimizations
   - CHRONO-022: Benchmark & tune
-**Rationale**: Prevents spec duplication, allows incremental implementation
+    **Rationale**: Prevents spec duplication, allows incremental implementation
 
 ---
 
@@ -361,4 +361,4 @@ When making new architectural decisions:
 
 ---
 
-*"Decisions recorded in the archives. The Khala remembers all."*
+_"Decisions recorded in the archives. The Khala remembers all."_

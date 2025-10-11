@@ -1,6 +1,6 @@
 # Test Specification: CHRONO-XXX
 
-*"The Observer sees all. No defect shall remain cloaked."*
+_"The Observer sees all. No defect shall remain cloaked."_
 
 ---
 
@@ -41,10 +41,10 @@
 test('should [expected behavior] when [condition]', () => {
   // Arrange
   const input = { ... };
-  
+
   // Act
   const result = functionUnderTest(input);
-  
+
   // Assert
   expect(result).toEqual(expectedOutput);
 });
@@ -199,9 +199,7 @@ test('should [expected behavior] when [condition]', () => {
     "wallet": "0x...",
     "delegation": 1000000
   },
-  "testPrices": [
-    { "symbol": "BTC", "price": 45000.00, "timestamp": "..." }
-  ]
+  "testPrices": [{ "symbol": "BTC", "price": 45000.0, "timestamp": "..." }]
 }
 ```
 
@@ -249,4 +247,4 @@ Tests run automatically on:
 
 ---
 
-*"All systems validated. The Observer confirms: defects detected and eliminated."*
+_"All systems validated. The Observer confirms: defects detected and eliminated."_

@@ -1,9 +1,9 @@
 ---
 name: Feature Ticket
 about: Standard ticket format for Project Chrono features
-title: 'CHRONO-XXX: [Role] Brief Description'
-labels: ''
-assignees: ''
+title: "CHRONO-XXX: [Role] Brief Description"
+labels: ""
+assignees: ""
 ---
 
 ## Summary
@@ -47,4 +47,5 @@ assignees: ''
 See `scripts/reference/CHRONO-XXX-*` for working reference code (if applicable)
 
 ---
-*"My life for Aiur! This task serves the greater Khala."*
+
+_"My life for Aiur! This task serves the greater Khala."_

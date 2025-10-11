@@ -1,6 +1,6 @@
 # Infrastructure Costs Guide - Project Chrono
 
-*"Construct additional pylons... but calculate the cost first!"*
+_"Construct additional pylons... but calculate the cost first!"_
 
 ---
 
@@ -14,31 +14,31 @@ Detailed cost breakdown and scaling scenarios for Project Chrono infrastructure.
 
 ### One-Time Costs
 
-| Item | Cost | Notes |
-|------|------|-------|
-| Mac Mini M4 Pro | $1,999 | 14-core, 48GB RAM, 512GB SSD |
-| UPS (Battery Backup) | $150 | APC 1500VA |
-| Network Switch | $50 | Gigabit, optional |
-| **Total One-Time** | **$2,199** | |
+| Item                 | Cost       | Notes                        |
+| -------------------- | ---------- | ---------------------------- |
+| Mac Mini M4 Pro      | $1,999     | 14-core, 48GB RAM, 512GB SSD |
+| UPS (Battery Backup) | $150       | APC 1500VA                   |
+| Network Switch       | $50        | Gigabit, optional            |
+| **Total One-Time**   | **$2,199** |                              |
 
 ### Monthly Operating Costs
 
-| Item | Cost | Annual | Notes |
-|------|------|--------|-------|
-| **Electricity** | | | |
-| Mac Mini (30W avg) | $11 | $132 | @ $0.15/kWh |
-| UPS + Network | $4 | $48 | Additional draw |
-| **Internet** | | | |
-| Business Internet | $50 | $600 | 500 Mbps |
-| **Services** | | | |
-| Domain (hayven.xyz) | $3 | $36 | Annual renewal |
-| Cloudflare (free tier) | $0 | $0 | Workers + DNS |
-| **Software** | | | |
-| macOS (included) | $0 | $0 | Free updates |
-| Development tools | $0 | $0 | All open source |
-| **Monitoring** | | | |
-| Prometheus/Grafana | $0 | $0 | Self-hosted |
-| **Total Monthly** | **$68** | **$816** | MVP baseline |
+| Item                   | Cost    | Annual   | Notes           |
+| ---------------------- | ------- | -------- | --------------- |
+| **Electricity**        |         |          |                 |
+| Mac Mini (30W avg)     | $11     | $132     | @ $0.15/kWh     |
+| UPS + Network          | $4      | $48      | Additional draw |
+| **Internet**           |         |          |                 |
+| Business Internet      | $50     | $600     | 500 Mbps        |
+| **Services**           |         |          |                 |
+| Domain (hayven.xyz)    | $3      | $36      | Annual renewal  |
+| Cloudflare (free tier) | $0      | $0       | Workers + DNS   |
+| **Software**           |         |          |                 |
+| macOS (included)       | $0      | $0       | Free updates    |
+| Development tools      | $0      | $0       | All open source |
+| **Monitoring**         |         |          |                 |
+| Prometheus/Grafana     | $0      | $0       | Self-hosted     |
+| **Total Monthly**      | **$68** | **$816** | MVP baseline    |
 
 ---
 
@@ -48,26 +48,26 @@ Detailed cost breakdown and scaling scenarios for Project Chrono infrastructure.
 
 **Additional Monthly Costs:**
 
-| Item | Cost | Reason |
-|------|------|--------|
-| Second Mac Mini | $15 | Redundancy/failover |
-| Cloud backup (S3) | $10 | Offsite backups |
-| Premium monitoring | $20 | Enhanced observability |
-| **Additional** | **$45** | |
-| **New Total** | **$113/month** | |
+| Item               | Cost           | Reason                 |
+| ------------------ | -------------- | ---------------------- |
+| Second Mac Mini    | $15            | Redundancy/failover    |
+| Cloud backup (S3)  | $10            | Offsite backups        |
+| Premium monitoring | $20            | Enhanced observability |
+| **Additional**     | **$45**        |                        |
+| **New Total**      | **$113/month** |                        |
 
 ### Scale Phase (100M+ FLR Delegated)
 
 **Additional Monthly Costs:**
 
-| Item | Cost | Reason |
-|------|------|--------|
-| Third Mac Mini | $15 | Load distribution |
-| Premium API keys | $50 | Higher rate limits |
-| Dedicated server space | $30 | Data center rack space |
-| Business insurance | $25 | Equipment protection |
-| **Additional** | **$120** | |
-| **New Total** | **$233/month** | |
+| Item                   | Cost           | Reason                 |
+| ---------------------- | -------------- | ---------------------- |
+| Third Mac Mini         | $15            | Load distribution      |
+| Premium API keys       | $50            | Higher rate limits     |
+| Dedicated server space | $30            | Data center rack space |
+| Business insurance     | $25            | Equipment protection   |
+| **Additional**         | **$120**       |                        |
+| **New Total**          | **$233/month** |                        |
 
 ---
 
@@ -120,4 +120,4 @@ Break-even time = $2,199 / $482 = 4.6 months
 
 ---
 
-*"Resources optimized. Maximum efficiency achieved."*
+_"Resources optimized. Maximum efficiency achieved."_

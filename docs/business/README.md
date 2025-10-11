@@ -39,4 +39,4 @@ Model different FLR price scenarios:
 
 ---
 
-*"We require more minerals... and accurate financial projections!"*
+_"We require more minerals... and accurate financial projections!"_

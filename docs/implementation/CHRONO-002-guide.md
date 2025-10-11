@@ -1,23 +1,26 @@
 # Implementation Guide: CHRONO-002
 
-*"Step by step, the Nexus rises. Follow the path to completion."*
+_"Step by step, the Nexus rises. Follow the path to completion."_
 
 ---
 
 ## Prerequisites
 
 ### Required Knowledge
+
 - Basic shell scripting (bash)
 - GitHub Actions concepts
 - Markdown documentation
 
 ### Required Tools
+
 - [x] Text editor or IDE
 - [x] Git CLI
 - [x] GitHub CLI (`gh`)
 - [x] macOS terminal
 
 ### Dependencies
+
 - [x] CHRONO-001 complete (GitHub Projects board)
 - [x] Repository cloned locally
 - [x] On `forge` branch or feature branch from `forge`
@@ -27,32 +30,39 @@
 ## Implementation Checklist
 
 ### Phase 1: Workflow Documentation
+
 - [ ] Create `docs/workflow/development-process.md`
 - [ ] Create `docs/workflow/deployment.md`
 
 ### Phase 2: Setup Documentation
+
 - [ ] Create `docs/setup/production-deployment.md`
 
 ### Phase 3: Helper Scripts
+
 - [ ] Create `scripts/helpers/new-ticket.sh`
 - [ ] Create `scripts/helpers/dev-setup.sh`
 - [ ] Create `scripts/helpers/run-tests.sh`
 - [ ] Make scripts executable
 
 ### Phase 4: GitHub Actions
+
 - [ ] Create `.github/workflows/ci.yml`
 - [ ] Create `.github/workflows/deploy-staging.yml`
 - [ ] Create `.github/workflows/deploy-production.yml`
 
 ### Phase 5: Templates & Contribution Guides
+
 - [ ] Create `.github/PULL_REQUEST_TEMPLATE.md`
 - [ ] Create `CONTRIBUTING.md`
 
 ### Phase 6: IDE Configuration
+
 - [ ] Create `.vscode/settings.json`
 - [ ] Create `.vscode/extensions.json`
 
 ### Phase 7: Testing & Validation
+
 - [ ] Test all scripts locally
 - [ ] Verify all documentation links
 - [ ] Trigger GitHub Actions with test PR
@@ -175,6 +185,7 @@ echo "4. Create GitHub issue: gh issue create --title \"$TICKET_ID: $TICKET_TITL
 ```
 
 **Action**: Create this script and make it executable:
+
 ```bash
 chmod +x scripts/helpers/new-ticket.sh
 ```
@@ -249,12 +260,15 @@ Create skeleton for production deployment workflow.
 
 ```markdown
 ## Summary
+
 <!-- Brief description of changes -->
 
 ## Related Issue
+
 Closes #<!-- issue number -->
 
 ## Type of Change
+
 - [ ] 🏗️ Infrastructure/DevOps
 - [ ] ✨ New feature
 - [ ] 🐛 Bug fix
@@ -262,6 +276,7 @@ Closes #<!-- issue number -->
 - [ ] ♻️ Refactoring
 
 ## Test Plan
+
 <!-- How did you test this? -->
 
 - [ ] Unit tests added/updated
@@ -270,6 +285,7 @@ Closes #<!-- issue number -->
 - [ ] Documentation updated
 
 ## Checklist
+
 - [ ] Code follows project style guidelines
 - [ ] Self-review completed
 - [ ] Comments added for complex logic
@@ -277,6 +293,7 @@ Closes #<!-- issue number -->
 - [ ] Related documentation updated
 
 ## Screenshots (if applicable)
+
 <!-- Add screenshots for UI changes -->
 
 ---
@@ -333,6 +350,7 @@ Create contribution guidelines covering git workflow, code style, issue creation
 ### Step 8: Testing & Validation
 
 #### Test Scripts
+
 ```bash
 # Test new-ticket.sh
 ./scripts/helpers/new-ticket.sh CHRONO-999 "Test Ticket"
@@ -349,12 +367,14 @@ rm docs/tests/CHRONO-999-*
 ```
 
 #### Verify Documentation Links
+
 ```bash
 # Check for broken links in all markdown files
 find docs -name "*.md" -exec grep -H "](../" {} \;
 ```
 
 #### Test GitHub Actions
+
 - Create test PR
 - Verify CI workflow runs
 - Check for any errors
@@ -400,16 +420,19 @@ gh pr create --base forge \
 ## Troubleshooting
 
 ### Script Permission Errors
+
 ```bash
 chmod +x scripts/helpers/*.sh
 ```
 
 ### GitHub Actions Not Running
+
 - Verify workflows are in `.github/workflows/` (not `.github/workflow/`)
 - Check YAML syntax with a validator
 - Ensure branch names match trigger conditions
 
 ### Broken Documentation Links
+
 - Use relative paths: `[link](../other/file.md)`
 - Verify paths are correct relative to the file location
 
@@ -418,13 +441,16 @@ chmod +x scripts/helpers/*.sh
 ## Post-Implementation
 
 ### Update Log
+
 Add learnings to `IMPLEMENTATION_LOG.md`:
+
 - What worked well
 - Challenges encountered
 - Time spent
 - Improvements for next time
 
 ### Verify Completeness
+
 - [ ] All files from spec created
 - [ ] All scripts tested and working
 - [ ] All documentation readable and accurate
@@ -433,4 +459,4 @@ Add learnings to `IMPLEMENTATION_LOG.md`:
 
 ---
 
-*"The structure is complete. The Nexus stands ready. En Taro Tassadar!"*
+_"The structure is complete. The Nexus stands ready. En Taro Tassadar!"_

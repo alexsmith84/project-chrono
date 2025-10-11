@@ -1,6 +1,6 @@
 # Data Flow Architecture - Project Chrono
 
-*"From edge to core to blockchain. The path of data through the Khala."*
+_"From edge to core to blockchain. The path of data through the Khala."_
 
 ---
 
@@ -114,8 +114,18 @@ This document details how data flows through Project Chrono's architecture, from
 
 ```json
 [
-  { "source": "coinbase", "price": 45120, "volume": 100, "timestamp": "12:00:00" },
-  { "source": "binance", "price": 45125, "volume": 150, "timestamp": "12:00:15" },
+  {
+    "source": "coinbase",
+    "price": 45120,
+    "volume": 100,
+    "timestamp": "12:00:00"
+  },
+  {
+    "source": "binance",
+    "price": 45125,
+    "volume": 150,
+    "timestamp": "12:00:15"
+  },
   { "source": "kraken", "price": 45118, "volume": 80, "timestamp": "12:00:30" }
 ]
 ```
@@ -355,8 +365,10 @@ struct PriceData {
 - Used for historical analysis, backtesting
 
 ### Archive (Future - S3-compatible)
+
 >
-- >2 years: Compressed archives
+
+- > 2 years: Compressed archives
 - Used for long-term analysis only
 
 ---
@@ -365,16 +377,16 @@ struct PriceData {
 
 ### Latency Targets
 
-| Flow | Target | Typical |
-|------|--------|---------|
-| Worker → API | <100ms | 45ms |
-| API → Database Insert | <50ms | 20ms |
-| Redis Pub/Sub | <10ms | 3ms |
-| WebSocket Push | <50ms | 15ms |
-| Price Aggregation | <10ms | 7ms |
-| FTSO Submission | <5s | 2.5s |
-| API Response (cached) | <50ms | 5ms |
-| API Response (uncached) | <200ms | 85ms |
+| Flow                    | Target | Typical |
+| ----------------------- | ------ | ------- |
+| Worker → API            | <100ms | 45ms    |
+| API → Database Insert   | <50ms  | 20ms    |
+| Redis Pub/Sub           | <10ms  | 3ms     |
+| WebSocket Push          | <50ms  | 15ms    |
+| Price Aggregation       | <10ms  | 7ms     |
+| FTSO Submission         | <5s    | 2.5s    |
+| API Response (cached)   | <50ms  | 5ms     |
+| API Response (uncached) | <200ms | 85ms    |
 
 ### Throughput
 
@@ -385,4 +397,4 @@ struct PriceData {
 
 ---
 
-*"The data flows. The Khala unites all. En Taro Tassadar!"*
+_"The data flows. The Khala unites all. En Taro Tassadar!"_

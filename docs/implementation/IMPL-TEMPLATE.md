@@ -1,6 +1,6 @@
 # Implementation Guide: CHRONO-XXX
 
-*"The path is illuminated. Follow these steps to victory."*
+_"The path is illuminated. Follow these steps to victory."_
 
 ---
 
@@ -93,7 +93,7 @@ touch src/[component]/[language]/[file].{rs,ts}
 // Stub implementation
 export function placeholder() {
   // TODO: Implement in next step
-  throw new Error('Not implemented');
+  throw new Error("Not implemented");
 }
 ```
 
@@ -211,4 +211,4 @@ tail -f logs/chrono-xxx.log
 
 ---
 
-*"The task is complete. The Khala rejoices. En Taro Tassadar!"*
+_"The task is complete. The Khala rejoices. En Taro Tassadar!"_

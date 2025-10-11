@@ -1,6 +1,6 @@
 # Networking & Infrastructure - Project Chrono
 
-*"The warp network connects all. From edge to core to blockchain."*
+_"The warp network connects all. From edge to core to blockchain."_
 
 ---
 
@@ -91,10 +91,10 @@ caddy version
 {
     # Email for Let's Encrypt
     email admin@hayven.xyz
-    
+
     # Enable automatic HTTPS
     auto_https on
-    
+
     # Admin API endpoint (localhost only)
     admin localhost:2019
 }
@@ -103,33 +103,33 @@ caddy version
 nexus.hayven.xyz {
     # Reverse proxy to Bun API server
     reverse_proxy localhost:3000
-    
+
     # Enable compression
     encode gzip zstd
-    
+
     # Access logging
     log {
         output file /var/log/caddy/nexus-access.log
         format json
     }
-    
+
     # Security headers
     header {
         # XSS Protection
         X-Content-Type-Options "nosniff"
         X-Frame-Options "DENY"
         X-XSS-Protection "1; mode=block"
-        
+
         # HSTS (uncomment after testing)
         # Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-        
+
         # Content Security Policy
         Content-Security-Policy "default-src 'self'"
-        
+
         # Remove server info
         -Server
     }
-    
+
     # Rate limiting (100 requests per minute per IP)
     rate_limit {
         zone nexus_api {
@@ -143,14 +143,14 @@ nexus.hayven.xyz {
 # Data Collection Status - Probe (Resource Gathering)
 probe.hayven.xyz {
     reverse_proxy localhost:3001
-    
+
     encode gzip zstd
-    
+
     log {
         output file /var/log/caddy/probe-access.log
         format json
     }
-    
+
     header {
         X-Content-Type-Options "nosniff"
         X-Frame-Options "DENY"
@@ -161,20 +161,20 @@ probe.hayven.xyz {
 # ML Analytics - Forge (Research & Development)
 forge.hayven.xyz {
     reverse_proxy localhost:8080
-    
+
     encode gzip zstd
-    
+
     log {
         output file /var/log/caddy/forge-access.log
         format json
     }
-    
+
     header {
         X-Content-Type-Options "nosniff"
         X-Frame-Options "DENY"
         -Server
     }
-    
+
     # Require API key for analytics endpoint
     @no_api_key {
         not header X-API-Key *
@@ -185,20 +185,20 @@ forge.hayven.xyz {
 # Public API - Gateway (Rate-Limited Portal)
 gateway.hayven.xyz {
     reverse_proxy localhost:3000
-    
+
     encode gzip zstd
-    
+
     log {
         output file /var/log/caddy/gateway-access.log
         format json
     }
-    
+
     header {
         X-Content-Type-Options "nosniff"
         X-Frame-Options "DENY"
         -Server
     }
-    
+
     # Stricter rate limiting for public API (30 req/min)
     rate_limit {
         zone gateway_api {
@@ -207,12 +207,12 @@ gateway.hayven.xyz {
             window 1m
         }
     }
-    
+
     # CORS for public API
     @cors_preflight {
         method OPTIONS
     }
-    
+
     handle @cors_preflight {
         header {
             Access-Control-Allow-Origin "*"
@@ -222,7 +222,7 @@ gateway.hayven.xyz {
         }
         respond 204
     }
-    
+
     header {
         Access-Control-Allow-Origin "*"
         Access-Control-Allow-Methods "GET, POST, OPTIONS"
@@ -233,25 +233,25 @@ gateway.hayven.xyz {
 # Admin Dashboard - Templar (High Command)
 templar.hayven.xyz {
     reverse_proxy localhost:5173
-    
+
     encode gzip zstd
-    
+
     log {
         output file /var/log/caddy/templar-access.log
         format json
     }
-    
+
     header {
         X-Content-Type-Options "nosniff"
         X-Frame-Options "SAMEORIGIN"
         -Server
     }
-    
+
     # Basic auth for admin access (replace with proper auth later)
     basicauth {
         admin $2a$14$[bcrypt_hash_here]
     }
-    
+
     # SvelteKit requires WebSocket support
     @websockets {
         header Connection *Upgrade*
@@ -293,19 +293,19 @@ staging-templar.hayven.xyz {
 
 ## Port Allocation
 
-| Service | Port | Protocol | Access |
-|---------|------|----------|--------|
-| Caddy HTTP | 80 | HTTP | Public (redirects to HTTPS) |
-| Caddy HTTPS | 443 | HTTPS | Public |
-| Caddy Admin | 2019 | HTTP | Localhost only |
-| Bun API Server | 3000 | HTTP | Localhost only |
-| Worker Status | 3001 | HTTP | Localhost only |
-| SvelteKit Dev | 5173 | HTTP | Localhost only |
-| PostgreSQL | 5432 | TCP | Localhost only |
-| Redis | 6379 | TCP | Localhost only |
-| Rust Engine | 8080 | HTTP | Localhost only |
-| Prometheus | 9090 | HTTP | Localhost only |
-| Grafana | 3002 | HTTP | Localhost only |
+| Service        | Port | Protocol | Access                      |
+| -------------- | ---- | -------- | --------------------------- |
+| Caddy HTTP     | 80   | HTTP     | Public (redirects to HTTPS) |
+| Caddy HTTPS    | 443  | HTTPS    | Public                      |
+| Caddy Admin    | 2019 | HTTP     | Localhost only              |
+| Bun API Server | 3000 | HTTP     | Localhost only              |
+| Worker Status  | 3001 | HTTP     | Localhost only              |
+| SvelteKit Dev  | 5173 | HTTP     | Localhost only              |
+| PostgreSQL     | 5432 | TCP      | Localhost only              |
+| Redis          | 6379 | TCP      | Localhost only              |
+| Rust Engine    | 8080 | HTTP     | Localhost only              |
+| Prometheus     | 9090 | HTTP     | Localhost only              |
+| Grafana        | 3002 | HTTP     | Localhost only              |
 
 **Security Note**: Only Caddy (80/443) exposed to internet. All services behind reverse proxy.
 
@@ -426,7 +426,7 @@ Caddy stores certificates at:
 <dict>
     <key>Label</key>
     <string>com.caddyserver.caddy</string>
-    
+
     <key>ProgramArguments</key>
     <array>
         <string>/usr/local/bin/caddy</string>
@@ -436,19 +436,19 @@ Caddy stores certificates at:
         <string>--adapter</string>
         <string>caddyfile</string>
     </array>
-    
+
     <key>RunAtLoad</key>
     <true/>
-    
+
     <key>KeepAlive</key>
     <true/>
-    
+
     <key>StandardOutPath</key>
     <string>/var/log/caddy/stdout.log</string>
-    
+
     <key>StandardErrorPath</key>
     <string>/var/log/caddy/stderr.log</string>
-    
+
     <key>WorkingDirectory</key>
     <string>/usr/local/etc</string>
 </dict>
@@ -535,7 +535,7 @@ curl localhost:2019/metrics
 {
     # Increase max header size for large API responses
     max_header_bytes 16384
-    
+
     # Connection timeouts
     timeouts {
         read_body   10s
@@ -620,4 +620,4 @@ caddy run --config /usr/local/etc/Caddyfile --debug
 
 ---
 
-*"The network is secured. All gateways operational. En Taro Tassadar!"*
+_"The network is secured. All gateways operational. En Taro Tassadar!"_

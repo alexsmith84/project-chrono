@@ -117,13 +117,7 @@
   "gitlens.currentLine.enabled": true,
 
   // Todo Tree settings (if extension is installed)
-  "todo-tree.general.tags": [
-    "TODO",
-    "FIXME",
-    "HACK",
-    "NOTE",
-    "XXX"
-  ],
+  "todo-tree.general.tags": ["TODO", "FIXME", "HACK", "NOTE", "XXX"],
   "todo-tree.highlights.defaultHighlight": {
     "foreground": "black",
     "background": "yellow",

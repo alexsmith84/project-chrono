@@ -1,6 +1,6 @@
 # Contributing to Project Chrono
 
-*"My life for Aiur! Your contributions make the FTSO oracle stronger."*
+_"My life for Aiur! Your contributions make the FTSO oracle stronger."_
 
 Thank you for considering contributing to Project Chrono! This document provides guidelines and instructions for contributing to this project.
 
@@ -231,7 +231,7 @@ pub fn calculate_weighted_median(prices: Vec<(f64, f64)>) -> Option<f64> {
  */
 async function fetchPrice(
   exchange: ExchangeId,
-  symbol: TradingPair
+  symbol: TradingPair,
 ): Promise<PriceData> {
   // Implementation...
 }
@@ -383,6 +383,7 @@ Use the bug report template and include:
 **Title:** Price aggregation fails with empty data sources
 
 **Steps to reproduce:**
+
 1. Start oracle with no exchange connections
 2. Wait for aggregation cycle
 3. Observe error in logs
@@ -391,6 +392,7 @@ Use the bug report template and include:
 **Actual:** Panic with stack trace
 
 **Environment:**
+
 - macOS 14.2
 - Rust 1.75.0
 - Project Chrono v0.2.0
@@ -491,6 +493,6 @@ Contributors will be:
 
 ---
 
-*"En Taro Tassadar! Together we build the future of FTSO oracles."*
+_"En Taro Tassadar! Together we build the future of FTSO oracles."_
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

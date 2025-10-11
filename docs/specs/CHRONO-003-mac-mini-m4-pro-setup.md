@@ -1,6 +1,6 @@
 # CHRONO-003: Mac Mini M4 Pro Setup
 
-*"Constructing the Nexus. All systems shall be operational."*
+_"Constructing the Nexus. All systems shall be operational."_
 
 ---
 
@@ -45,6 +45,7 @@ Project Chrono requires a fully configured development environment on the Mac Mi
 The Mac Mini M4 Pro serves as the primary development and eventually production environment for Project Chrono. All components run natively on macOS to maximize performance on the ARM64 architecture.
 
 **Stack Architecture**:
+
 - **Systems Layer**: Rust for high-performance oracle logic, data processing
 - **Application Layer**: Bun/TypeScript for API server, workers, dashboard
 - **Data Layer**: PostgreSQL with TimescaleDB for time-series data, Redis for caching
@@ -84,6 +85,7 @@ The Mac Mini M4 Pro serves as the primary development and eventually production 
 **Main Setup Script**: `scripts/helpers/dev-setup-auto.sh`
 
 **Key Features**:
+
 - Non-interactive automated installation
 - Idempotent (safe to re-run)
 - Color-coded progress output
@@ -109,6 +111,7 @@ The Mac Mini M4 Pro serves as the primary development and eventually production 
 ### Shell Configuration Structure
 
 **Modular Zsh Integration**:
+
 - `~/.config/zsh/configs/tools/bun.zsh` - Bun runtime configuration
 - `~/.config/zsh/configs/tools/rust.zsh` - Rust/Cargo configuration
 - `~/.config/zsh/configs/tools/postgresql.zsh` - PostgreSQL with convenience aliases
@@ -119,6 +122,7 @@ The Mac Mini M4 Pro serves as the primary development and eventually production 
 ### Database Configuration
 
 **PostgreSQL Setup**:
+
 - Version: 16.10 (arm64)
 - Database: `project_chrono_dev`
 - Extensions: TimescaleDB (optional, for time-series optimization)
@@ -126,6 +130,7 @@ The Mac Mini M4 Pro serves as the primary development and eventually production 
 - Path: `/opt/homebrew/opt/postgresql@16/bin`
 
 **Redis Setup**:
+
 - Version: 8.2.2
 - Default port: 6379
 - Service: Managed by Homebrew services
@@ -134,6 +139,7 @@ The Mac Mini M4 Pro serves as the primary development and eventually production 
 ### Shell Aliases Created
 
 **PostgreSQL aliases** (`~/.config/zsh/configs/tools/postgresql.zsh`):
+
 ```bash
 pg_start       # Start PostgreSQL service
 pg_stop        # Stop PostgreSQL service
@@ -142,6 +148,7 @@ pg_status      # Show PostgreSQL service status
 ```
 
 **Redis aliases** (`~/.config/zsh/configs/tools/redis.zsh`):
+
 ```bash
 redis_start    # Start Redis service
 redis_stop     # Stop Redis service
@@ -292,6 +299,7 @@ See `docs/tests/CHRONO-003-tests.md` for verification steps
 "As a developer, I should be able to run `./scripts/helpers/dev-setup-auto.sh` on a fresh Mac Mini M4 Pro and have a fully working development environment in under 30 minutes, with all tools properly configured and accessible in my shell."
 
 **Verification**:
+
 ```bash
 # All these commands should work without errors:
 rustc --version
@@ -342,4 +350,4 @@ redis_status # Custom alias
 
 ---
 
-*"The Nexus is constructed. All warriors may now report for duty. En Taro Tassadar!"*
+_"The Nexus is constructed. All warriors may now report for duty. En Taro Tassadar!"_

@@ -1,6 +1,6 @@
 # P&L Model Guide - Project Chrono
 
-*"We require more minerals... and accurate financial projections!"*
+_"We require more minerals... and accurate financial projections!"_
 
 ---
 
@@ -18,13 +18,13 @@ This guide explains how to build the P&L (Profit & Loss) projection model for Pr
 
 ### Sheet 1: Assumptions
 
-| Parameter | Value | Notes |
-|-----------|-------|-------|
-| **Current FLR Price** | $0.021 | Update monthly |
-| **Monthly Infrastructure Cost** | $70-220 | MVP phase |
-| **Delegation Fee %** | 15% | Our fee from delegators |
-| **FTSO Reward Rate** | 2-5% APY | Network average |
-| **Target Delegation** | 100M FLR | Long-term goal |
+| Parameter                       | Value    | Notes                   |
+| ------------------------------- | -------- | ----------------------- |
+| **Current FLR Price**           | $0.021   | Update monthly          |
+| **Monthly Infrastructure Cost** | $70-220  | MVP phase               |
+| **Delegation Fee %**            | 15%      | Our fee from delegators |
+| **FTSO Reward Rate**            | 2-5% APY | Network average         |
+| **Target Delegation**           | 100M FLR | Long-term goal          |
 
 ### Sheet 2: Revenue Projections
 
@@ -50,15 +50,15 @@ Monthly Revenue = Our Fee / 12
 
 **Monthly Costs:**
 
-| Item | MVP | Growth | Scale |
-|------|-----|--------|-------|
-| Mac Mini (power) | $15 | $15 | $30 (2 units) |
-| Internet | $50 | $50 | $50 |
-| Domain & SSL | $5 | $5 | $5 |
-| Cloudflare Workers | $0 | $0 | $5 |
-| API Keys (exchanges) | $0 | $0 | $50 |
-| Monitoring | $0 | $0 | $0 (self-hosted) |
-| **Total** | **$70** | **$70** | **$140** |
+| Item                 | MVP     | Growth  | Scale            |
+| -------------------- | ------- | ------- | ---------------- |
+| Mac Mini (power)     | $15     | $15     | $30 (2 units)    |
+| Internet             | $50     | $50     | $50              |
+| Domain & SSL         | $5      | $5      | $5               |
+| Cloudflare Workers   | $0      | $0      | $5               |
+| API Keys (exchanges) | $0      | $0      | $50              |
+| Monitoring           | $0      | $0      | $0 (self-hosted) |
+| **Total**            | **$70** | **$70** | **$140**         |
 
 **Growth Phase** (add):
 
@@ -83,11 +83,11 @@ Break-Even Delegation (FLR) = Monthly Costs / (FLR Price Ã— Annual Reward Rate Ã
 **Example Calculations:**
 
 | FLR Price | Monthly Cost | Break-Even Delegation |
-|-----------|-------------|----------------------|
-| $0.021 | $70 | ~90M FLR |
-| $0.05 | $70 | ~38M FLR |
-| $0.10 | $70 | ~19M FLR |
-| $0.50 | $70 | ~4M FLR |
+| --------- | ------------ | --------------------- |
+| $0.021    | $70          | ~90M FLR              |
+| $0.05     | $70          | ~38M FLR              |
+| $0.10     | $70          | ~19M FLR              |
+| $0.50     | $70          | ~4M FLR               |
 
 ### Sheet 5: Scenario Analysis
 
@@ -126,4 +126,4 @@ Break-Even Delegation (FLR) = Monthly Costs / (FLR Price Ã— Annual Reward Rate Ã
 
 ---
 
-*"Resources calculated. Strategy optimized."*
+_"Resources calculated. Strategy optimized."_

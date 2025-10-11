@@ -1,6 +1,6 @@
 # Production Deployment Setup - Project Chrono
 
-*"Construct the Nexus with precision. Every component must align."*
+_"Construct the Nexus with precision. Every component must align."_
 
 ---
 
@@ -372,9 +372,9 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'project-chrono'
+  - job_name: "project-chrono"
     static_configs:
-      - targets: ['localhost:3000']
+      - targets: ["localhost:3000"]
 ```
 
 **Start Prometheus:**
@@ -591,4 +591,4 @@ df -h
 
 ---
 
-*"The Nexus is complete. Now it serves. En Taro Tassadar!"*
+_"The Nexus is complete. Now it serves. En Taro Tassadar!"_

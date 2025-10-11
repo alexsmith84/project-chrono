@@ -1,6 +1,6 @@
 # System Design - Project Chrono
 
-*"The architecture of the Protoss, refined over millennia. Efficiency. Power. Unity."*
+_"The architecture of the Protoss, refined over millennia. Efficiency. Power. Unity."_
 
 ---
 
@@ -281,15 +281,15 @@ Frontend (SvelteKit Dashboard)
 
 ## Technology Decision Matrix
 
-| Component | Technology | Alternative | Why Chosen |
-|-----------|------------|-------------|------------|
-| Core Processing | Rust | Go, C++ | Memory safety + speed |
-| API Server | Bun | Node.js, Deno | 3x faster, native TS |
-| Database | PostgreSQL + TimescaleDB | ClickHouse | Better tooling |
-| Cache | Redis | Memcached | Pub/sub + persistence |
-| Frontend | SvelteKit | React, Vue | Small bundle, fast |
-| Edge | Cloudflare Workers | AWS Lambda@Edge | Better DX, lower cost |
+| Component       | Technology               | Alternative     | Why Chosen            |
+| --------------- | ------------------------ | --------------- | --------------------- |
+| Core Processing | Rust                     | Go, C++         | Memory safety + speed |
+| API Server      | Bun                      | Node.js, Deno   | 3x faster, native TS  |
+| Database        | PostgreSQL + TimescaleDB | ClickHouse      | Better tooling        |
+| Cache           | Redis                    | Memcached       | Pub/sub + persistence |
+| Frontend        | SvelteKit                | React, Vue      | Small bundle, fast    |
+| Edge            | Cloudflare Workers       | AWS Lambda@Edge | Better DX, lower cost |
 
 ---
 
-*"The architecture stands complete. Purity of form. Purity of function. En Taro Tassadar!"*
+_"The architecture stands complete. Purity of form. Purity of function. En Taro Tassadar!"_

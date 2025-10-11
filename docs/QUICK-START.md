@@ -1,6 +1,6 @@
 # Project Chrono - Quick Start Guide
 
-*"Warp in the Nexus. Construction begins now."*
+_"Warp in the Nexus. Construction begins now."_
 
 ---
 
@@ -84,7 +84,7 @@ cat PROJECT-CHRONO-BLUEPRINT.md
 claude-code
 
 # Give context
-"I'm working on Project Chrono. Read PROJECT-CHRONO-BLUEPRINT.md 
+"I'm working on Project Chrono. Read PROJECT-CHRONO-BLUEPRINT.md
 and docs/specs/CHRONO-XXX-*.md for context. Let's implement this ticket."
 ```
 
@@ -144,4 +144,4 @@ git log --oneline -10
 
 ---
 
-*"The archives are open. Knowledge awaits. En Taro Tassadar!"*
+_"The archives are open. Knowledge awaits. En Taro Tassadar!"_

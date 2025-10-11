@@ -1,6 +1,6 @@
 # 🚀 PROJECT CHRONO - FTSO Oracle
 
-*"Chrono boost activated! Time is a flat circle, but prices are multidimensional."*
+_"Chrono boost activated! Time is a flat circle, but prices are multidimensional."_
 
 ## 🎮 StarCraft 2 Themed FTSO Oracle
 
@@ -24,24 +24,24 @@ graph TB
         API1[Exchange APIs]
         API2[DEX Aggregators]
     end
-    
+
     subgraph "Core Processing (Mac Mini M4 Pro)"
         RE[Rust Engine]
         TS[TypeScript API]
         DB[(PostgreSQL + TimescaleDB)]
         RD[(Redis Cache)]
     end
-    
+
     subgraph "Blockchain"
         FL[Flare Network]
         SC[Smart Contracts]
     end
-    
+
     subgraph "Frontend"
         SV[SvelteKit UI]
         WS[WebSocket]
     end
-    
+
     CF --> RE
     API1 --> CF
     API2 --> CF
@@ -139,6 +139,7 @@ graph TB
    ```
 
 **For detailed setup instructions, see:**
+
 - Automated Setup: `docs/implementation/CHRONO-003-guide.md`
 - Manual Setup: `docs/setup/mac-mini-setup.md` (production hardening)
 - Verification: `docs/tests/CHRONO-003-tests.md`
@@ -155,13 +156,13 @@ When deployed, Project Chrono will be accessible at:
 
 ## 📊 Performance Targets
 
-| Component | Performance Target | Technology |
-|-----------|-------------------|------------|
-| Price Aggregation | <10ms calculation | Rust |
-| API Response | <200ms (95th percentile) | TypeScript/Bun |
-| WebSocket Updates | <50ms latency | Redis pub/sub |
-| Database Queries | <50ms complex queries | PostgreSQL + TimescaleDB |
-| System Uptime | 99.9% availability | Multi-layer redundancy |
+| Component         | Performance Target       | Technology               |
+| ----------------- | ------------------------ | ------------------------ |
+| Price Aggregation | <10ms calculation        | Rust                     |
+| API Response      | <200ms (95th percentile) | TypeScript/Bun           |
+| WebSocket Updates | <50ms latency            | Redis pub/sub            |
+| Database Queries  | <50ms complex queries    | PostgreSQL + TimescaleDB |
+| System Uptime     | 99.9% availability       | Multi-layer redundancy   |
 
 ## 🏷️ Team Composition (StarCraft Themed)
 
@@ -184,7 +185,7 @@ When deployed, Project Chrono will be accessible at:
 ### Supply Cost Estimation (StarCraft Style)
 
 - **1 Supply** (XS) - Marine/Zealot level tasks
-- **2 Supply** (S) - Stalker/Marauder level features  
+- **2 Supply** (S) - Stalker/Marauder level features
 - **3 Supply** (M) - High Templar/Ghost level complexity
 - **5 Supply** (L) - Colossus/Thor level major systems
 - **8 Supply** (XL) - Carrier/Battlecruiser level epic implementations
@@ -250,6 +251,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-*En Taro Tassadar! For Aiur... and accurate price feeds!* ⚡
+_En Taro Tassadar! For Aiur... and accurate price feeds!_ ⚡
 
 **May the Khala guide your coding journey!**

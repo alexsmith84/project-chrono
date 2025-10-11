@@ -1,6 +1,6 @@
 # Mac Mini M4 Pro Setup Guide - Project Chrono
 
-*"Constructing the Nexus. This is our command center."*
+_"Constructing the Nexus. This is our command center."_
 
 ---
 
@@ -34,6 +34,7 @@ cd project-chrono
 ```
 
 **What it installs**:
+
 - Homebrew (if not present)
 - Rust via rustup (stable toolchain)
 - Bun runtime
@@ -44,6 +45,7 @@ cd project-chrono
 - Configures services to auto-start
 
 **Documentation**:
+
 - Specification: `docs/specs/CHRONO-003-mac-mini-m4-pro-setup.md`
 - Implementation Guide: `docs/implementation/CHRONO-003-guide.md`
 - Test Verification: `docs/tests/CHRONO-003-tests.md`
@@ -436,19 +438,19 @@ scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
-  
+
   - job_name: 'caddy'
     static_configs:
       - targets: ['localhost:2019']
-  
+
   - job_name: 'rust-engine'
     static_configs:
       - targets: ['localhost:8080']
-  
+
   - job_name: 'bun-api'
     static_configs:
       - targets: ['localhost:3000']
-  
+
   - job_name: 'node-exporter'
     static_configs:
       - targets: ['localhost:9100']
@@ -769,4 +771,4 @@ brew cleanup
 
 ---
 
-*"The Nexus is operational. All systems green. En Taro Tassadar!"*
+_"The Nexus is operational. All systems green. En Taro Tassadar!"_

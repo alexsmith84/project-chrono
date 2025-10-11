@@ -33,4 +33,4 @@ Read the entire spec before starting implementation. The spec provides:
 
 ---
 
-*"The Khala provides clarity. Follow the specification illuminated."*
+_"The Khala provides clarity. Follow the specification illuminated."_

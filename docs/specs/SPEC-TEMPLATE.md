@@ -1,6 +1,6 @@
 # CHRONO-XXX: [Feature Title]
 
-*"[StarCraft-themed flavor text related to this feature]"*
+_"[StarCraft-themed flavor text related to this feature]"_
 
 ---
 
@@ -130,7 +130,7 @@ CREATE INDEX idx_example_field1 ON example(field1);
 ```yaml
 # Environment variables or config needed
 EXAMPLE_API_KEY: "required"
-EXAMPLE_TIMEOUT: 5000  # milliseconds
+EXAMPLE_TIMEOUT: 5000 # milliseconds
 ```
 
 ---
@@ -264,4 +264,4 @@ See `docs/tests/CHRONO-XXX-tests.md` for performance test specifications.
 
 ---
 
-*"The Khala provides clarity. Follow the path illuminated."*
+_"The Khala provides clarity. Follow the path illuminated."_
