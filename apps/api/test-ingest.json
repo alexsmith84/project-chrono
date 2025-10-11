@@ -1,0 +1,20 @@
+{
+  "worker_id": "test-worker",
+  "timestamp": "2025-10-10T04:00:00Z",
+  "feeds": [
+    {
+      "symbol": "BTC/USD",
+      "price": "67234.56",
+      "volume": "1234.567890",
+      "source": "binance",
+      "timestamp": "2025-10-10T04:00:00Z"
+    },
+    {
+      "symbol": "ETH/USD",
+      "price": "2678.90",
+      "volume": "5678.901234",
+      "source": "binance",
+      "timestamp": "2025-10-10T04:00:00Z"
+    }
+  ]
+}

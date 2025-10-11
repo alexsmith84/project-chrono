@@ -4,6 +4,20 @@
 
 ---
 
+## ⚠️ Before Starting ANY Work - Critical Checklist
+
+**Stop and verify BEFORE coding:**
+
+- [ ] Is there an open PR on my current branch? → **Merge it first, don't continue**
+- [ ] Am I on the correct base branch? (`forge` for features, `khala` for hotfixes)
+- [ ] Do I have a CHRONO ticket number for this work?
+- [ ] Is this a NEW feature (different CHRONO-XXX)? → **Create new branch from updated base**
+- [ ] Have I read the complete spec for this ticket?
+
+**Golden Rule: One ticket = One branch = One PR = One merge BEFORE starting next ticket**
+
+---
+
 ## Quick Start
 
 1. **Pick a ticket** from [Project Board](https://github.com/users/alexsmith84/projects/5)
@@ -12,7 +26,7 @@
 4. **Implement** following `docs/implementation/CHRONO-XXX-guide.md`
 5. **Run tests**: `./scripts/helpers/run-tests.sh`
 6. **Commit and push** changes
-7. **Create PR** to `forge`
+7. **Create PR** to `forge` ← **DO THIS BEFORE STARTING NEXT TICKET**
 8. **Review and merge**
 9. **Update log** in `IMPLEMENTATION_LOG.md`
 
@@ -139,7 +153,27 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ---
 
-### 6. Create Pull Request
+### 6. Create Pull Request ⚠️ CRITICAL CHECKPOINT
+
+**STOP HERE BEFORE STARTING ANY NEW WORK**
+
+This is a **mandatory checkpoint**. You must create a PR for your current work BEFORE starting the next feature or task.
+
+#### Why This Matters
+
+- **One feature = One branch = One PR**
+- Different CHRONO numbers = Different PRs
+- Even if features are related, they should be separate PRs
+- Never continue working after completing a feature without creating a PR first
+
+#### PR Creation Checklist
+
+- [ ] Current feature is complete and tested
+- [ ] All commits are pushed to branch
+- [ ] I have NOT started working on the next feature yet
+- [ ] If next task has a different CHRONO-XXX number → It needs a separate PR
+
+#### Create the PR
 
 ```bash
 # Push feature branch
@@ -159,6 +193,36 @@ gh pr create --base forge \
 - Screenshots (if UI changes)
 
 **PR template auto-fills** - complete all sections
+
+#### After Creating PR
+
+**DO NOT START NEW WORK YET**
+
+- Wait for review and approval
+- Address any feedback
+- Get PR merged to base branch
+- Pull updated base branch locally
+- **ONLY THEN** start next feature on a fresh branch
+
+**Example: Wrong vs Right**
+
+❌ **WRONG**:
+```bash
+git commit -m "Complete CHRONO-007"
+# Immediately start coding CHRONO-008 on same branch
+```
+
+✅ **RIGHT**:
+```bash
+git commit -m "Complete CHRONO-007"
+git push
+gh pr create --base forge  # CREATE PR NOW
+# Wait for merge
+git checkout forge
+git pull
+git checkout -b warp-in/CHRONO-008-websocket  # Fresh branch
+# NOW start CHRONO-008
+```
 
 ---
 
