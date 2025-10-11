@@ -16,29 +16,26 @@
  *   { "type": "error", "message": "..." }
  */
 
-import { ServerWebSocket } from "bun";
-import {
-  subscribeToPriceUpdates,
-  type PriceUpdateMessage,
-} from "../cache/pubsub";
-import { logger } from "../utils/logger";
-import { config } from "../utils/config";
+import { ServerWebSocket } from 'bun';
+import { subscribeToPriceUpdates, type PriceUpdateMessage } from '../cache/pubsub';
+import { logger } from '../utils/logger';
+import { config } from '../utils/config';
 
 /**
  * Client message types
  */
 interface SubscribeMessage {
-  type: "subscribe";
+  type: 'subscribe';
   symbols: string[];
 }
 
 interface UnsubscribeMessage {
-  type: "unsubscribe";
+  type: 'unsubscribe';
   symbols: string[];
 }
 
 interface PingMessage {
-  type: "ping";
+  type: 'ping';
 }
 
 type ClientMessage = SubscribeMessage | UnsubscribeMessage | PingMessage;
@@ -47,22 +44,22 @@ type ClientMessage = SubscribeMessage | UnsubscribeMessage | PingMessage;
  * Server message types
  */
 interface SubscribedMessage {
-  type: "subscribed";
+  type: 'subscribed';
   symbols: string[];
 }
 
 interface UnsubscribedMessage {
-  type: "unsubscribed";
+  type: 'unsubscribed';
   symbols: string[];
 }
 
 interface PongMessage {
-  type: "pong";
+  type: 'pong';
   timestamp: string;
 }
 
 interface ErrorMessage {
-  type: "error";
+  type: 'error';
   message: string;
 }
 
@@ -139,7 +136,7 @@ async function handleOpen(ws: ServerWebSocket<ConnectionData>): Promise<void> {
 
   // Add to connection manager
   if (!connectionManager.add(ws)) {
-    ws.close(1008, "Connection limit reached");
+    ws.close(1008, 'Connection limit reached');
     return;
   }
 
@@ -148,52 +145,45 @@ async function handleOpen(ws: ServerWebSocket<ConnectionData>): Promise<void> {
       connection_id: id,
       total_connections: connectionManager.count(),
     },
-    "WebSocket connection opened",
+    'WebSocket connection opened'
   );
 
   // Start heartbeat
   ws.data.heartbeatInterval = setInterval(() => {
     try {
       const message: PongMessage = {
-        type: "pong",
+        type: 'pong',
         timestamp: new Date().toISOString(),
       };
       ws.send(JSON.stringify(message));
     } catch (error) {
-      logger.error(
-        { connection_id: id, err: error },
-        "Failed to send heartbeat",
-      );
+      logger.error({ connection_id: id, err: error }, 'Failed to send heartbeat');
     }
   }, config.WS_HEARTBEAT_INTERVAL);
 }
 
 async function handleMessage(
   ws: ServerWebSocket<ConnectionData>,
-  message: string | Buffer,
+  message: string | Buffer
 ): Promise<void> {
   const { id } = ws.data;
 
   try {
-    const messageStr =
-      typeof message === "string" ? message : message.toString("utf-8");
+    const messageStr = typeof message === 'string' ? message : message.toString('utf-8');
     const parsed = JSON.parse(messageStr) as ClientMessage;
 
-    logger.debug(
-      { connection_id: id, message: parsed },
-      "Received WebSocket message",
-    );
+    logger.debug({ connection_id: id, message: parsed }, 'Received WebSocket message');
 
     switch (parsed.type) {
-      case "subscribe":
+      case 'subscribe':
         await handleSubscribe(ws, parsed.symbols);
         break;
 
-      case "unsubscribe":
+      case 'unsubscribe':
         await handleUnsubscribe(ws, parsed.symbols);
         break;
 
-      case "ping":
+      case 'ping':
         await handlePing(ws);
         break;
 
@@ -201,18 +191,15 @@ async function handleMessage(
         sendError(ws, `Unknown message type: ${(parsed as any).type}`);
     }
   } catch (error) {
-    logger.error(
-      { connection_id: id, err: error },
-      "Failed to handle WebSocket message",
-    );
-    sendError(ws, "Invalid message format");
+    logger.error({ connection_id: id, err: error }, 'Failed to handle WebSocket message');
+    sendError(ws, 'Invalid message format');
   }
 }
 
 async function handleClose(
   ws: ServerWebSocket<ConnectionData>,
   code: number,
-  reason: string,
+  reason: string
 ): Promise<void> {
   const { id, unsubscribe, heartbeatInterval } = ws.data;
 
@@ -236,13 +223,13 @@ async function handleClose(
       reason,
       total_connections: connectionManager.count(),
     },
-    "WebSocket connection closed",
+    'WebSocket connection closed'
   );
 }
 
 async function handleError(
   ws: ServerWebSocket<ConnectionData>,
-  error: Error,
+  error: Error
 ): Promise<void> {
   const { id } = ws.data;
 
@@ -251,7 +238,7 @@ async function handleError(
       connection_id: id,
       err: error,
     },
-    "WebSocket error",
+    'WebSocket error'
   );
 }
 
@@ -260,7 +247,7 @@ async function handleError(
  */
 async function handleSubscribe(
   ws: ServerWebSocket<ConnectionData>,
-  symbols: string[],
+  symbols: string[]
 ): Promise<void> {
   const { id, subscribedSymbols } = ws.data;
 
@@ -269,7 +256,7 @@ async function handleSubscribe(
   const validSymbols = symbols.filter((s) => symbolRegex.test(s));
 
   if (validSymbols.length === 0) {
-    sendError(ws, "No valid symbols provided. Format: BTC/USD, ETH/USD, etc.");
+    sendError(ws, 'No valid symbols provided. Format: BTC/USD, ETH/USD, etc.');
     return;
   }
 
@@ -291,10 +278,10 @@ async function handleSubscribe(
       } catch (error) {
         logger.error(
           { connection_id: id, err: error },
-          "Failed to send price update to client",
+          'Failed to send price update to client'
         );
       }
-    },
+    }
   );
 
   logger.info(
@@ -303,12 +290,12 @@ async function handleSubscribe(
       symbols: validSymbols,
       total_subscribed: subscribedSymbols.size,
     },
-    "Client subscribed to symbols",
+    'Client subscribed to symbols'
   );
 
   // Send confirmation
   const response: SubscribedMessage = {
-    type: "subscribed",
+    type: 'subscribed',
     symbols: validSymbols,
   };
   ws.send(JSON.stringify(response));
@@ -316,7 +303,7 @@ async function handleSubscribe(
 
 async function handleUnsubscribe(
   ws: ServerWebSocket<ConnectionData>,
-  symbols: string[],
+  symbols: string[]
 ): Promise<void> {
   const { id, subscribedSymbols } = ws.data;
 
@@ -344,10 +331,10 @@ async function handleUnsubscribe(
         } catch (error) {
           logger.error(
             { connection_id: id, err: error },
-            "Failed to send price update to client",
+            'Failed to send price update to client'
           );
         }
-      },
+      }
     );
   }
 
@@ -357,12 +344,12 @@ async function handleUnsubscribe(
       symbols,
       remaining_subscribed: subscribedSymbols.size,
     },
-    "Client unsubscribed from symbols",
+    'Client unsubscribed from symbols'
   );
 
   // Send confirmation
   const response: UnsubscribedMessage = {
-    type: "unsubscribed",
+    type: 'unsubscribed',
     symbols,
   };
   ws.send(JSON.stringify(response));
@@ -370,7 +357,7 @@ async function handleUnsubscribe(
 
 async function handlePing(ws: ServerWebSocket<ConnectionData>): Promise<void> {
   const response: PongMessage = {
-    type: "pong",
+    type: 'pong',
     timestamp: new Date().toISOString(),
   };
   ws.send(JSON.stringify(response));
@@ -378,7 +365,7 @@ async function handlePing(ws: ServerWebSocket<ConnectionData>): Promise<void> {
 
 function sendError(ws: ServerWebSocket<ConnectionData>, message: string): void {
   const response: ErrorMessage = {
-    type: "error",
+    type: 'error',
     message,
   };
   ws.send(JSON.stringify(response));

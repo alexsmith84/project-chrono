@@ -3,13 +3,11 @@
  * Validates and provides type-safe access to environment variables
  */
 
-import { z } from "zod";
+import { z } from 'zod';
 
 const configSchema = z.object({
   // Server
-  NODE_ENV: z
-    .enum(["development", "production", "test"])
-    .default("development"),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(3000),
 
   // Database
@@ -22,9 +20,9 @@ const configSchema = z.object({
   REDIS_CACHE_TTL: z.coerce.number().default(60),
 
   // Authentication
-  INTERNAL_API_KEYS: z.string().transform((val) => val.split(",")),
-  PUBLIC_API_KEYS: z.string().transform((val) => val.split(",")),
-  ADMIN_API_KEYS: z.string().transform((val) => val.split(",")),
+  INTERNAL_API_KEYS: z.string().transform((val) => val.split(',')),
+  PUBLIC_API_KEYS: z.string().transform((val) => val.split(',')),
+  ADMIN_API_KEYS: z.string().transform((val) => val.split(',')),
 
   // Rate Limits
   RATE_LIMIT_INTERNAL: z.coerce.number().default(5000),
@@ -33,9 +31,7 @@ const configSchema = z.object({
   RATE_LIMIT_ADMIN: z.coerce.number().default(0), // 0 = unlimited
 
   // Observability
-  LOG_LEVEL: z
-    .enum(["trace", "debug", "info", "warn", "error", "fatal"])
-    .default("info"),
+  LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
   METRICS_ENABLED: z.coerce.boolean().default(true),
 
   // WebSocket
@@ -53,9 +49,9 @@ export function loadConfig(): Config {
     return configSchema.parse(process.env);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error("❌ Invalid configuration:");
+      console.error('❌ Invalid configuration:');
       error.errors.forEach((err) => {
-        console.error(`  - ${err.path.join(".")}: ${err.message}`);
+        console.error(`  - ${err.path.join('.')}: ${err.message}`);
       });
       process.exit(1);
     }

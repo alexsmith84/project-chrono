@@ -3,37 +3,35 @@
  * Optimized for high-throughput ingestion and low-latency reads
  */
 
-import { sql } from "../client";
-import type { PriceFeed, PriceFeedInsert } from "../types";
-import { DatabaseError } from "../client";
+import { sql } from '../client';
+import type { PriceFeed, PriceFeedInsert } from '../types';
+import { DatabaseError } from '../client';
 
 /**
  * Insert price feeds in batch
  * Maximum 100 feeds per batch for optimal performance
  */
-export async function insertPriceFeeds(
-  feeds: PriceFeedInsert[],
-): Promise<number> {
+export async function insertPriceFeeds(feeds: PriceFeedInsert[]): Promise<number> {
   try {
     if (feeds.length === 0) {
       return 0;
     }
 
     if (feeds.length > 100) {
-      throw new DatabaseError("Batch size exceeds maximum of 100 feeds");
+      throw new DatabaseError('Batch size exceeds maximum of 100 feeds');
     }
 
     const result = await sql`
-      INSERT INTO price_feeds ${sql(feeds, "symbol", "price", "volume", "timestamp", "source", "worker_id", "metadata")}
+      INSERT INTO price_feeds ${sql(feeds, 'symbol', 'price', 'volume', 'timestamp', 'source', 'worker_id', 'metadata')}
       RETURNING id
     `;
 
     return result.count;
   } catch (error) {
     throw new DatabaseError(
-      "Failed to insert price feeds",
+      'Failed to insert price feeds',
       `INSERT price_feeds (batch of ${feeds.length})`,
-      error as Error,
+      error as Error
     );
   }
 }
@@ -42,9 +40,7 @@ export async function insertPriceFeeds(
  * Get latest price for a symbol
  * Uses index on (symbol, timestamp DESC) for fast lookup
  */
-export async function getLatestPrice(
-  symbol: string,
-): Promise<PriceFeed | null> {
+export async function getLatestPrice(symbol: string): Promise<PriceFeed | null> {
   try {
     const result = await sql<PriceFeed[]>`
       SELECT *
@@ -58,8 +54,8 @@ export async function getLatestPrice(
   } catch (error) {
     throw new DatabaseError(
       `Failed to get latest price for ${symbol}`,
-      "SELECT latest price",
-      error as Error,
+      'SELECT latest price',
+      error as Error
     );
   }
 }
@@ -85,8 +81,8 @@ export async function getLatestPrices(symbols: string[]): Promise<PriceFeed[]> {
   } catch (error) {
     throw new DatabaseError(
       `Failed to get latest prices for ${symbols.length} symbols`,
-      "SELECT latest prices",
-      error as Error,
+      'SELECT latest prices',
+      error as Error
     );
   }
 }
@@ -106,7 +102,7 @@ export async function getPriceRange(params: {
     const { symbol, from, to, source, limit = 1000 } = params;
 
     if (limit > 10000) {
-      throw new DatabaseError("Limit exceeds maximum of 10000");
+      throw new DatabaseError('Limit exceeds maximum of 10000');
     }
 
     const result = await sql<PriceFeed[]>`
@@ -124,8 +120,8 @@ export async function getPriceRange(params: {
   } catch (error) {
     throw new DatabaseError(
       `Failed to get price range for ${params.symbol}`,
-      "SELECT price range",
-      error as Error,
+      'SELECT price range',
+      error as Error
     );
   }
 }
@@ -185,8 +181,8 @@ export async function getPriceStats(params: {
   } catch (error) {
     throw new DatabaseError(
       `Failed to get price stats for ${params.symbol}`,
-      "SELECT price stats",
-      error as Error,
+      'SELECT price stats',
+      error as Error
     );
   }
 }

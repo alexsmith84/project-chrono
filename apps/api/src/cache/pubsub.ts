@@ -3,9 +3,9 @@
  * Enables horizontal scaling of WebSocket servers
  */
 
-import { redisPubSub, redisPublisher } from "./redis";
-import { logger } from "../utils/logger";
-import type { PriceFeed } from "../db/types";
+import { redisPubSub, redisPublisher } from './redis';
+import { logger } from '../utils/logger';
+import type { PriceFeed } from '../db/types';
 
 /**
  * Pub/sub channel patterns
@@ -19,7 +19,7 @@ export const PubSubChannels = {
  * Price update message format
  */
 export interface PriceUpdateMessage {
-  type: "price_update";
+  type: 'price_update';
   data: {
     symbol: string;
     price: string;
@@ -37,7 +37,7 @@ export interface PriceUpdateMessage {
 export async function publishPriceUpdate(price: PriceFeed): Promise<void> {
   try {
     const message: PriceUpdateMessage = {
-      type: "price_update",
+      type: 'price_update',
       data: {
         symbol: price.symbol,
         price: price.price,
@@ -60,12 +60,12 @@ export async function publishPriceUpdate(price: PriceFeed): Promise<void> {
 
     logger.debug(
       { symbol: price.symbol, channel: symbolChannel },
-      "Published price update",
+      'Published price update'
     );
   } catch (error) {
     logger.error(
       { err: error, symbol: price.symbol },
-      "Failed to publish price update",
+      'Failed to publish price update'
     );
   }
 }
@@ -78,12 +78,9 @@ export async function publishPriceUpdates(prices: PriceFeed[]): Promise<void> {
     const promises = prices.map((price) => publishPriceUpdate(price));
     await Promise.all(promises);
 
-    logger.debug({ count: prices.length }, "Published batch price updates");
+    logger.debug({ count: prices.length }, 'Published batch price updates');
   } catch (error) {
-    logger.error(
-      { err: error, count: prices.length },
-      "Failed to publish batch price updates",
-    );
+    logger.error({ err: error, count: prices.length }, 'Failed to publish batch price updates');
   }
 }
 
@@ -93,7 +90,7 @@ export async function publishPriceUpdates(prices: PriceFeed[]): Promise<void> {
  */
 export async function subscribeToPriceUpdates(
   symbols: string[],
-  callback: (message: PriceUpdateMessage) => void,
+  callback: (message: PriceUpdateMessage) => void
 ): Promise<() => void> {
   const channels = symbols.map((symbol) => PubSubChannels.priceUpdate(symbol));
 
@@ -106,22 +103,19 @@ export async function subscribeToPriceUpdates(
       const parsed = JSON.parse(message) as PriceUpdateMessage;
       callback(parsed);
     } catch (error) {
-      logger.error(
-        { err: error, channel, message },
-        "Failed to parse pub/sub message",
-      );
+      logger.error({ err: error, channel, message }, 'Failed to parse pub/sub message');
     }
   };
 
-  redisPubSub.on("message", messageHandler);
+  redisPubSub.on('message', messageHandler);
 
-  logger.info({ symbols, channels }, "Subscribed to price updates");
+  logger.info({ symbols, channels }, 'Subscribed to price updates');
 
   // Return unsubscribe function
   return async () => {
-    redisPubSub.off("message", messageHandler);
+    redisPubSub.off('message', messageHandler);
     await redisPubSub.unsubscribe(...channels);
-    logger.info({ symbols, channels }, "Unsubscribed from price updates");
+    logger.info({ symbols, channels }, 'Unsubscribed from price updates');
   };
 }
 
@@ -130,7 +124,7 @@ export async function subscribeToPriceUpdates(
  * Returns unsubscribe function
  */
 export async function subscribeToAllPriceUpdates(
-  callback: (message: PriceUpdateMessage) => void,
+  callback: (message: PriceUpdateMessage) => void
 ): Promise<() => void> {
   const channel = PubSubChannels.priceUpdateAll();
 
@@ -143,20 +137,17 @@ export async function subscribeToAllPriceUpdates(
       const parsed = JSON.parse(message) as PriceUpdateMessage;
       callback(parsed);
     } catch (error) {
-      logger.error(
-        { err: error, channel, message },
-        "Failed to parse pub/sub message",
-      );
+      logger.error({ err: error, channel, message }, 'Failed to parse pub/sub message');
     }
   };
 
-  redisPubSub.on("message", messageHandler);
+  redisPubSub.on('message', messageHandler);
 
-  logger.info({ channel }, "Subscribed to all price updates");
+  logger.info({ channel }, 'Subscribed to all price updates');
 
   return async () => {
-    redisPubSub.off("message", messageHandler);
+    redisPubSub.off('message', messageHandler);
     await redisPubSub.unsubscribe(channel);
-    logger.info({ channel }, "Unsubscribed from all price updates");
+    logger.info({ channel }, 'Unsubscribed from all price updates');
   };
 }

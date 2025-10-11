@@ -101,16 +101,10 @@ export interface SystemMetadata {
 /**
  * Insert types (omit auto-generated fields)
  */
-export type PriceFeedInsert = Omit<PriceFeed, "id" | "ingested_at">;
-export type AggregatedPriceInsert = Omit<
-  AggregatedPrice,
-  "id" | "calculated_at"
->;
-export type FTSOSubmissionInsert = Omit<FTSOSubmission, "id">;
-export type DelegatorInsert = Omit<
-  Delegator,
-  "id" | "first_seen" | "last_updated"
->;
-export type DelegationInsert = Omit<Delegation, "id">;
-export type FTSORewardInsert = Omit<FTSOReward, "id">;
-export type SystemMetadataInsert = Omit<SystemMetadata, "updated_at">;
+export type PriceFeedInsert = Omit<PriceFeed, 'id' | 'ingested_at'>;
+export type AggregatedPriceInsert = Omit<AggregatedPrice, 'id' | 'calculated_at'>;
+export type FTSOSubmissionInsert = Omit<FTSOSubmission, 'id'>;
+export type DelegatorInsert = Omit<Delegator, 'id' | 'first_seen' | 'last_updated'>;
+export type DelegationInsert = Omit<Delegation, 'id'>;
+export type FTSORewardInsert = Omit<FTSOReward, 'id'>;
+export type SystemMetadataInsert = Omit<SystemMetadata, 'updated_at'>;

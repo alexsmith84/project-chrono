@@ -4,13 +4,13 @@
  * Receives price feed batches from exchange workers
  */
 
-import { Hono } from "hono";
-import { ingestRequestSchema, type IngestResponse } from "../../schemas/ingest";
-import { insertPriceFeeds } from "../../db/queries/price-feeds";
-import { cacheLatestPrices } from "../../cache/price-cache";
-import { publishPriceUpdates } from "../../cache/pubsub";
-import { logger, logPriceIngestion } from "../../utils/logger";
-import type { PriceFeedInsert } from "../../db/types";
+import { Hono } from 'hono';
+import { ingestRequestSchema, type IngestResponse } from '../../schemas/ingest';
+import { insertPriceFeeds } from '../../db/queries/price-feeds';
+import { cacheLatestPrices } from '../../cache/price-cache';
+import { publishPriceUpdates } from '../../cache/pubsub';
+import { logger, logPriceIngestion } from '../../utils/logger';
+import type { PriceFeedInsert } from '../../db/types';
 
 const app = new Hono();
 
@@ -18,9 +18,9 @@ const app = new Hono();
  * POST /internal/ingest
  * Ingest price feeds from exchange workers
  */
-app.post("/", async (c) => {
+app.post('/', async (c) => {
   const startTime = Date.now();
-  const requestId = c.get("requestId") as string;
+  const requestId = c.get('requestId') as string;
 
   try {
     // Parse and validate request body
@@ -33,12 +33,12 @@ app.post("/", async (c) => {
       return c.json(
         {
           error: {
-            code: "VALIDATION_ERROR",
-            message: `Validation failed: ${firstError.path.join(".")}: ${firstError.message}`,
+            code: 'VALIDATION_ERROR',
+            message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
             details: {
-              field: firstError.path.join("."),
+              field: firstError.path.join('.'),
               errors: validationResult.error.errors.map((e) => ({
-                path: e.path.join("."),
+                path: e.path.join('.'),
                 message: e.message,
               })),
             },
@@ -46,7 +46,7 @@ app.post("/", async (c) => {
           },
           status: 400,
         },
-        400,
+        400
       );
     }
 
@@ -58,7 +58,7 @@ app.post("/", async (c) => {
         feed_count: feeds.length,
         request_id: requestId,
       },
-      "Processing price feed ingestion",
+      'Processing price feed ingestion'
     );
 
     // Convert to database insert format
@@ -93,18 +93,12 @@ app.post("/", async (c) => {
 
     // Cache latest prices (fire and forget - non-blocking)
     cacheLatestPrices(latestFeeds).catch((error) => {
-      logger.warn(
-        { err: error, request_id: requestId },
-        "Failed to cache latest prices",
-      );
+      logger.warn({ err: error, request_id: requestId }, 'Failed to cache latest prices');
     });
 
     // Publish to WebSocket subscribers via Redis pub/sub (fire and forget)
     publishPriceUpdates(latestFeeds).catch((error) => {
-      logger.warn(
-        { err: error, request_id: requestId },
-        "Failed to publish price updates",
-      );
+      logger.warn({ err: error, request_id: requestId }, 'Failed to publish price updates');
     });
 
     const latency = Date.now() - startTime;
@@ -118,7 +112,7 @@ app.post("/", async (c) => {
     });
 
     const response: IngestResponse = {
-      status: "success",
+      status: 'success',
       ingested: insertedCount,
       failed: 0,
       latency_ms: latency,

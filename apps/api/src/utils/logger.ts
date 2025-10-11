@@ -3,8 +3,8 @@
  * Provides request tracing and contextual logging
  */
 
-import pino from "pino";
-import { config } from "./config";
+import pino from 'pino';
+import { config } from './config';
 
 /**
  * Create logger instance with pretty printing in development
@@ -12,13 +12,13 @@ import { config } from "./config";
 export const logger = pino({
   level: config.LOG_LEVEL,
   transport:
-    config.NODE_ENV === "development"
+    config.NODE_ENV === 'development'
       ? {
-          target: "pino-pretty",
+          target: 'pino-pretty',
           options: {
             colorize: true,
-            translateTime: "SYS:standard",
-            ignore: "pid,hostname",
+            translateTime: 'SYS:standard',
+            ignore: 'pid,hostname',
           },
         }
       : undefined,
@@ -40,7 +40,7 @@ export function logPriceIngestion(params: {
   latency_ms: number;
   request_id?: string;
 }) {
-  logger.info(params, "Price feeds ingested");
+  logger.info(params, 'Price feeds ingested');
 }
 
 /**
@@ -54,14 +54,14 @@ export function logApiRequest(params: {
   request_id: string;
   cached?: boolean;
 }) {
-  logger.info(params, "API request completed");
+  logger.info(params, 'API request completed');
 }
 
 /**
  * Log WebSocket event
  */
 export function logWebSocketEvent(params: {
-  event: "connect" | "disconnect" | "subscribe" | "error";
+  event: 'connect' | 'disconnect' | 'subscribe' | 'error';
   client_id?: string;
   symbols?: string[];
   error?: string;
@@ -78,7 +78,7 @@ export function logDatabaseError(error: Error, query?: string) {
       err: error,
       query: query?.substring(0, 200), // Truncate long queries
     },
-    "Database error",
+    'Database error'
   );
 }
 
@@ -91,6 +91,6 @@ export function logCacheError(error: Error, operation: string) {
       err: error,
       operation,
     },
-    "Cache error",
+    'Cache error'
   );
 }

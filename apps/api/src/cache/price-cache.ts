@@ -3,10 +3,10 @@
  * Redis-backed caching for hot data (latest prices, aggregates)
  */
 
-import { redis } from "./redis";
-import { config } from "../utils/config";
-import { CacheError } from "./redis";
-import type { PriceFeed } from "../db/types";
+import { redis } from './redis';
+import { config } from '../utils/config';
+import { CacheError } from './redis';
+import type { PriceFeed } from '../db/types';
 
 /**
  * Cache key patterns
@@ -14,7 +14,7 @@ import type { PriceFeed } from "../db/types";
 export const CacheKeys = {
   latestPrice: (symbol: string) => `latest:${symbol}`,
   priceRange: (symbol: string, from: Date, to: Date, interval?: string) =>
-    `range:${symbol}:${from.getTime()}:${to.getTime()}:${interval || "raw"}`,
+    `range:${symbol}:${from.getTime()}:${to.getTime()}:${interval || 'raw'}`,
   consensus: (symbol: string, timestamp: Date) =>
     `consensus:${symbol}:${timestamp.getTime()}`,
 } as const;
@@ -24,7 +24,7 @@ export const CacheKeys = {
  */
 export async function cacheLatestPrice(
   symbol: string,
-  price: PriceFeed,
+  price: PriceFeed
 ): Promise<void> {
   try {
     const key = CacheKeys.latestPrice(symbol);
@@ -32,8 +32,8 @@ export async function cacheLatestPrice(
   } catch (error) {
     throw new CacheError(
       `Failed to cache latest price for ${symbol}`,
-      "SET latest price",
-      error as Error,
+      'SET latest price',
+      error as Error
     );
   }
 }
@@ -42,7 +42,7 @@ export async function cacheLatestPrice(
  * Get cached latest price for a symbol
  */
 export async function getLatestPriceFromCache(
-  symbol: string,
+  symbol: string
 ): Promise<PriceFeed | null> {
   try {
     const key = CacheKeys.latestPrice(symbol);
@@ -54,7 +54,7 @@ export async function getLatestPriceFromCache(
 
     return JSON.parse(cached, (key, value) => {
       // Parse Date fields
-      if (key === "timestamp" || key === "ingested_at") {
+      if (key === 'timestamp' || key === 'ingested_at') {
         return new Date(value);
       }
       return value;
@@ -62,8 +62,8 @@ export async function getLatestPriceFromCache(
   } catch (error) {
     throw new CacheError(
       `Failed to get cached latest price for ${symbol}`,
-      "GET latest price",
-      error as Error,
+      'GET latest price',
+      error as Error
     );
   }
 }
@@ -88,8 +88,8 @@ export async function cacheLatestPrices(prices: PriceFeed[]): Promise<void> {
   } catch (error) {
     throw new CacheError(
       `Failed to cache ${prices.length} latest prices`,
-      "SETEX batch",
-      error as Error,
+      'SETEX batch',
+      error as Error
     );
   }
 }
@@ -99,7 +99,7 @@ export async function cacheLatestPrices(prices: PriceFeed[]): Promise<void> {
  * Returns a map of symbol → price (null if not cached)
  */
 export async function getLatestPricesFromCache(
-  symbols: string[],
+  symbols: string[]
 ): Promise<Map<string, PriceFeed | null>> {
   try {
     if (symbols.length === 0) {
@@ -118,7 +118,7 @@ export async function getLatestPricesFromCache(
         result.set(symbol, null);
       } else {
         const price = JSON.parse(value, (key, value) => {
-          if (key === "timestamp" || key === "ingested_at") {
+          if (key === 'timestamp' || key === 'ingested_at') {
             return new Date(value);
           }
           return value;
@@ -132,8 +132,8 @@ export async function getLatestPricesFromCache(
   } catch (error) {
     throw new CacheError(
       `Failed to get cached prices for ${symbols.length} symbols`,
-      "MGET latest prices",
-      error as Error,
+      'MGET latest prices',
+      error as Error
     );
   }
 }
@@ -146,7 +146,7 @@ export async function cachePriceRange(
   from: Date,
   to: Date,
   data: unknown[],
-  interval?: string,
+  interval?: string
 ): Promise<void> {
   try {
     const key = CacheKeys.priceRange(symbol, from, to, interval);
@@ -155,8 +155,8 @@ export async function cachePriceRange(
   } catch (error) {
     throw new CacheError(
       `Failed to cache price range for ${symbol}`,
-      "SET price range",
-      error as Error,
+      'SET price range',
+      error as Error
     );
   }
 }
@@ -168,7 +168,7 @@ export async function getPriceRangeFromCache(
   symbol: string,
   from: Date,
   to: Date,
-  interval?: string,
+  interval?: string
 ): Promise<unknown[] | null> {
   try {
     const key = CacheKeys.priceRange(symbol, from, to, interval);
@@ -180,7 +180,7 @@ export async function getPriceRangeFromCache(
 
     return JSON.parse(cached, (key, value) => {
       // Parse Date fields
-      if (key === "timestamp" || key === "bucket") {
+      if (key === 'timestamp' || key === 'bucket') {
         return new Date(value);
       }
       return value;
@@ -188,8 +188,8 @@ export async function getPriceRangeFromCache(
   } catch (error) {
     throw new CacheError(
       `Failed to get cached price range for ${symbol}`,
-      "GET price range",
-      error as Error,
+      'GET price range',
+      error as Error
     );
   }
 }
@@ -200,7 +200,7 @@ export async function getPriceRangeFromCache(
 export async function cacheConsensusPrice(
   symbol: string,
   timestamp: Date,
-  data: unknown,
+  data: unknown
 ): Promise<void> {
   try {
     const key = CacheKeys.consensus(symbol, timestamp);
@@ -208,8 +208,8 @@ export async function cacheConsensusPrice(
   } catch (error) {
     throw new CacheError(
       `Failed to cache consensus price for ${symbol}`,
-      "SET consensus",
-      error as Error,
+      'SET consensus',
+      error as Error
     );
   }
 }
@@ -219,7 +219,7 @@ export async function cacheConsensusPrice(
  */
 export async function getConsensusPriceFromCache(
   symbol: string,
-  timestamp: Date,
+  timestamp: Date
 ): Promise<unknown | null> {
   try {
     const key = CacheKeys.consensus(symbol, timestamp);
@@ -230,7 +230,7 @@ export async function getConsensusPriceFromCache(
     }
 
     return JSON.parse(cached, (key, value) => {
-      if (key === "timestamp") {
+      if (key === 'timestamp') {
         return new Date(value);
       }
       return value;
@@ -238,8 +238,8 @@ export async function getConsensusPriceFromCache(
   } catch (error) {
     throw new CacheError(
       `Failed to get cached consensus price for ${symbol}`,
-      "GET consensus",
-      error as Error,
+      'GET consensus',
+      error as Error
     );
   }
 }
@@ -258,8 +258,8 @@ export async function invalidatePriceCache(symbol: string): Promise<void> {
   } catch (error) {
     throw new CacheError(
       `Failed to invalidate cache for ${symbol}`,
-      "DEL pattern",
-      error as Error,
+      'DEL pattern',
+      error as Error
     );
   }
 }

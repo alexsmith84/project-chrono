@@ -9,7 +9,6 @@
 ## ✅ Completed
 
 ### CHRONO-004: Core Data Models & Database Schema
-
 - ✅ PostgreSQL 17.6 installed and running
 - ✅ 7 database tables created (price_feeds, aggregated_prices, ftso_submissions, delegators, delegations, ftso_rewards, system_metadata)
 - ✅ Migration system (`scripts/database/run-migration.sh`)
@@ -19,7 +18,6 @@
 ### CHRONO-007: Bun/TypeScript API Layer (In Progress)
 
 #### ✅ Infrastructure Complete
-
 - Database client with connection pooling (postgres)
 - Redis client for caching and pub/sub
 - Configuration management (Zod validation)
@@ -27,14 +25,12 @@
 - Prometheus metrics
 
 #### ✅ Middleware Complete
-
 - Authentication (internal/public/admin API keys)
 - Rate limiting (Redis-backed, 1-minute sliding window)
 - Request context (ID, timing, CORS)
 - Error handling (partial - see Known Issues)
 
 #### ✅ Routes Complete
-
 - `POST /internal/ingest` - Price feed ingestion (tested, working)
 - `GET /prices/latest` - Latest prices (tested, working, 2ms cache hits)
 - `GET /prices/range` - Price history with OHLCV
@@ -43,7 +39,6 @@
 - `GET /metrics` - Prometheus metrics
 
 #### ✅ Testing Infrastructure
-
 - Test setup/teardown helpers
 - Database and Redis cleanup
 - Integration test framework (Bun:test)
@@ -59,11 +54,9 @@ No known issues at this time. All validation errors are properly handled and ret
 ## 🎉 Testing Complete
 
 ### Integration Tests Summary
-
 **Status**: ✅ 50/50 tests passing (100%)
 
 #### Test Coverage by Endpoint:
-
 - ✅ **POST /internal/ingest** - 7 tests
   - Successfully ingest price feeds
   - Reject without authentication (401)
@@ -127,9 +120,7 @@ No known issues at this time. All validation errors are properly handled and ret
 ---
 
 ### ✅ PR #21: CHRONO-007 REST API - MERGED
-
 **Status**: Complete and merged to `khala`
-
 - REST API endpoints (ingest, prices, aggregates, health)
 - Authentication and rate limiting
 - 50 integration tests passing
@@ -137,9 +128,7 @@ No known issues at this time. All validation errors are properly handled and ret
 ---
 
 ### ✅ PR #22: CHRONO-008 WebSocket Streaming - MERGED
-
 **Status**: Complete and merged to `khala`
-
 - WebSocket `/stream` endpoint
 - Subscribe/unsubscribe functionality
 - 12 WebSocket tests (62 total tests)
@@ -147,12 +136,10 @@ No known issues at this time. All validation errors are properly handled and ret
 ---
 
 ### 🔄 Next PR: CHRONO-009 Load Testing
-
 **Status**: Not started
 **Branch**: Create `warp-in/CHRONO-009-load-testing` from updated `forge`
 
 **Scope** (~1-2 hours):
-
 - k6 load test scripts for ingestion endpoint
 - k6 scripts for API query endpoints
 - k6 scripts for WebSocket scalability
@@ -163,12 +150,10 @@ No known issues at this time. All validation errors are properly handled and ret
 ---
 
 ### 📋 Future PR: CHRONO-010 API Documentation
-
 **Status**: Not started
 **Branch**: Create `warp-in/CHRONO-010-api-docs` from updated `forge`
 
 **Scope** (~1 hour):
-
 - OpenAPI/Swagger spec with Scalar UI
 - API usage examples and authentication guide
 - WebSocket protocol documentation
@@ -180,13 +165,11 @@ No known issues at this time. All validation errors are properly handled and ret
 ### 🚀 Long Term
 
 **CHRONO-006: Exchange Data Collection**
-
 - Build workers to fetch prices from exchanges
 - Use POST /internal/ingest endpoint
 - Schedule with cron or workers
 
 **CHRONO-005: Rust Engine Foundation**
-
 - VWAP/TWAP calculations
 - Called via Bun N-API or future Elixir NIFs
 
@@ -194,13 +177,13 @@ No known issues at this time. All validation errors are properly handled and ret
 
 ## 📊 Performance Metrics (Manual Tests)
 
-| Metric                 | Current | Target | Status |
-| ---------------------- | ------- | ------ | ------ |
-| Ingestion (2 feeds)    | 14ms    | <50ms  | ✅     |
-| Latest prices (cached) | 2ms     | <50ms  | ✅     |
-| Consensus              | 11ms    | <100ms | ✅     |
-| Database health        | <20ms   | <100ms | ✅     |
-| Redis health           | <5ms    | <50ms  | ✅     |
+| Metric | Current | Target | Status |
+|--------|---------|--------|--------|
+| Ingestion (2 feeds) | 14ms | <50ms | ✅ |
+| Latest prices (cached) | 2ms | <50ms | ✅ |
+| Consensus | 11ms | <100ms | ✅ |
+| Database health | <20ms | <100ms | ✅ |
+| Redis health | <5ms | <50ms | ✅ |
 
 ---
 
@@ -301,7 +284,6 @@ curl "http://localhost:3000/prices/latest?symbols=BTC/USD" \
 ### Current Status
 
 **Latest Merged PRs**:
-
 - ✅ PR #21: CHRONO-007 REST API (merged to `khala`)
 - ✅ PR #22: CHRONO-008 WebSocket (merged to `khala`)
 
@@ -312,7 +294,6 @@ curl "http://localhost:3000/prices/latest?symbols=BTC/USD" \
 **API Status**: ✅ Fully functional with 62 integration tests passing
 
 **What Was Completed Last Session**:
-
 - ✅ Fixed Zod validation error handling
 - ✅ Completed REST API integration tests (50 tests)
 - ✅ Implemented WebSocket streaming (12 tests)
@@ -321,4 +302,4 @@ curl "http://localhost:3000/prices/latest?symbols=BTC/USD" \
 
 ---
 
-_"The workflow is clear. One feature, one branch, one PR. En Taro Tassadar!"_
+*"The workflow is clear. One feature, one branch, one PR. En Taro Tassadar!"*

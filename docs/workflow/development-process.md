@@ -1,6 +1,6 @@
 # Development Process - Project Chrono
 
-_"The path is clear. Follow these steps to victory."_
+*"The path is clear. Follow these steps to victory."*
 
 ---
 
@@ -207,14 +207,12 @@ gh pr create --base forge \
 **Example: Wrong vs Right**
 
 ❌ **WRONG**:
-
 ```bash
 git commit -m "Complete CHRONO-007"
 # Immediately start coding CHRONO-008 on same branch
 ```
 
 ✅ **RIGHT**:
-
 ```bash
 git commit -m "Complete CHRONO-007"
 git push
@@ -512,4 +510,4 @@ git rebase --continue
 
 ---
 
-_"The process is clear. The Khala guides your development. En Taro Tassadar!"_
+*"The process is clear. The Khala guides your development. En Taro Tassadar!"*

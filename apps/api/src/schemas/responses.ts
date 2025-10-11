@@ -3,7 +3,7 @@
  * Ensures consistent response formats
  */
 
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * Standard error response
@@ -88,12 +88,12 @@ export const consensusPricesResponseSchema = z.object({
  * Health check response
  */
 export const healthResponseSchema = z.object({
-  status: z.enum(["healthy", "degraded", "unhealthy"]),
+  status: z.enum(['healthy', 'degraded', 'unhealthy']),
   timestamp: z.string(), // ISO 8601
   services: z.object({
-    database: z.enum(["healthy", "unhealthy"]),
-    redis: z.enum(["healthy", "unhealthy"]),
-    websocket: z.enum(["healthy", "unhealthy"]),
+    database: z.enum(['healthy', 'unhealthy']),
+    redis: z.enum(['healthy', 'unhealthy']),
+    websocket: z.enum(['healthy', 'unhealthy']),
   }),
   uptime_seconds: z.number().int(),
 });
@@ -107,7 +107,5 @@ export type LatestPricesResponse = z.infer<typeof latestPricesResponseSchema>;
 export type OHLCVData = z.infer<typeof ohlcvDataSchema>;
 export type PriceRangeResponse = z.infer<typeof priceRangeResponseSchema>;
 export type ConsensusPriceData = z.infer<typeof consensusPriceDataSchema>;
-export type ConsensusPricesResponse = z.infer<
-  typeof consensusPricesResponseSchema
->;
+export type ConsensusPricesResponse = z.infer<typeof consensusPricesResponseSchema>;
 export type HealthResponse = z.infer<typeof healthResponseSchema>;

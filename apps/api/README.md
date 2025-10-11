@@ -61,7 +61,6 @@ bun run src/test-connection.ts
 ```
 
 Expected output:
-
 ```
 ✅ PostgreSQL connection: OK
 ✅ All 7 database tables found
@@ -99,7 +98,6 @@ Authorization: Bearer chrono_internal_dev_key_001
 ```
 
 Request body:
-
 ```json
 {
   "worker_id": "binance-worker-001",
@@ -117,7 +115,6 @@ Request body:
 ```
 
 Example:
-
 ```bash
 curl -X POST http://localhost:3000/internal/ingest \
   -H "Authorization: Bearer chrono_internal_dev_key_001" \
@@ -144,7 +141,6 @@ Authorization: Bearer chrono_public_dev_key_001
 ```
 
 Example:
-
 ```bash
 curl "http://localhost:3000/prices/latest?symbols=BTC/USD,ETH/USD" \
   -H "Authorization: Bearer chrono_public_dev_key_001"
@@ -158,7 +154,6 @@ Authorization: Bearer chrono_public_dev_key_001
 ```
 
 Example:
-
 ```bash
 curl "http://localhost:3000/prices/range?symbol=BTC/USD&from=2025-10-09T00:00:00Z&to=2025-10-10T00:00:00Z" \
   -H "Authorization: Bearer chrono_public_dev_key_001"
@@ -172,7 +167,6 @@ Authorization: Bearer chrono_public_dev_key_001
 ```
 
 Example:
-
 ```bash
 curl "http://localhost:3000/aggregates/consensus?symbols=BTC/USD" \
   -H "Authorization: Bearer chrono_public_dev_key_001"
@@ -180,27 +174,26 @@ curl "http://localhost:3000/aggregates/consensus?symbols=BTC/USD" \
 
 ## Rate Limits
 
-| API Key Type | Rate Limit   |
-| ------------ | ------------ |
-| Internal     | 5000 req/min |
-| Public       | 1000 req/min |
-| Admin        | Unlimited    |
+| API Key Type | Rate Limit |
+|--------------|------------|
+| Internal | 5000 req/min |
+| Public | 1000 req/min |
+| Admin | Unlimited |
 
 Rate limit headers:
-
 - `X-RateLimit-Limit`: Maximum requests per minute
 - `X-RateLimit-Remaining`: Requests remaining in current window
 - `X-RateLimit-Reset`: Unix timestamp when limit resets
 
 ## Performance Targets
 
-| Metric                  | Target               |
-| ----------------------- | -------------------- |
-| Ingestion Throughput    | 1000 feeds/sec       |
-| Ingestion Latency (P95) | < 50ms               |
-| API Response (P95)      | < 200ms (cache miss) |
-| Cache Hit Latency (P95) | < 50ms               |
-| Memory Usage            | < 512 MB             |
+| Metric | Target |
+|--------|--------|
+| Ingestion Throughput | 1000 feeds/sec |
+| Ingestion Latency (P95) | < 50ms |
+| API Response (P95) | < 200ms (cache miss) |
+| Cache Hit Latency (P95) | < 50ms |
+| Memory Usage | < 512 MB |
 
 ## Development
 
@@ -266,7 +259,6 @@ apps/api/
 Access metrics at `http://localhost:3000/metrics`
 
 Key metrics:
-
 - `http_request_duration_ms` - Request latency histogram
 - `price_ingestions_total` - Total price feeds ingested
 - `price_ingestion_duration_ms` - Ingestion latency
@@ -277,7 +269,6 @@ Key metrics:
 ### Logs
 
 Structured JSON logs with Pino:
-
 - Development: Pretty-printed colorized output
 - Production: JSON format for log aggregation
 
@@ -286,7 +277,6 @@ Structured JSON logs with Pino:
 ### Connection Errors
 
 Run the connection test to diagnose:
-
 ```bash
 bun run src/test-connection.ts
 ```
@@ -323,4 +313,4 @@ Rate limits are per API key with 1-minute sliding windows. Wait 60 seconds or us
 
 ---
 
-_"The API awakens. Data flows through the gateway, precise and swift. En Taro Tassadar!"_
+*"The API awakens. Data flows through the gateway, precise and swift. En Taro Tassadar!"*

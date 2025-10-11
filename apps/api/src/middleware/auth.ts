@@ -3,16 +3,16 @@
  * Validates API keys and sets user context
  */
 
-import type { Context, Next } from "hono";
-import { config } from "../utils/config";
+import type { Context, Next } from 'hono';
+import { config } from '../utils/config';
 
 /**
  * API key types and their rate limits
  */
 export enum ApiKeyType {
-  Internal = "internal",
-  Public = "public",
-  Admin = "admin",
+  Internal = 'internal',
+  Public = 'public',
+  Admin = 'admin',
 }
 
 /**
@@ -30,13 +30,13 @@ export interface AuthContext {
  */
 function extractApiKey(c: Context): string | null {
   // Try Authorization header first
-  const authHeader = c.req.header("Authorization");
-  if (authHeader?.startsWith("Bearer ")) {
+  const authHeader = c.req.header('Authorization');
+  if (authHeader?.startsWith('Bearer ')) {
     return authHeader.substring(7);
   }
 
   // Fall back to query parameter (for WebSocket connections)
-  const queryKey = c.req.query("key");
+  const queryKey = c.req.query('key');
   if (queryKey) {
     return queryKey;
   }
@@ -89,14 +89,13 @@ export async function authMiddleware(c: Context, next: Next) {
     return c.json(
       {
         error: {
-          code: "UNAUTHORIZED",
-          message:
-            "Missing API key. Provide via Authorization header or ?key= query parameter",
-          request_id: c.get("requestId"),
+          code: 'UNAUTHORIZED',
+          message: 'Missing API key. Provide via Authorization header or ?key= query parameter',
+          request_id: c.get('requestId'),
         },
         status: 401,
       },
-      401,
+      401
     );
   }
 
@@ -106,18 +105,18 @@ export async function authMiddleware(c: Context, next: Next) {
     return c.json(
       {
         error: {
-          code: "UNAUTHORIZED",
-          message: "Invalid API key",
-          request_id: c.get("requestId"),
+          code: 'UNAUTHORIZED',
+          message: 'Invalid API key',
+          request_id: c.get('requestId'),
         },
         status: 401,
       },
-      401,
+      401
     );
   }
 
   // Add auth context to request
-  c.set("auth", authContext);
+  c.set('auth', authContext);
 
   await next();
 }
@@ -128,19 +127,19 @@ export async function authMiddleware(c: Context, next: Next) {
  */
 export function requireApiKeyType(...allowedTypes: ApiKeyType[]) {
   return async (c: Context, next: Next) => {
-    const auth = c.get("auth") as AuthContext | undefined;
+    const auth = c.get('auth') as AuthContext | undefined;
 
     if (!auth) {
       return c.json(
         {
           error: {
-            code: "UNAUTHORIZED",
-            message: "Authentication required",
-            request_id: c.get("requestId"),
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+            request_id: c.get('requestId'),
           },
           status: 401,
         },
-        401,
+        401
       );
     }
 
@@ -148,13 +147,13 @@ export function requireApiKeyType(...allowedTypes: ApiKeyType[]) {
       return c.json(
         {
           error: {
-            code: "FORBIDDEN",
-            message: `This endpoint requires ${allowedTypes.join(" or ")} API key`,
-            request_id: c.get("requestId"),
+            code: 'FORBIDDEN',
+            message: `This endpoint requires ${allowedTypes.join(' or ')} API key`,
+            request_id: c.get('requestId'),
           },
           status: 403,
         },
-        403,
+        403
       );
     }
 

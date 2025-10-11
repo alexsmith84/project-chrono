@@ -3,10 +3,10 @@
  * Redis-backed rate limiting with sliding window
  */
 
-import type { Context, Next } from "hono";
-import { redis } from "../cache/redis";
-import type { AuthContext } from "./auth";
-import { logger } from "../utils/logger";
+import type { Context, Next } from 'hono';
+import { redis } from '../cache/redis';
+import type { AuthContext } from './auth';
+import { logger } from '../utils/logger';
 
 /**
  * Rate limit key pattern
@@ -21,7 +21,7 @@ function getRateLimitKey(apiKey: string): string {
  */
 async function checkRateLimit(
   apiKey: string,
-  limit: number,
+  limit: number
 ): Promise<{ allowed: boolean; remaining: number; reset: number }> {
   // Unlimited rate limit (0 = no limit)
   if (limit === 0) {
@@ -39,7 +39,7 @@ async function checkRateLimit(
     const results = await pipeline.exec();
 
     if (!results) {
-      throw new Error("Redis pipeline returned no results");
+      throw new Error('Redis pipeline returned no results');
     }
 
     const count = results[0][1] as number;
@@ -57,7 +57,7 @@ async function checkRateLimit(
       reset: resetTimestamp,
     };
   } catch (error) {
-    logger.error({ err: error, apiKey }, "Rate limit check failed");
+    logger.error({ err: error, apiKey }, 'Rate limit check failed');
     // Fail open - allow request if Redis is down
     return { allowed: true, remaining: -1, reset: 0 };
   }
@@ -68,7 +68,7 @@ async function checkRateLimit(
  * Must be used AFTER authMiddleware
  */
 export async function rateLimitMiddleware(c: Context, next: Next) {
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get('auth') as AuthContext | undefined;
 
   if (!auth) {
     // No auth context - skip rate limiting (auth middleware will handle)
@@ -76,21 +76,18 @@ export async function rateLimitMiddleware(c: Context, next: Next) {
     return;
   }
 
-  const { allowed, remaining, reset } = await checkRateLimit(
-    auth.apiKey,
-    auth.rateLimit,
-  );
+  const { allowed, remaining, reset } = await checkRateLimit(auth.apiKey, auth.rateLimit);
 
   // Set rate limit headers
-  c.header("X-RateLimit-Limit", auth.rateLimit.toString());
-  c.header("X-RateLimit-Remaining", remaining.toString());
-  c.header("X-RateLimit-Reset", reset.toString());
+  c.header('X-RateLimit-Limit', auth.rateLimit.toString());
+  c.header('X-RateLimit-Remaining', remaining.toString());
+  c.header('X-RateLimit-Reset', reset.toString());
 
   if (!allowed) {
     return c.json(
       {
         error: {
-          code: "RATE_LIMIT_EXCEEDED",
+          code: 'RATE_LIMIT_EXCEEDED',
           message: `Rate limit exceeded. Limit: ${auth.rateLimit} requests per minute`,
           details: {
             limit: auth.rateLimit,
@@ -98,14 +95,14 @@ export async function rateLimitMiddleware(c: Context, next: Next) {
             reset,
             retry_after: Math.ceil((reset - Date.now()) / 1000),
           },
-          request_id: c.get("requestId"),
+          request_id: c.get('requestId'),
         },
         status: 429,
       },
       429,
       {
-        "Retry-After": Math.ceil((reset - Date.now()) / 1000).toString(),
-      },
+        'Retry-After': Math.ceil((reset - Date.now()) / 1000).toString(),
+      }
     );
   }
 

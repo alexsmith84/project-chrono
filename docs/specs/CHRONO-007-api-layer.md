@@ -1,6 +1,6 @@
 # CHRONO-007: Bun/TypeScript API Layer
 
-_"The gateway opens. Data flows like time itself—swift, precise, unstoppable."_
+*"The gateway opens. Data flows like time itself—swift, precise, unstoppable."*
 
 ---
 
@@ -78,16 +78,16 @@ Build a high-performance Bun/TypeScript API layer serving as the gateway between
 
 ### Technology Stack
 
-| Component           | Technology                              | Justification                                      |
-| ------------------- | --------------------------------------- | -------------------------------------------------- |
-| **Runtime**         | Bun 1.1+                                | 3x faster than Node.js, native TypeScript support  |
-| **Web Framework**   | Hono                                    | Ultra-fast edge runtime, <1ms overhead             |
-| **WebSocket**       | `ws` (Bun-native)                       | Native WebSocket support, high concurrency         |
+| Component | Technology | Justification |
+|-----------|-----------|---------------|
+| **Runtime** | Bun 1.1+ | 3x faster than Node.js, native TypeScript support |
+| **Web Framework** | Hono | Ultra-fast edge runtime, <1ms overhead |
+| **WebSocket** | `ws` (Bun-native) | Native WebSocket support, high concurrency |
 | **Database Client** | `@neondatabase/serverless` + `postgres` | PostgreSQL connection pooling, prepared statements |
-| **Redis Client**    | `ioredis`                               | Clustering support, Lua scripting, pub/sub         |
-| **Validation**      | Zod                                     | Type-safe schema validation, TypeScript inference  |
-| **Authentication**  | Custom middleware                       | API key validation, rate limiting                  |
-| **Testing**         | Bun:test                                | Native test runner, fast execution                 |
+| **Redis Client** | `ioredis` | Clustering support, Lua scripting, pub/sub |
+| **Validation** | Zod | Type-safe schema validation, TypeScript inference |
+| **Authentication** | Custom middleware | API key validation, rate limiting |
+| **Testing** | Bun:test | Native test runner, fast execution |
 
 ### Project Structure
 
@@ -163,7 +163,6 @@ apps/api/
 **Authentication**: Internal API key (different from public keys)
 
 **Request Body**:
-
 ```typescript
 {
   "worker_id": "binance-worker-001",
@@ -191,7 +190,6 @@ apps/api/
 ```
 
 **Response** (200 OK):
-
 ```typescript
 {
   "status": "success",
@@ -203,7 +201,6 @@ apps/api/
 ```
 
 **Business Logic**:
-
 1. Validate worker API key and rate limits (5000 req/min per worker)
 2. Validate each price feed schema (Zod validation)
 3. Insert into `price_feeds` table (batch insert, 100 max per request)
@@ -224,13 +221,11 @@ apps/api/
 **Authentication**: Public API key
 
 **Query Parameters**:
-
 ```typescript
 ?symbols=BTC/USD,ETH/USD,FLR/USD
 ```
 
 **Response** (200 OK):
-
 ```typescript
 {
   "data": [
@@ -249,7 +244,6 @@ apps/api/
 ```
 
 **Business Logic**:
-
 1. Check Redis cache for `latest:{symbol}` keys
 2. If cache miss, query PostgreSQL:
    ```sql
@@ -270,7 +264,6 @@ apps/api/
 **Purpose**: Get price history for a time range
 
 **Query Parameters**:
-
 ```typescript
 ?symbol=BTC/USD
 &from=2025-10-09T00:00:00Z
@@ -281,7 +274,6 @@ apps/api/
 ```
 
 **Response** (200 OK):
-
 ```typescript
 {
   "data": [
@@ -302,7 +294,6 @@ apps/api/
 ```
 
 **Business Logic**:
-
 1. Validate date range (max 90 days for raw data, 2 years for aggregated)
 2. If interval specified, use time-bucket aggregation:
    ```sql
@@ -334,14 +325,12 @@ apps/api/
 **Purpose**: Get FTSO consensus prices (aggregated from multiple sources)
 
 **Query Parameters**:
-
 ```typescript
 ?symbols=BTC/USD,ETH/USD
 &timestamp=2025-10-09T12:00:00Z  // Optional: specific time, defaults to latest
 ```
 
 **Response** (200 OK):
-
 ```typescript
 {
   "data": [
@@ -361,7 +350,6 @@ apps/api/
 ```
 
 **Business Logic**:
-
 1. Query `aggregated_prices` table for consensus data
 2. If no aggregated data exists, compute on-the-fly:
    ```sql
@@ -396,7 +384,6 @@ apps/api/
 **Message Protocol**:
 
 **Client → Server (Subscribe)**:
-
 ```typescript
 {
   "action": "subscribe",
@@ -405,7 +392,6 @@ apps/api/
 ```
 
 **Server → Client (Price Update)**:
-
 ```typescript
 {
   "type": "price_update",
@@ -420,7 +406,6 @@ apps/api/
 ```
 
 **Server → Client (Heartbeat)**:
-
 ```typescript
 {
   "type": "heartbeat",
@@ -429,7 +414,6 @@ apps/api/
 ```
 
 **Business Logic**:
-
 1. Authenticate client via API key (first message or query param)
 2. Subscribe client to Redis pub/sub channels for requested symbols
 3. When new price ingested, publish to `price_updates:{symbol}` Redis channel
@@ -447,11 +431,11 @@ apps/api/
 
 ```typescript
 // src/db/client.ts
-import { Pool } from "@neondatabase/serverless";
+import { Pool } from '@neondatabase/serverless';
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 20, // Max connections
+  max: 20,  // Max connections
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
 });
@@ -470,13 +454,11 @@ export const queryPriceFeeds = pool.prepare(`
 ### Query Optimization
 
 **Indexes** (already created in CHRONO-004):
-
 - `idx_price_feeds_symbol_time` on `(symbol, timestamp DESC)` - Range queries
 - `idx_aggregated_prices_symbol_time` on `(symbol, timestamp DESC)` - Consensus queries
 - `idx_delegations_delegator_time` on `(delegator_id, timestamp DESC)` - Delegation history
 
 **Query Patterns**:
-
 1. **Latest Prices**: `SELECT DISTINCT ON (symbol)` with `ORDER BY timestamp DESC`
 2. **Range Queries**: `WHERE timestamp >= $1 AND timestamp <= $2` with index scan
 3. **Aggregations**: `time_bucket()` for OHLCV data (when TimescaleDB enabled)
@@ -488,20 +470,20 @@ export const queryPriceFeeds = pool.prepare(`
 
 ### Cache Keys
 
-| Key Pattern                             | Data                    | TTL  |
-| --------------------------------------- | ----------------------- | ---- |
-| `latest:{symbol}`                       | Latest price for symbol | 60s  |
-| `range:{symbol}:{from}:{to}:{interval}` | Aggregated range query  | 5min |
-| `consensus:{symbol}:{timestamp}`        | Consensus price         | 5min |
-| `worker:{worker_id}:rate`               | Rate limit counter      | 1min |
-| `api:{api_key}:rate`                    | Public API rate limit   | 1min |
+| Key Pattern | Data | TTL |
+|------------|------|-----|
+| `latest:{symbol}` | Latest price for symbol | 60s |
+| `range:{symbol}:{from}:{to}:{interval}` | Aggregated range query | 5min |
+| `consensus:{symbol}:{timestamp}` | Consensus price | 5min |
+| `worker:{worker_id}:rate` | Rate limit counter | 1min |
+| `api:{api_key}:rate` | Public API rate limit | 1min |
 
 ### Pub/Sub Channels
 
-| Channel             | Purpose                 | Subscribers      |
-| ------------------- | ----------------------- | ---------------- |
-| `price_updates:*`   | Price updates by symbol | WebSocket server |
-| `price_updates:all` | All price updates       | Admin dashboards |
+| Channel | Purpose | Subscribers |
+|---------|---------|-------------|
+| `price_updates:*` | Price updates by symbol | WebSocket server |
+| `price_updates:all` | All price updates | Admin dashboards |
 
 ### Cache Invalidation
 
@@ -534,17 +516,14 @@ export const queryPriceFeeds = pool.prepare(`
 
 ```typescript
 // src/middleware/rate-limit.ts
-import { redis } from "../cache/redis";
+import { redis } from '../cache/redis';
 
-export async function rateLimit(
-  apiKey: string,
-  limit: number,
-): Promise<boolean> {
+export async function rateLimit(apiKey: string, limit: number): Promise<boolean> {
   const key = `api:${apiKey}:rate`;
   const current = await redis.incr(key);
 
   if (current === 1) {
-    await redis.expire(key, 60); // 1-minute window
+    await redis.expire(key, 60);  // 1-minute window
   }
 
   return current <= limit;
@@ -581,15 +560,15 @@ export async function rateLimit(
 
 ### Error Codes
 
-| Code                  | HTTP Status | Description                    |
-| --------------------- | ----------- | ------------------------------ |
-| `VALIDATION_ERROR`    | 400         | Invalid request payload/params |
-| `UNAUTHORIZED`        | 401         | Missing or invalid API key     |
-| `RATE_LIMIT_EXCEEDED` | 429         | Too many requests              |
-| `NOT_FOUND`           | 404         | Resource not found             |
-| `DATABASE_ERROR`      | 503         | Database unavailable           |
-| `CACHE_ERROR`         | 503         | Redis unavailable              |
-| `INTERNAL_ERROR`      | 500         | Unexpected server error        |
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `VALIDATION_ERROR` | 400 | Invalid request payload/params |
+| `UNAUTHORIZED` | 401 | Missing or invalid API key |
+| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
+| `NOT_FOUND` | 404 | Resource not found |
+| `DATABASE_ERROR` | 503 | Database unavailable |
+| `CACHE_ERROR` | 503 | Redis unavailable |
+| `INTERNAL_ERROR` | 500 | Unexpected server error |
 
 ---
 
@@ -599,24 +578,24 @@ export async function rateLimit(
 
 ```typescript
 // src/utils/metrics.ts
-import { register, Counter, Histogram } from "prom-client";
+import { register, Counter, Histogram } from 'prom-client';
 
 export const httpRequestDuration = new Histogram({
-  name: "http_request_duration_ms",
-  help: "HTTP request duration in milliseconds",
-  labelNames: ["method", "route", "status_code"],
+  name: 'http_request_duration_ms',
+  help: 'HTTP request duration in milliseconds',
+  labelNames: ['method', 'route', 'status_code'],
   buckets: [10, 50, 100, 200, 500, 1000, 2000, 5000],
 });
 
 export const priceIngestionsTotal = new Counter({
-  name: "price_ingestions_total",
-  help: "Total number of price feeds ingested",
-  labelNames: ["worker_id", "symbol", "status"],
+  name: 'price_ingestions_total',
+  help: 'Total number of price feeds ingested',
+  labelNames: ['worker_id', 'symbol', 'status'],
 });
 
 export const websocketConnections = new Gauge({
-  name: "websocket_connections_active",
-  help: "Number of active WebSocket connections",
+  name: 'websocket_connections_active',
+  help: 'Number of active WebSocket connections',
 });
 ```
 
@@ -626,19 +605,19 @@ export const websocketConnections = new Gauge({
 
 ```typescript
 // src/utils/logger.ts
-import pino from "pino";
+import pino from 'pino';
 
 export const logger = pino({
-  level: process.env.LOG_LEVEL || "info",
+  level: process.env.LOG_LEVEL || 'info',
   transport: {
-    target: "pino-pretty",
+    target: 'pino-pretty',
     options: { colorize: true },
   },
 });
 
 // Usage
-logger.info({ worker_id: "binance-001", count: 100 }, "Price feeds ingested");
-logger.error({ err, request_id }, "Database query failed");
+logger.info({ worker_id: 'binance-001', count: 100 }, 'Price feeds ingested');
+logger.error({ err, request_id }, 'Database query failed');
 ```
 
 ### Health Checks
@@ -662,16 +641,16 @@ logger.error({ err, request_id }, "Database query failed");
 
 ## Performance Targets
 
-| Metric                       | Target          | Measurement                 |
-| ---------------------------- | --------------- | --------------------------- |
-| **Ingestion Throughput**     | 1000 feeds/sec  | Load test with 10 workers   |
-| **Ingestion Latency (P95)**  | < 50ms          | 100-feed batches            |
-| **API Response (P95)**       | < 200ms         | Cache miss scenarios        |
-| **Cache Hit Latency (P95)**  | < 50ms          | Redis round-trip            |
-| **WebSocket Latency**        | < 100ms         | Ingestion → client delivery |
-| **Database Connection Pool** | 90% utilization | 20 max connections          |
-| **Memory Usage**             | < 512 MB        | Steady-state operation      |
-| **CPU Usage**                | < 50%           | 1000 req/sec load           |
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| **Ingestion Throughput** | 1000 feeds/sec | Load test with 10 workers |
+| **Ingestion Latency (P95)** | < 50ms | 100-feed batches |
+| **API Response (P95)** | < 200ms | Cache miss scenarios |
+| **Cache Hit Latency (P95)** | < 50ms | Redis round-trip |
+| **WebSocket Latency** | < 100ms | Ingestion → client delivery |
+| **Database Connection Pool** | 90% utilization | 20 max connections |
+| **Memory Usage** | < 512 MB | Steady-state operation |
+| **CPU Usage** | < 50% | 1000 req/sec load |
 
 ---
 
@@ -681,18 +660,18 @@ logger.error({ err, request_id }, "Database query failed");
 
 ```typescript
 // tests/unit/cache.test.ts
-import { describe, test, expect } from "bun:test";
-import { cacheLatestPrice, getLatestPrice } from "../src/cache/price-cache";
+import { describe, test, expect } from 'bun:test';
+import { cacheLatestPrice, getLatestPrice } from '../src/cache/price-cache';
 
-describe("Price Cache", () => {
-  test("should cache and retrieve latest price", async () => {
-    await cacheLatestPrice("BTC/USD", {
-      price: "67234.56",
+describe('Price Cache', () => {
+  test('should cache and retrieve latest price', async () => {
+    await cacheLatestPrice('BTC/USD', {
+      price: '67234.56',
       timestamp: new Date().toISOString(),
     });
 
-    const cached = await getLatestPrice("BTC/USD");
-    expect(cached?.price).toBe("67234.56");
+    const cached = await getLatestPrice('BTC/USD');
+    expect(cached?.price).toBe('67234.56');
   });
 });
 ```
@@ -701,25 +680,25 @@ describe("Price Cache", () => {
 
 ```typescript
 // tests/integration/ingest.test.ts
-import { describe, test, expect } from "bun:test";
-import { app } from "../src/server";
+import { describe, test, expect } from 'bun:test';
+import { app } from '../src/server';
 
-describe("POST /internal/ingest", () => {
-  test("should ingest price feeds", async () => {
-    const response = await app.request("/internal/ingest", {
-      method: "POST",
+describe('POST /internal/ingest', () => {
+  test('should ingest price feeds', async () => {
+    const response = await app.request('/internal/ingest', {
+      method: 'POST',
       headers: {
-        Authorization: "Bearer chrono_internal_test_key",
-        "Content-Type": "application/json",
+        'Authorization': 'Bearer chrono_internal_test_key',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        worker_id: "test-worker",
+        worker_id: 'test-worker',
         timestamp: new Date().toISOString(),
         feeds: [
           {
-            symbol: "BTC/USD",
-            price: "67234.56",
-            source: "binance",
+            symbol: 'BTC/USD',
+            price: '67234.56',
+            source: 'binance',
             timestamp: new Date().toISOString(),
           },
         ],
@@ -742,12 +721,12 @@ k6 run tests/load/ingestion.js
 
 ```javascript
 // tests/load/ingestion.js
-import http from "k6/http";
-import { check } from "k6";
+import http from 'k6/http';
+import { check } from 'k6';
 
 export const options = {
-  vus: 10, // 10 virtual workers
-  duration: "60s",
+  vus: 10,  // 10 virtual workers
+  duration: '60s',
 };
 
 export default function () {
@@ -756,21 +735,21 @@ export default function () {
     timestamp: new Date().toISOString(),
     feeds: [
       {
-        symbol: "BTC/USD",
+        symbol: 'BTC/USD',
         price: `${60000 + Math.random() * 10000}`,
-        source: "binance",
+        source: 'binance',
         timestamp: new Date().toISOString(),
       },
     ],
   });
 
-  const res = http.post("http://localhost:3000/internal/ingest", payload, {
-    headers: { "Content-Type": "application/json" },
+  const res = http.post('http://localhost:3000/internal/ingest', payload, {
+    headers: { 'Content-Type': 'application/json' },
   });
 
   check(res, {
-    "status is 200": (r) => r.status === 200,
-    "latency < 100ms": (r) => r.timings.duration < 100,
+    'status is 200': (r) => r.status === 200,
+    'latency < 100ms': (r) => r.timings.duration < 100,
   });
 }
 ```
@@ -835,13 +814,13 @@ WS_MAX_CONNECTIONS=10000
 
 ```typescript
 // src/websocket.ts
-import { redis } from "./cache/redis";
+import { redis } from './cache/redis';
 
 // Subscribe to Redis pub/sub
-redis.subscribe("price_updates:*");
+redis.subscribe('price_updates:*');
 
-redis.on("message", (channel, message) => {
-  const symbol = channel.split(":")[1];
+redis.on('message', (channel, message) => {
+  const symbol = channel.split(':')[1];
 
   // Broadcast to all connected clients subscribed to this symbol
   wss.clients.forEach((client) => {
@@ -894,18 +873,18 @@ redis.on("message", (channel, message) => {
 
 ## Timeline Estimate
 
-| Phase                 | Tasks                                     | Duration |
-| --------------------- | ----------------------------------------- | -------- |
-| **Setup**             | Project scaffolding, dependencies, config | 1 day    |
-| **Database Layer**    | Connection pool, queries, types           | 1 day    |
-| **Cache Layer**       | Redis setup, caching logic, pub/sub       | 1 day    |
-| **Ingestion API**     | POST /internal/ingest + validation        | 1 day    |
-| **Query APIs**        | GET /prices/_, /aggregates/_              | 2 days   |
-| **WebSocket**         | WS server, pub/sub, subscriptions         | 2 days   |
-| **Auth & Rate Limit** | Middleware, API key validation            | 1 day    |
-| **Observability**     | Metrics, logging, health checks           | 1 day    |
-| **Testing**           | Unit, integration, load tests             | 2 days   |
-| **Documentation**     | OpenAPI spec, README, deployment guide    | 1 day    |
+| Phase | Tasks | Duration |
+|-------|-------|----------|
+| **Setup** | Project scaffolding, dependencies, config | 1 day |
+| **Database Layer** | Connection pool, queries, types | 1 day |
+| **Cache Layer** | Redis setup, caching logic, pub/sub | 1 day |
+| **Ingestion API** | POST /internal/ingest + validation | 1 day |
+| **Query APIs** | GET /prices/*, /aggregates/* | 2 days |
+| **WebSocket** | WS server, pub/sub, subscriptions | 2 days |
+| **Auth & Rate Limit** | Middleware, API key validation | 1 day |
+| **Observability** | Metrics, logging, health checks | 1 day |
+| **Testing** | Unit, integration, load tests | 2 days |
+| **Documentation** | OpenAPI spec, README, deployment guide | 1 day |
 
 **Total**: ~13 days (2-3 weeks with buffer)
 
@@ -955,25 +934,21 @@ redis.on("message", (channel, message) => {
 While Bun/TypeScript provides excellent performance for initial deployment, Elixir/Phoenix offers compelling advantages for production-scale FTSO operations requiring extreme reliability and concurrency:
 
 #### Concurrency & Scalability
-
 - **2M WebSocket connections** on a single server (vs Bun's ~10K-50K)
 - **Millions of lightweight processes** for parallel price aggregation
 - **Horizontal scaling** built into the BEAM VM (distributed Erlang)
 
 #### Fault Tolerance
-
 - **OTP supervision trees**: Automatic recovery from crashes without downtime
 - **"Let it crash" philosophy**: Isolated failures don't cascade
 - **Hot code reloading**: Deploy updates with **zero downtime**
 
 #### Real-Time Performance
-
 - **Phoenix Channels**: Industry-leading WebSocket implementation
 - **Sub-millisecond message passing** between processes
 - **Built-in pub/sub**: No Redis dependency for WebSocket scaling
 
 #### Production Reliability
-
 - **Battle-tested**: Runs WhatsApp (2B+ users), Discord (150M+ users)
 - **Predictable latency**: No GC pauses (vs Node.js/Bun)
 - **Observability**: Built-in telemetry, distributed tracing
@@ -985,7 +960,6 @@ While Bun/TypeScript provides excellent performance for initial deployment, Elix
 **Replaces**: The entire TypeScript/Bun API server (REST + WebSocket)
 
 **Keeps**:
-
 - PostgreSQL 17 + TimescaleDB (database layer)
 - Redis (caching only, not required for WebSocket scaling)
 - Rust engine (called via NIFs for heavy computation)
@@ -1168,7 +1142,6 @@ end
 ```
 
 **What this does**:
-
 - If `PriceAggregator` crashes, it **automatically restarts** without affecting other processes
 - WebSocket connections, database pool, etc. remain unaffected
 - **No cascading failures** — isolated fault domains
@@ -1177,41 +1150,37 @@ end
 
 ### Performance Comparison
 
-| Metric                     | Bun/TypeScript           | Elixir/Phoenix                     |
-| -------------------------- | ------------------------ | ---------------------------------- |
-| **WebSocket Connections**  | ~10K-50K per server      | **2M+ per server**                 |
-| **Concurrent Processes**   | Limited by event loop    | **Millions** (lightweight)         |
-| **Message Latency**        | ~10ms (Redis pub/sub)    | **<1ms** (native BEAM)             |
-| **Fault Tolerance**        | Process crash = downtime | **Auto-restart** (OTP)             |
-| **Hot Code Reload**        | Requires restart         | **Zero-downtime** deploys          |
+| Metric | Bun/TypeScript | Elixir/Phoenix |
+|--------|---------------|---------------|
+| **WebSocket Connections** | ~10K-50K per server | **2M+ per server** |
+| **Concurrent Processes** | Limited by event loop | **Millions** (lightweight) |
+| **Message Latency** | ~10ms (Redis pub/sub) | **<1ms** (native BEAM) |
+| **Fault Tolerance** | Process crash = downtime | **Auto-restart** (OTP) |
+| **Hot Code Reload** | Requires restart | **Zero-downtime** deploys |
 | **Distributed Clustering** | Manual (sticky sessions) | **Built-in** (Erlang distribution) |
-| **GC Pauses**              | ~10-100ms (V8 GC)        | **Per-process GC** (no pauses)     |
+| **GC Pauses** | ~10-100ms (V8 GC) | **Per-process GC** (no pauses) |
 
 ---
 
 ### Migration Strategy
 
 #### Phase 1: Run Both in Parallel
-
 1. Deploy Phoenix API alongside Bun API
 2. Route 10% of traffic to Phoenix (canary deployment)
 3. Monitor performance, error rates, latency
 4. Gradually increase traffic to Phoenix (25% → 50% → 100%)
 
 #### Phase 2: Database Layer (Shared)
-
 - Both Bun and Phoenix use the **same PostgreSQL database**
 - No schema changes needed
 - Ecto (Elixir ORM) maps to existing tables
 
 #### Phase 3: WebSocket Migration
-
 1. New clients connect to Phoenix Channels
 2. Keep Bun WebSocket for existing connections (graceful drain)
 3. After 24h, all connections migrated to Phoenix
 
 #### Phase 4: Decommission Bun API
-
 1. Verify Phoenix handles 100% of traffic reliably
 2. Keep Bun as backup for 1 week
 3. Decommission Bun servers
@@ -1223,7 +1192,6 @@ end
 ### When to Migrate?
 
 Consider migrating when:
-
 - **WebSocket connections exceed 10K** (Bun performance degrades)
 - **Uptime requirements exceed 99.9%** (need OTP fault tolerance)
 - **Multi-region deployment** required (Elixir clustering shines)
@@ -1241,14 +1209,12 @@ Consider migrating when:
 PostgreSQL + TimescaleDB excels at **OLTP** (transactional queries), but **OLAP** (analytical queries) benefits from column-oriented storage.
 
 #### Hot Data (PostgreSQL 17 + TimescaleDB)
-
 - **Last 30 days** of price feeds
 - **Real-time queries**: Sub-50ms response
 - **ACID transactions**: Critical for FTSO submissions
 - **Use Cases**: Latest prices, consensus calculations, API queries
 
 #### Cold Data (ClickHouse)
-
 - **Historical analytics** (months/years)
 - **Column-oriented storage**: 100x faster for analytical queries
 - **Compression**: 10-100x better than PostgreSQL
@@ -1258,12 +1224,12 @@ PostgreSQL + TimescaleDB excels at **OLTP** (transactional queries), but **OLAP*
 
 ### Performance Comparison: PostgreSQL vs ClickHouse
 
-| Query Type                               | PostgreSQL (30 days) | ClickHouse (2 years)        |
-| ---------------------------------------- | -------------------- | --------------------------- |
-| **Recent price (BTC/USD, last 24h)**     | 20ms                 | Not needed (use PostgreSQL) |
-| **Historical analysis (1 billion rows)** | 60+ seconds          | **2 seconds**               |
-| **Aggregation (avg price, 6 months)**    | 10-30 seconds        | **<1 second**               |
-| **Storage (1 year, 100M rows)**          | ~50 GB               | **~5 GB** (compressed)      |
+| Query Type | PostgreSQL (30 days) | ClickHouse (2 years) |
+|-----------|---------------------|---------------------|
+| **Recent price (BTC/USD, last 24h)** | 20ms | Not needed (use PostgreSQL) |
+| **Historical analysis (1 billion rows)** | 60+ seconds | **2 seconds** |
+| **Aggregation (avg price, 6 months)** | 10-30 seconds | **<1 second** |
+| **Storage (1 year, 100M rows)** | ~50 GB | **~5 GB** (compressed) |
 
 ---
 
@@ -1286,13 +1252,11 @@ PostgreSQL + TimescaleDB excels at **OLTP** (transactional queries), but **OLAP*
 ```
 
 #### Write Path
-
 1. **Exchange workers** → Elixir API → **PostgreSQL** (real-time insert)
 2. **Background job** (daily): Copy data older than 30 days → **ClickHouse**
 3. **Optional**: Delete from PostgreSQL after replication (or keep for ACID guarantees)
 
 #### Read Path
-
 - **Real-time query** (last 24h): Elixir → **PostgreSQL** → 20ms response
 - **Analytical query** (last 6 months): Elixir → **ClickHouse** → 2s response
 
@@ -1357,7 +1321,6 @@ ALTER TABLE price_feeds MODIFY COLUMN volume CODEC(DoubleDelta, ZSTD(3));
 ### When to Add ClickHouse?
 
 Consider adding ClickHouse when:
-
 - **PostgreSQL exceeds 100 GB** (compression would save 90%+)
 - **Analytical queries take >10 seconds** (ClickHouse 10-100x faster)
 - **Backtesting requirements** (need fast access to historical data)
@@ -1371,7 +1334,6 @@ Consider adding ClickHouse when:
 ## Technology Evolution Roadmap
 
 ### Phase 1: MVP (Current)
-
 - **API**: Bun/TypeScript + Hono
 - **Database**: PostgreSQL 17 (no TimescaleDB yet)
 - **Cache**: Redis
@@ -1383,7 +1345,6 @@ Consider adding ClickHouse when:
 ---
 
 ### Phase 2: Production-Ready
-
 - **API**: Bun/TypeScript (optimize, harden)
 - **Database**: PostgreSQL 17 + **TimescaleDB** (hypertables, compression)
 - **Cache**: Redis Cluster (HA)
@@ -1395,7 +1356,6 @@ Consider adding ClickHouse when:
 ---
 
 ### Phase 3: Scale (If Needed)
-
 - **API**: **Elixir/Phoenix** (2M WebSocket connections, OTP fault tolerance)
 - **Database (Hot)**: PostgreSQL 17 + TimescaleDB (last 30 days)
 - **Database (Cold)**: **ClickHouse** (historical analytics)
@@ -1409,16 +1369,16 @@ Consider adding ClickHouse when:
 
 ### Technology Decision Matrix
 
-| Requirement               | Bun/TypeScript                   | Elixir/Phoenix                       |
-| ------------------------- | -------------------------------- | ------------------------------------ |
-| **Fast MVP**              | ✅ Best (familiar, fast setup)   | ⚠️ Learning curve                    |
-| **<10K WebSocket**        | ✅ Sufficient                    | ⚠️ Overkill                          |
-| **>50K WebSocket**        | ❌ Performance issues            | ✅ Ideal (2M+ connections)           |
-| **99.9% Uptime**          | ⚠️ Requires manual supervision   | ✅ Built-in (OTP)                    |
-| **99.99% Uptime**         | ❌ Very difficult                | ✅ Battle-tested (WhatsApp, Discord) |
-| **Zero-Downtime Deploys** | ❌ Requires load balancer tricks | ✅ Native (hot code reload)          |
-| **Distributed System**    | ⚠️ Manual (sticky sessions)      | ✅ Native (Erlang clustering)        |
-| **ML/Heavy Compute**      | ⚠️ Rust via N-API                | ✅ Rust via NIFs (faster FFI)        |
+| Requirement | Bun/TypeScript | Elixir/Phoenix |
+|------------|---------------|---------------|
+| **Fast MVP** | ✅ Best (familiar, fast setup) | ⚠️ Learning curve |
+| **<10K WebSocket** | ✅ Sufficient | ⚠️ Overkill |
+| **>50K WebSocket** | ❌ Performance issues | ✅ Ideal (2M+ connections) |
+| **99.9% Uptime** | ⚠️ Requires manual supervision | ✅ Built-in (OTP) |
+| **99.99% Uptime** | ❌ Very difficult | ✅ Battle-tested (WhatsApp, Discord) |
+| **Zero-Downtime Deploys** | ❌ Requires load balancer tricks | ✅ Native (hot code reload) |
+| **Distributed System** | ⚠️ Manual (sticky sessions) | ✅ Native (Erlang clustering) |
+| **ML/Heavy Compute** | ⚠️ Rust via N-API | ✅ Rust via NIFs (faster FFI) |
 
 **Pragmatic Path**: Start with Bun, migrate to Elixir when scale/reliability demands it.
 
@@ -1443,4 +1403,4 @@ Consider adding ClickHouse when:
 
 ---
 
-_"The API awakens. Data flows through the gateway, precise and swift. The Nexus pulses with life. En Taro Tassadar!"_
+*"The API awakens. Data flows through the gateway, precise and swift. The Nexus pulses with life. En Taro Tassadar!"*

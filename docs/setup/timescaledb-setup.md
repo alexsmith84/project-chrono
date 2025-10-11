@@ -1,6 +1,6 @@
 # TimescaleDB Setup Guide - Project Chrono
 
-_"Patience, young Templar. Even the greatest structures are built in phases."_
+*"Patience, young Templar. Even the greatest structures are built in phases."*
 
 ---
 
@@ -24,11 +24,11 @@ TimescaleDB provides significant performance benefits for time-series data:
 
 ### Performance Impact
 
-| Feature                | Standard PostgreSQL | With TimescaleDB          |
-| ---------------------- | ------------------- | ------------------------- |
-| Storage (1 year)       | ~100 GB             | ~10 GB (with compression) |
-| Query Speed (24h data) | ~500ms              | ~50ms                     |
-| Insert Throughput      | 50/sec              | 100+/sec                  |
+| Feature | Standard PostgreSQL | With TimescaleDB |
+|---------|-------------------|------------------|
+| Storage (1 year) | ~100 GB | ~10 GB (with compression) |
+| Query Speed (24h data) | ~500ms | ~50ms |
+| Insert Throughput | 50/sec | 100+/sec |
 
 ---
 
@@ -152,19 +152,16 @@ For production, consider TimescaleDB Cloud:
 ## Migration Plan (When Enabling TimescaleDB)
 
 1. **Backup Current Database**:
-
    ```bash
    pg_dump project_chrono_dev > /tmp/chrono_backup_$(date +%Y%m%d).sql
    ```
 
 2. **Enable TimescaleDB Extension**:
-
    ```sql
    CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
    ```
 
 3. **Convert Tables to Hypertables**:
-
    ```sql
    -- Convert price_feeds
    SELECT create_hypertable('price_feeds', 'timestamp',
@@ -186,7 +183,6 @@ For production, consider TimescaleDB Cloud:
    ```
 
 4. **Enable Compression Policies**:
-
    ```sql
    ALTER TABLE price_feeds SET (
      timescaledb.compress,
@@ -198,7 +194,6 @@ For production, consider TimescaleDB Cloud:
    ```
 
 5. **Enable Retention Policies**:
-
    ```sql
    SELECT add_retention_policy('price_feeds', INTERVAL '2 years');
    SELECT add_retention_policy('aggregated_prices', INTERVAL '2 years');
@@ -206,7 +201,6 @@ For production, consider TimescaleDB Cloud:
    ```
 
 6. **Verify Setup**:
-
    ```sql
    -- Check hypertables
    SELECT * FROM timescaledb_information.hypertables;
@@ -241,7 +235,6 @@ The current setup is still highly performant:
 - **Storage**: ~10 MB per 100K price feeds
 
 This is sufficient for:
-
 - Development and testing
 - Initial production deployment
 - Up to 10M price feeds (~100 GB storage)
@@ -299,4 +292,4 @@ SELECT 'delegations', COUNT(*) FROM delegations;
 
 ---
 
-_"The foundation is strong. Optimizations will come when they are needed. For now, we build. En Taro Tassadar!"_
+*"The foundation is strong. Optimizations will come when they are needed. For now, we build. En Taro Tassadar!"*

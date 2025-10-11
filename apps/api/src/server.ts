@@ -3,9 +3,9 @@
  * Configures routes, middleware, and error handling
  */
 
-import { Hono } from "hono";
-import { logger } from "./utils/logger";
-import { config } from "./utils/config";
+import { Hono } from 'hono';
+import { logger } from './utils/logger';
+import { config } from './utils/config';
 
 // Middleware
 import {
@@ -13,26 +13,17 @@ import {
   timingMiddleware,
   errorHandlerMiddleware,
   corsMiddleware,
-} from "./middleware/request-context";
-import {
-  authMiddleware,
-  requireApiKeyType,
-  ApiKeyType,
-} from "./middleware/auth";
-import { rateLimitMiddleware } from "./middleware/rate-limit";
+} from './middleware/request-context';
+import { authMiddleware, requireApiKeyType, ApiKeyType } from './middleware/auth';
+import { rateLimitMiddleware } from './middleware/rate-limit';
 
 // Routes
-import ingestRoute from "./routes/internal/ingest";
-import pricesRoute from "./routes/public/prices";
-import aggregatesRoute from "./routes/public/aggregates";
-import healthRoute from "./routes/health";
-import { docsRouter } from "./routes/docs";
-import {
-  websocketHandlers,
-  getConnectionStats,
-  type ConnectionData,
-} from "./routes/websocket";
-import type { ServerWebSocket } from "bun";
+import ingestRoute from './routes/internal/ingest';
+import pricesRoute from './routes/public/prices';
+import aggregatesRoute from './routes/public/aggregates';
+import healthRoute from './routes/health';
+import { websocketHandlers, getConnectionStats, type ConnectionData } from './routes/websocket';
+import type { ServerWebSocket } from 'bun';
 
 /**
  * Create and configure Hono app
@@ -42,22 +33,22 @@ export function createApp() {
 
   // Hono onError handler (catches all errors)
   app.onError((error, c) => {
-    const requestId = c.get("requestId") as string;
+    const requestId = c.get('requestId') as string;
 
     // Import ZodError dynamically to avoid circular deps
-    const { ZodError } = require("zod");
+    const { ZodError } = require('zod');
 
     if (error instanceof ZodError) {
       const firstError = error.errors[0];
       return c.json(
         {
           error: {
-            code: "VALIDATION_ERROR",
-            message: `Validation failed: ${firstError.path.join(".")}: ${firstError.message}`,
+            code: 'VALIDATION_ERROR',
+            message: `Validation failed: ${firstError.path.join('.')}: ${firstError.message}`,
             details: {
-              field: firstError.path.join("."),
+              field: firstError.path.join('.'),
               errors: error.errors.map((e: any) => ({
-                path: e.path.join("."),
+                path: e.path.join('.'),
                 message: e.message,
               })),
             },
@@ -65,7 +56,7 @@ export function createApp() {
           },
           status: 400,
         },
-        400,
+        400
       );
     }
 
@@ -73,89 +64,77 @@ export function createApp() {
     return c.json(
       {
         error: {
-          code: "INTERNAL_ERROR",
-          message:
-            error instanceof Error
-              ? error.message
-              : "An unexpected error occurred",
+          code: 'INTERNAL_ERROR',
+          message: error instanceof Error ? error.message : 'An unexpected error occurred',
           request_id: requestId,
         },
         status: 500,
       },
-      500,
+      500
     );
   });
 
   // Global middleware (applied to all routes)
-  app.use("*", corsMiddleware);
-  app.use("*", requestIdMiddleware);
-  app.use("*", timingMiddleware);
+  app.use('*', corsMiddleware);
+  app.use('*', requestIdMiddleware);
+  app.use('*', timingMiddleware);
 
   // Welcome route (no auth required)
-  app.get("/", (c) => {
+  app.get('/', (c) => {
     return c.json({
-      name: "Project Chrono API",
-      version: "0.1.0",
-      description: "High-performance FTSO price feed API",
+      name: 'Project Chrono API',
+      version: '0.1.0',
+      description: 'High-performance FTSO price feed API',
       endpoints: {
-        health: "GET /health",
-        metrics: "GET /metrics",
-        stream: "WS /stream",
+        health: 'GET /health',
+        metrics: 'GET /metrics',
+        stream: 'WS /stream',
         internal: {
-          ingest: "POST /internal/ingest",
+          ingest: 'POST /internal/ingest',
         },
         public: {
-          latest: "GET /prices/latest?symbols=BTC/USD,ETH/USD",
-          range: "GET /prices/range?symbol=BTC/USD&from=...&to=...&interval=1h",
-          consensus: "GET /aggregates/consensus?symbols=BTC/USD,ETH/USD",
+          latest: 'GET /prices/latest?symbols=BTC/USD,ETH/USD',
+          range: 'GET /prices/range?symbol=BTC/USD&from=...&to=...&interval=1h',
+          consensus: 'GET /aggregates/consensus?symbols=BTC/USD,ETH/USD',
         },
       },
-      documentation: "https://github.com/alexsmith84/project-chrono",
+      documentation: 'https://github.com/alexsmith84/project-chrono',
     });
   });
 
-  // Documentation routes (no auth required)
-  app.route("/", docsRouter);
-
   // Health check routes (no auth required)
-  app.route("/health", healthRoute);
-  app.route("/metrics", healthRoute);
+  app.route('/health', healthRoute);
+  app.route('/metrics', healthRoute);
 
   // Internal routes (require internal API key)
-  app.use("/internal/*", authMiddleware);
-  app.use(
-    "/internal/*",
-    requireApiKeyType(ApiKeyType.Internal, ApiKeyType.Admin),
-  );
-  app.use("/internal/*", rateLimitMiddleware);
-  app.route("/internal/ingest", ingestRoute);
+  app.use('/internal/*', authMiddleware);
+  app.use('/internal/*', requireApiKeyType(ApiKeyType.Internal, ApiKeyType.Admin));
+  app.use('/internal/*', rateLimitMiddleware);
+  app.route('/internal/ingest', ingestRoute);
 
   // Public routes (require public or admin API key)
-  app.use("/prices/*", authMiddleware);
-  app.use("/prices/*", requireApiKeyType(ApiKeyType.Public, ApiKeyType.Admin));
-  app.use("/prices/*", rateLimitMiddleware);
-  app.route("/prices", pricesRoute);
+  app.use('/prices/*', authMiddleware);
+  app.use('/prices/*', requireApiKeyType(ApiKeyType.Public, ApiKeyType.Admin));
+  app.use('/prices/*', rateLimitMiddleware);
+  app.route('/prices', pricesRoute);
 
-  app.use("/aggregates/*", authMiddleware);
-  app.use(
-    "/aggregates/*",
-    requireApiKeyType(ApiKeyType.Public, ApiKeyType.Admin),
-  );
-  app.use("/aggregates/*", rateLimitMiddleware);
-  app.route("/aggregates", aggregatesRoute);
+  app.use('/aggregates/*', authMiddleware);
+  app.use('/aggregates/*', requireApiKeyType(ApiKeyType.Public, ApiKeyType.Admin));
+  app.use('/aggregates/*', rateLimitMiddleware);
+  app.route('/aggregates', aggregatesRoute);
 
   // 404 handler
   app.notFound((c) => {
     return c.json(
       {
         error: {
-          code: "NOT_FOUND",
+          code: 'NOT_FOUND',
           message: `Route not found: ${c.req.method} ${c.req.path}`,
-          request_id: c.get("requestId"),
+          request_id: c.get('requestId'),
         },
         status: 404,
       },
-      404,
+      404
     );
   });
 
@@ -174,7 +153,7 @@ export function startServer() {
       const url = new URL(req.url);
 
       // Handle WebSocket upgrade for /stream endpoint
-      if (url.pathname === "/stream") {
+      if (url.pathname === '/stream') {
         const connectionId = crypto.randomUUID();
 
         const upgraded = server.upgrade(req, {
@@ -189,7 +168,7 @@ export function startServer() {
           return undefined; // Connection upgraded successfully
         }
 
-        return new Response("WebSocket upgrade failed", { status: 500 });
+        return new Response('WebSocket upgrade failed', { status: 500 });
       }
 
       // Pass all other requests to Hono
@@ -207,7 +186,7 @@ export function startServer() {
       ws_heartbeat_interval: config.WS_HEARTBEAT_INTERVAL,
       ws_max_connections: config.WS_MAX_CONNECTIONS,
     },
-    `🚀 Project Chrono API server started on port ${config.PORT}`,
+    `🚀 Project Chrono API server started on port ${config.PORT}`
   );
 
   return server;
