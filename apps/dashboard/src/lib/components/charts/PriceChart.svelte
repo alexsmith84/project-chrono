@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import * as Plot from '@observablehq/plot';
 	import type { DataProvider, PriceData } from '$lib/providers/types';
 
@@ -31,10 +31,11 @@
 
 		// Initial render
 		renderChart();
-	});
 
-	onDestroy(() => {
-		unsubscribe?.();
+		// Cleanup function (Svelte 5 way)
+		return () => {
+			unsubscribe?.();
+		};
 	});
 
 	function renderChart() {
