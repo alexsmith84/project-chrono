@@ -14,14 +14,19 @@ script_name = "chrono-collectors"
 # Enable Durable Objects migrations
 [[migrations]]
 tag = "v1"
-new_classes = ["PriceCollector"]
+new_sqlite_classes = ["PriceCollector"]
 
 # Development environment (default)
 [env.dev]
 name = "chrono-collectors-dev"
-vars = { WORKER_ID = "worker-dev" }
+
+[[env.dev.durable_objects.bindings]]
+name = "PRICE_COLLECTOR"
+class_name = "PriceCollector"
+script_name = "chrono-collectors-dev"
 
 [env.dev.vars]
+WORKER_ID = "worker-dev"
 API_BASE_URL = "http://localhost:3000"
 
 # Secrets (set via: wrangler secret put API_KEY --env dev)
@@ -30,9 +35,14 @@ API_BASE_URL = "http://localhost:3000"
 # Staging environment
 [env.staging]
 name = "chrono-collectors-staging"
-vars = { WORKER_ID = "worker-staging" }
+
+[[env.staging.durable_objects.bindings]]
+name = "PRICE_COLLECTOR"
+class_name = "PriceCollector"
+script_name = "chrono-collectors-staging"
 
 [env.staging.vars]
+WORKER_ID = "worker-staging"
 API_BASE_URL = "https://api-staging.projectchrono.io"
 
 # Secrets (set via: wrangler secret put API_KEY --env staging)
@@ -41,9 +51,14 @@ API_BASE_URL = "https://api-staging.projectchrono.io"
 # Production environment
 [env.production]
 name = "chrono-collectors-production"
-vars = { WORKER_ID = "worker-production" }
+
+[[env.production.durable_objects.bindings]]
+name = "PRICE_COLLECTOR"
+class_name = "PriceCollector"
+script_name = "chrono-collectors-production"
 
 [env.production.vars]
+WORKER_ID = "worker-production"
 API_BASE_URL = "https://chrono-api.hayven.xyz"
 
 # Custom domain routes for production
