@@ -91,15 +91,23 @@ export class WebSocketManager {
 
     this.logger.info('WebSocket connected', { exchange: this.adapter.name });
 
-    // Send subscription message
+    // Send subscription message (if needed)
     try {
       const subscribeMsg = this.adapter.getSubscribeMessage();
-      this.ws?.send(subscribeMsg);
 
-      this.logger.debug('Sent subscription message', {
-        exchange: this.adapter.name,
-        message: subscribeMsg
-      });
+      // Only send if there's actually a message (some exchanges use URL-based streams)
+      if (subscribeMsg && subscribeMsg.trim() !== '') {
+        this.ws?.send(subscribeMsg);
+
+        this.logger.debug('Sent subscription message', {
+          exchange: this.adapter.name,
+          message: subscribeMsg
+        });
+      } else {
+        this.logger.debug('No subscription message needed (URL-based stream)', {
+          exchange: this.adapter.name
+        });
+      }
     } catch (error) {
       this.logger.error('Failed to send subscription message', {
         error: String(error)
