@@ -1,0 +1,76 @@
+# Wrangler configuration for Chrono Collectors
+# Cloudflare Workers for collecting real-time cryptocurrency prices
+
+name = "chrono-collectors"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Durable Objects configuration
+[[durable_objects.bindings]]
+name = "PRICE_COLLECTOR"
+class_name = "PriceCollector"
+script_name = "chrono-collectors"
+
+# Enable Durable Objects migrations
+[[migrations]]
+tag = "v1"
+new_classes = ["PriceCollector"]
+
+# Development environment (default)
+[env.dev]
+name = "chrono-collectors-dev"
+vars = { WORKER_ID = "worker-dev" }
+
+[env.dev.vars]
+API_BASE_URL = "http://localhost:3000"
+
+# Secrets (set via: wrangler secret put API_KEY --env dev)
+# API_KEY = "..." (set via CLI)
+
+# Staging environment
+[env.staging]
+name = "chrono-collectors-staging"
+vars = { WORKER_ID = "worker-staging" }
+
+[env.staging.vars]
+API_BASE_URL = "https://api-staging.projectchrono.io"
+
+# Secrets (set via: wrangler secret put API_KEY --env staging)
+# API_KEY = "..." (set via CLI)
+
+# Production environment
+[env.production]
+name = "chrono-collectors-production"
+vars = { WORKER_ID = "worker-production" }
+
+[env.production.vars]
+API_BASE_URL = "https://chrono-api.hayven.xyz"
+
+# Custom domain routes for production
+# Note: Domain must be added to your Cloudflare account first
+# Add hayven.xyz to Cloudflare, then these routes will work
+[[env.production.routes]]
+pattern = "collectors-coinbase.hayven.xyz/*"
+custom_domain = true
+
+[[env.production.routes]]
+pattern = "collectors-binance.hayven.xyz/*"
+custom_domain = true
+
+[[env.production.routes]]
+pattern = "collectors-kraken.hayven.xyz/*"
+custom_domain = true
+
+# Secrets (set via: wrangler secret put API_KEY --env production)
+# API_KEY = "..." (set via CLI)
+
+# Worker limits
+# Free tier allows:
+# - 100,000 requests/day
+# - 10ms CPU time per request
+# - 128 MB memory
+
+# Durable Objects limits (Paid plan required)
+# - Unlimited objects
+# - $0.15 per million requests
+# - $0.02 per GB-hour of storage
