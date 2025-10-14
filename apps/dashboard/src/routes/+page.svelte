@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { initializeProviders, providerRegistry } from '$lib/providers';
-	import { useStore } from 'nanostores';
+	import { providerRegistry } from '$lib/providers';
+	import { CoinbaseProvider } from '$lib/providers/exchanges/CoinbaseProvider';
+	import { BinanceProvider } from '$lib/providers/exchanges/BinanceProvider';
+	import { KrakenProvider } from '$lib/providers/exchanges/KrakenProvider';
 	import PriceChart from '$lib/components/charts/PriceChart.svelte';
 	import ProviderStatusCard from '$lib/components/ProviderStatusCard.svelte';
 
@@ -9,33 +11,24 @@
 	const WS_URL = 'ws://localhost:3000';
 	const SYMBOLS = ['BTC/USD', 'ETH/USD'];
 
-	// Reactive providers store
-	const providers = useStore(providerRegistry.$providers);
-	const providerCount = useStore(providerRegistry.$providerCount);
-	const activeProviders = useStore(providerRegistry.$activeProviders);
+	// Initialize providers immediately (not in onMount to avoid hydration issues)
+	// Clear any existing providers first (handles HMR during development)
+	providerRegistry.clear();
+	providerRegistry.register(new CoinbaseProvider());
+	providerRegistry.register(new BinanceProvider());
+	providerRegistry.register(new KrakenProvider());
 
 	// State
-	let initialized = false;
+	let initialized = true; // Set to true immediately since we registered providers
 	let error: string | null = null;
 
-	// Initialize providers on mount
-	onMount(async () => {
-		try {
-			initializeProviders({
-				wsUrl: WS_URL,
-				symbols: SYMBOLS,
-				autoConnect: true
-			});
+	// Extract stores from registry for Svelte reactivity
+	const providersStore = providerRegistry.$providers;
+	const activeProvidersStore = providerRegistry.$activeProviders;
+	const providerCountStore = providerRegistry.$providerCount;
 
-			initialized = true;
-		} catch (err) {
-			console.error('Failed to initialize providers:', err);
-			error = err instanceof Error ? err.message : 'Unknown error';
-		}
-	});
-
-	// Get providers as array
-	$: providersList = Object.values($providers);
+	// Get providers as array - using $ prefix to access nanostore reactively
+	$: providersList = Object.values($providersStore);
 	$: exchangeProviders = providersList.filter((p) => p.category === 'exchange');
 </script>
 
@@ -49,11 +42,11 @@
 
 		<div class="header-stats">
 			<div class="stat-card">
-				<span class="stat-value">{$providerCount}</span>
+				<span class="stat-value">{$providerCountStore}</span>
 				<span class="stat-label">Total Providers</span>
 			</div>
 			<div class="stat-card">
-				<span class="stat-value">{$activeProviders.length}</span>
+				<span class="stat-value">{$activeProvidersStore.length}</span>
 				<span class="stat-label">Active</span>
 			</div>
 		</div>

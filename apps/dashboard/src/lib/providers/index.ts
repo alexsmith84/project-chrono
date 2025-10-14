@@ -18,11 +18,11 @@ export * from './types';
  * Initialize and register all providers
  * Call this once at app startup
  */
-export function initializeProviders(config?: {
+export async function initializeProviders(config?: {
 	wsUrl?: string;
 	symbols?: string[];
 	autoConnect?: boolean;
-}): void {
+}): Promise<void> {
 	console.log('🚀 Initializing Project Chrono provider system...');
 
 	// Register exchange providers
@@ -39,7 +39,7 @@ export function initializeProviders(config?: {
 
 	// Auto-connect if requested
 	if (config?.autoConnect) {
-		providerRegistry.connectAll({
+		await providerRegistry.connectAll({
 			wsUrl: config.wsUrl,
 			symbols: config.symbols
 		});
