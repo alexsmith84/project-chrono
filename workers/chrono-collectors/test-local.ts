@@ -19,6 +19,7 @@ const CONFIG = {
   batchSize: parseInt(process.env.BATCH_SIZE || '10'),
   batchIntervalMs: parseInt(process.env.BATCH_INTERVAL_MS || '5000'),
   maxReconnectAttempts: parseInt(process.env.MAX_RECONNECT_ATTEMPTS || '10'),
+  maxRuntimeMs: process.env.MAX_RUNTIME_MS ? parseInt(process.env.MAX_RUNTIME_MS) : undefined,
 };
 
 // Test which exchange to run (default: all)
@@ -27,6 +28,7 @@ const EXCHANGE = process.env.EXCHANGE || 'all'; // coinbase, binance, kraken, or
 class LocalCollector {
   private feedBuffer: PriceFeed[] = [];
   private batchTimer: ReturnType<typeof setTimeout> | null = null;
+  private maxRuntimeTimer: ReturnType<typeof setTimeout> | null = null;
   private stats = {
     feedsCollected: 0,
     batchesSent: 0,
@@ -43,6 +45,7 @@ class LocalCollector {
       exchange: this.adapter.name,
       symbols: this.adapter.symbols,
       api_url: this.config.apiBaseUrl,
+      max_runtime_ms: this.config.maxRuntimeMs,
     });
 
     const wsManager = new WebSocketManager(
@@ -57,9 +60,26 @@ class LocalCollector {
     // Start batch timer
     this.scheduleBatchFlush();
 
+    // Set up auto-shutdown timer if configured
+    if (this.config.maxRuntimeMs) {
+      this.maxRuntimeTimer = setTimeout(async () => {
+        this.logger.info('⏱️  Max runtime reached, shutting down gracefully...', {
+          max_runtime_ms: this.config.maxRuntimeMs,
+          feeds_collected: this.stats.feedsCollected,
+          batches_sent: this.stats.batchesSent,
+        });
+        await this.flushBatch();
+        wsManager.disconnect();
+        process.exit(0);
+      }, this.config.maxRuntimeMs);
+    }
+
     // Handle graceful shutdown
     process.on('SIGINT', async () => {
       this.logger.info('Shutting down gracefully...');
+      if (this.maxRuntimeTimer) {
+        clearTimeout(this.maxRuntimeTimer);
+      }
       await this.flushBatch();
       wsManager.disconnect();
       process.exit(0);
@@ -162,7 +182,13 @@ async function main() {
   console.log(`  Symbols: ${CONFIG.symbols.join(', ')}`);
   console.log(`  Batch Size: ${CONFIG.batchSize}`);
   console.log(`  Batch Interval: ${CONFIG.batchIntervalMs}ms`);
-  console.log(`  Exchange: ${EXCHANGE}\n`);
+  console.log(`  Exchange: ${EXCHANGE}`);
+  if (CONFIG.maxRuntimeMs) {
+    console.log(`  Max Runtime: ${CONFIG.maxRuntimeMs}ms (${Math.floor(CONFIG.maxRuntimeMs / 1000)}s)`);
+  } else {
+    console.log(`  Max Runtime: unlimited (use MAX_RUNTIME_MS env var to set)`);
+  }
+  console.log();
 
   const collectors: LocalCollector[] = [];
 
