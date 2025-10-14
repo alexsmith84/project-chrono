@@ -66,6 +66,12 @@ export interface WorkerConfig {
 
   /** Maximum reconnection attempts before giving up */
   maxReconnectAttempts: number;
+
+  /**
+   * Symbols to collect (e.g., ["BTC/USD", "ETH/USD", "SOL/USD"])
+   * Optional: defaults to ["BTC/USD", "ETH/USD"] if not specified
+   */
+  symbols?: string[];
 }
 
 /**

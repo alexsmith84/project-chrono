@@ -175,12 +175,17 @@ export class PriceCollector {
     // Worker ID format: "worker-{exchange}-{region}"
     // Example: "worker-coinbase-us-east", "worker-binance-global"
     const exchange = this.extractExchangeFromWorkerId(this.config.workerId);
-    const symbols = ['BTC/USD', 'ETH/USD']; // Default symbols, can be made configurable
+
+    // Use symbols from config, or default to BTC/USD and ETH/USD
+    const symbols = this.config.symbols || ['BTC/USD', 'ETH/USD'];
+
+    this.logger.info('Initializing with symbols', { symbols, source: this.config.symbols ? 'config' : 'default' });
 
     this.adapter = this.createExchangeAdapter(exchange, symbols, this.config.workerId);
     this.logger.info('Created exchange adapter', {
       exchange: this.adapter.name,
-      symbols: this.adapter.symbols
+      symbols: this.adapter.symbols,
+      symbol_count: this.adapter.symbols.length
     });
 
     // Create WebSocket manager

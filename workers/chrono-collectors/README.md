@@ -53,19 +53,22 @@ workers/chrono-collectors/
 - [x] Durable Object with HTTP endpoints
 - [x] API ingestion with retry logic
 
-### 🚧 Phase 2: Exchange Implementations (TODO)
+### ✅ Phase 2: Exchange Implementations (COMPLETE)
 
-- [ ] Coinbase adapter
-- [ ] Binance adapter
-- [ ] Kraken adapter
-- [ ] Integration testing
+- [x] Coinbase adapter (ticker channel, BTC-USD format)
+- [x] Binance adapter (stream-based, BTCUSDT format)
+- [x] Kraken adapter (array messages, XBT/USD format)
+- [x] Symbol normalization across exchanges
+- [x] Exchange-specific metadata preservation
 
-### 🚧 Phase 3: Production Ready (TODO)
+### ✅ Phase 3: Production Ready (COMPLETE)
 
-- [ ] Deployment scripts
-- [ ] Multi-environment configuration
-- [ ] Monitoring dashboard
-- [ ] Complete documentation
+- [x] Configurable symbol lists per worker
+- [x] Deployment scripts (deploy, start, stop, check)
+- [x] Multi-worker orchestration
+- [x] Enhanced logging and monitoring
+- [x] Complete documentation
+- [x] DEX considerations and future roadmap
 
 ## Prerequisites
 
@@ -124,9 +127,12 @@ Start the price collector.
   "apiKey": "chrono_internal_dev_key_001",
   "batchSize": 100,
   "batchIntervalMs": 5000,
-  "maxReconnectAttempts": 10
+  "maxReconnectAttempts": 10,
+  "symbols": ["BTC/USD", "ETH/USD", "SOL/USD"]
 }
 ```
+
+**Note**: `symbols` is optional. Defaults to `["BTC/USD", "ETH/USD"]` if not provided.
 
 **Response:**
 ```json
@@ -203,16 +209,67 @@ curl -X POST http://localhost:8787/stop
 
 ## Deployment
 
-### Development
+### Automated Deployment (Recommended)
+
+Use the deployment scripts for multi-worker orchestration:
+
+```bash
+# Deploy all workers
+./scripts/deployment/deploy-workers.sh production
+
+# Start all workers with configured symbol sets
+export API_KEY=your-production-api-key
+./scripts/deployment/start-workers.sh production
+
+# Check status of all workers
+./scripts/deployment/check-workers.sh production
+
+# Stop all workers
+./scripts/deployment/stop-workers.sh production
+```
+
+### Manual Deployment
+
+#### Development
 
 ```bash
 npm run deploy
 ```
 
-### Production
+#### Production
 
 ```bash
 npm run deploy:production
+```
+
+### Multi-Worker Strategy
+
+Deploy multiple workers for different symbol sets:
+
+```bash
+# Major pairs worker (high priority)
+curl -X POST https://chrono-coinbase-prod.workers.dev/start -d '{
+  "workerId": "worker-coinbase-major",
+  "symbols": ["BTC/USD", "ETH/USD", "SOL/USD"],
+  "batchSize": 100,
+  "batchIntervalMs": 5000
+}'
+
+# Altcoins worker (medium priority)
+curl -X POST https://chrono-binance-prod.workers.dev/start -d '{
+  "workerId": "worker-binance-alts",
+  "symbols": ["ADA/USD", "DOGE/USD", "DOT/USD", "AVAX/USD"],
+  "batchSize": 100,
+  "batchIntervalMs": 5000
+}'
+
+# Stablecoins worker (monitoring)
+curl -X POST https://chrono-coinbase-prod.workers.dev/start -d '{
+  "workerId": "worker-coinbase-stable",
+  "symbols": ["USDT/USD", "USDC/USD", "DAI/USD"],
+  "batchSize": 50,
+  "batchIntervalMs": 10000
+}'
 ```
 
 ## Configuration
