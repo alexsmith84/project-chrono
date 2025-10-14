@@ -248,29 +248,69 @@ Deploy multiple workers for different symbol sets:
 
 ```bash
 # Major pairs worker (high priority)
-curl -X POST https://chrono-coinbase-prod.workers.dev/start -d '{
+curl -X POST https://collectors-coinbase.hayven.xyz/start -d '{
   "workerId": "worker-coinbase-major",
   "symbols": ["BTC/USD", "ETH/USD", "SOL/USD"],
   "batchSize": 100,
-  "batchIntervalMs": 5000
+  "batchIntervalMs": 5000,
+  "apiBaseUrl": "https://api.hayven.xyz",
+  "apiKey": "your-api-key",
+  "maxReconnectAttempts": 10
 }'
 
 # Altcoins worker (medium priority)
-curl -X POST https://chrono-binance-prod.workers.dev/start -d '{
+curl -X POST https://collectors-binance.hayven.xyz/start -d '{
   "workerId": "worker-binance-alts",
   "symbols": ["ADA/USD", "DOGE/USD", "DOT/USD", "AVAX/USD"],
   "batchSize": 100,
-  "batchIntervalMs": 5000
+  "batchIntervalMs": 5000,
+  "apiBaseUrl": "https://api.hayven.xyz",
+  "apiKey": "your-api-key",
+  "maxReconnectAttempts": 10
 }'
 
 # Stablecoins worker (monitoring)
-curl -X POST https://chrono-coinbase-prod.workers.dev/start -d '{
+curl -X POST https://collectors-coinbase.hayven.xyz/start -d '{
   "workerId": "worker-coinbase-stable",
   "symbols": ["USDT/USD", "USDC/USD", "DAI/USD"],
   "batchSize": 50,
-  "batchIntervalMs": 10000
+  "batchIntervalMs": 10000,
+  "apiBaseUrl": "https://api.hayven.xyz",
+  "apiKey": "your-api-key",
+  "maxReconnectAttempts": 10
 }'
 ```
+
+## Custom Domain Setup (hayven.xyz)
+
+This project uses custom domains on `hayven.xyz` for production deployments.
+
+### Prerequisites
+
+1. **Add domain to Cloudflare**:
+   - Go to https://dash.cloudflare.com
+   - Add `hayven.xyz` as a new site
+   - Update nameservers at your registrar
+
+2. **DNS Records** (automatic with custom_domain routes):
+   - `collectors-coinbase.hayven.xyz` → Cloudflare Worker
+   - `collectors-binance.hayven.xyz` → Cloudflare Worker
+   - `collectors-kraken.hayven.xyz` → Cloudflare Worker
+
+### Production URLs
+
+Once configured, your workers will be available at:
+
+- **Coinbase**: https://collectors-coinbase.hayven.xyz
+- **Binance**: https://collectors-binance.hayven.xyz
+- **Kraken**: https://collectors-kraken.hayven.xyz
+
+### Development URLs
+
+For dev/staging, workers use environment-specific subdomains:
+
+- **Dev**: https://chrono-coinbase-dev.hayven.xyz
+- **Staging**: https://chrono-coinbase-staging.hayven.xyz
 
 ## Configuration
 

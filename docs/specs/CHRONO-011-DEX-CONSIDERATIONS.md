@@ -141,10 +141,10 @@ this.adapter = new CoinbaseAdapter(majorPairs, workerId);
 **Dedicated workers for on-chain DEX data**:
 
 ```
-worker-coinbase-cex     → Centralized exchange (current)
-worker-coinbase-dex     → DEX aggregated data (future)
-worker-base-aerodrome   → Direct Aerodrome monitoring (future)
-worker-base-uniswap     → Direct Uniswap monitoring (future)
+collectors-coinbase.hayven.xyz     → Centralized exchange (current)
+collectors-dex.hayven.xyz          → DEX aggregated data (future)
+collectors-aerodrome.hayven.xyz    → Direct Aerodrome monitoring (future)
+collectors-uniswap.hayven.xyz      → Direct Uniswap monitoring (future)
 ```
 
 **Benefits**:

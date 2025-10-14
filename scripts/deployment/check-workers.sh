@@ -20,7 +20,13 @@ echo -e "${BLUE}=== Chrono Collectors Status - Environment: $ENV ===${NC}\n"
 check_worker() {
     local exchange=$1
     local worker_name=$2
-    local worker_url="https://chrono-${exchange}-${ENV}.alexsmith84.workers.dev"
+
+    # Use custom domain for production, dev domain otherwise
+    if [ "$ENV" = "production" ]; then
+        local worker_url="https://collectors-${exchange}.hayven.xyz"
+    else
+        local worker_url="https://chrono-${exchange}-${ENV}.hayven.xyz"
+    fi
 
     echo -e "${BLUE}Checking $worker_name...${NC}"
 

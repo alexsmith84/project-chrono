@@ -48,7 +48,13 @@ start_worker() {
     local exchange=$1
     local worker_id=$2
     local symbols=$3
-    local worker_url="https://chrono-${exchange}-${ENV}.alexsmith84.workers.dev"
+
+    # Use custom domain for production, dev domain otherwise
+    if [ "$ENV" = "production" ]; then
+        local worker_url="https://collectors-${exchange}.hayven.xyz"
+    else
+        local worker_url="https://chrono-${exchange}-${ENV}.hayven.xyz"
+    fi
 
     echo -e "${BLUE}Starting $worker_id...${NC}"
 

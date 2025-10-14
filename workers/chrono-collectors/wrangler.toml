@@ -44,7 +44,22 @@ name = "chrono-collectors-production"
 vars = { WORKER_ID = "worker-production" }
 
 [env.production.vars]
-API_BASE_URL = "https://api.projectchrono.io"
+API_BASE_URL = "https://api.hayven.xyz"
+
+# Custom domain routes for production
+# Note: Domain must be added to your Cloudflare account first
+# Add hayven.xyz to Cloudflare, then these routes will work
+[[env.production.routes]]
+pattern = "collectors-coinbase.hayven.xyz/*"
+custom_domain = true
+
+[[env.production.routes]]
+pattern = "collectors-binance.hayven.xyz/*"
+custom_domain = true
+
+[[env.production.routes]]
+pattern = "collectors-kraken.hayven.xyz/*"
+custom_domain = true
 
 # Secrets (set via: wrangler secret put API_KEY --env production)
 # API_KEY = "..." (set via CLI)

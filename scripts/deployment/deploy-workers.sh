@@ -73,9 +73,15 @@ echo -e "${GREEN}=== All workers deployed successfully ===${NC}\n"
 
 # Print worker URLs
 echo -e "${BLUE}Worker URLs:${NC}"
-echo "  Coinbase: https://chrono-coinbase-$ENV.alexsmith84.workers.dev"
-echo "  Binance:  https://chrono-binance-$ENV.alexsmith84.workers.dev"
-echo "  Kraken:   https://chrono-kraken-$ENV.alexsmith84.workers.dev"
+if [ "$ENV" = "production" ]; then
+    echo "  Coinbase: https://collectors-coinbase.hayven.xyz"
+    echo "  Binance:  https://collectors-binance.hayven.xyz"
+    echo "  Kraken:   https://collectors-kraken.hayven.xyz"
+else
+    echo "  Coinbase: https://chrono-coinbase-$ENV.hayven.xyz"
+    echo "  Binance:  https://chrono-binance-$ENV.hayven.xyz"
+    echo "  Kraken:   https://chrono-kraken-$ENV.hayven.xyz"
+fi
 echo
 
 echo -e "${YELLOW}Next steps:${NC}"
