@@ -4,6 +4,27 @@
 
 ---
 
+## ⚠️ CRITICAL: Never Commit Directly to `khala`
+
+**`khala` is the main production branch. ALL work must be done on feature branches.**
+
+See **[Branch Management](./branch-management.md)** for complete workflow.
+
+**Quick rule**:
+```bash
+# ❌ NEVER do this
+git checkout khala
+git commit -m "work"
+
+# ✅ ALWAYS do this
+git checkout khala && git pull
+git checkout -b feature/chrono-XXX-description
+git commit -m "work"
+gh pr create --base khala
+```
+
+---
+
 ## ⚠️ Before Starting ANY Work - Critical Checklist
 
 **Stop and verify BEFORE coding:**
