@@ -59,28 +59,28 @@ export class BinanceAdapter implements ExchangeAdapter {
 
   /**
    * Binance uses streams in the URL path
-   * Example: wss://stream.binance.com:9443/stream?streams=btcusdt@ticker/ethusdt@ticker
+   * Example: wss://stream.binance.com:9443/ws/btcusdt@ticker
+   * For multiple streams: use individual WebSocket connections or combined stream endpoint
    */
   constructor(
     public symbols: string[],
     public workerId: string
   ) {
-    // Convert symbols to stream names and build URL
-    const streams = this.symbols
-      .map(symbol => this.toStreamName(symbol))
-      .join('/');
-
-    this.wsUrl = `wss://stream.binance.com:9443/stream?streams=${streams}`;
+    // For simplicity, use the first symbol only in PoC
+    // In production, you'd want to handle multiple streams properly
+    const firstSymbol = this.toStreamName(symbols[0]);
+    this.wsUrl = `wss://stream.binance.com:9443/ws/${firstSymbol}`;
   }
 
   /**
    * Convert normalized symbol to Binance stream name
-   * BTC/USD → btcusdt@ticker
+   * BTC/USD → btcusdt@miniTicker (updates every second, faster than @ticker)
    */
   private toStreamName(symbol: string): string {
-    // Remove slash and convert to lowercase
-    const pair = symbol.replace('/', '').toLowerCase();
-    return `${pair}@ticker`;
+    // Convert USD to USDT (Binance uses Tether, not USD)
+    const binanceSymbol = symbol.replace('/USD', 'USDT').replace('/', '').toLowerCase();
+    // Use miniTicker for real-time updates (1 second vs 24hr ticker which updates less frequently)
+    return `${binanceSymbol}@miniTicker`;
   }
 
   /**
@@ -98,17 +98,10 @@ export class BinanceAdapter implements ExchangeAdapter {
   /**
    * Parse Binance ticker message to normalized PriceFeed
    *
-   * Binance wraps ticker data in a stream message:
-   * {
-   *   "stream": "btcusdt@ticker",
-   *   "data": {
-   *     "e": "24hrTicker",
-   *     "E": 123456789,
-   *     "s": "BTCUSDT",
-   *     "c": "0.0025",
-   *     ...
-   *   }
-   * }
+   * Single stream format (/ws/): ticker data sent directly
+   * Combined stream format (/stream?streams=): wrapped in {stream, data}
+   *
+   * This adapter uses single stream, so data is direct
    */
   parseMessage(msg: ExchangeMessage): PriceFeed | null {
     // Ignore array messages (not from Binance)
@@ -116,17 +109,25 @@ export class BinanceAdapter implements ExchangeAdapter {
       return null;
     }
 
-    const streamMsg = msg as unknown as BinanceStreamMessage;
+    // Try to parse as direct ticker data first (single stream format)
+    let data: BinanceTickerData;
 
-    // Ensure we have the data wrapper
-    if (!streamMsg.data) {
+    const rawMsg = msg as any;
+
+    // Check if this is a wrapped message (combined streams) or direct (single stream)
+    if (rawMsg.data && typeof rawMsg.data === 'object') {
+      // Combined stream format: {stream: "...", data: {...}}
+      data = rawMsg.data as BinanceTickerData;
+    } else if (rawMsg.e) {
+      // Single stream format: ticker data directly
+      data = rawMsg as BinanceTickerData;
+    } else {
+      // Unknown format
       return null;
     }
 
-    const data = streamMsg.data;
-
-    // Only process 24hrTicker events
-    if (data.e !== '24hrTicker') {
+    // Process both 24hrTicker and miniTicker events
+    if (data.e !== '24hrTicker' && data.e !== '24hrMiniTicker') {
       return null;
     }
 
