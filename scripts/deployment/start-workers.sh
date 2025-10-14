@@ -22,10 +22,10 @@ case $ENV in
         API_BASE_URL="http://localhost:3000"
         ;;
     staging)
-        API_BASE_URL="https://api-staging.projectchrono.io"
+        API_BASE_URL="https://chrono-api-staging.hayven.xyz"
         ;;
     production)
-        API_BASE_URL="https://api.projectchrono.io"
+        API_BASE_URL="https://chrono-api.hayven.xyz"
         ;;
     *)
         echo -e "${RED}✗ Unknown environment: $ENV${NC}"

@@ -44,7 +44,7 @@ name = "chrono-collectors-production"
 vars = { WORKER_ID = "worker-production" }
 
 [env.production.vars]
-API_BASE_URL = "https://api.hayven.xyz"
+API_BASE_URL = "https://chrono-api.hayven.xyz"
 
 # Custom domain routes for production
 # Note: Domain must be added to your Cloudflare account first

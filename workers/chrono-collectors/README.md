@@ -253,7 +253,7 @@ curl -X POST https://collectors-coinbase.hayven.xyz/start -d '{
   "symbols": ["BTC/USD", "ETH/USD", "SOL/USD"],
   "batchSize": 100,
   "batchIntervalMs": 5000,
-  "apiBaseUrl": "https://api.hayven.xyz",
+  "apiBaseUrl": "https://chrono-api.hayven.xyz",
   "apiKey": "your-api-key",
   "maxReconnectAttempts": 10
 }'
@@ -264,7 +264,7 @@ curl -X POST https://collectors-binance.hayven.xyz/start -d '{
   "symbols": ["ADA/USD", "DOGE/USD", "DOT/USD", "AVAX/USD"],
   "batchSize": 100,
   "batchIntervalMs": 5000,
-  "apiBaseUrl": "https://api.hayven.xyz",
+  "apiBaseUrl": "https://chrono-api.hayven.xyz",
   "apiKey": "your-api-key",
   "maxReconnectAttempts": 10
 }'
@@ -275,7 +275,7 @@ curl -X POST https://collectors-coinbase.hayven.xyz/start -d '{
   "symbols": ["USDT/USD", "USDC/USD", "DAI/USD"],
   "batchSize": 50,
   "batchIntervalMs": 10000,
-  "apiBaseUrl": "https://api.hayven.xyz",
+  "apiBaseUrl": "https://chrono-api.hayven.xyz",
   "apiKey": "your-api-key",
   "maxReconnectAttempts": 10
 }'
