@@ -5,7 +5,7 @@
  */
 
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { BaseProvider } from '../BaseProvider';
+import { BaseProvider } from '../BaseProvider.svelte';
 import type { PriceData, ProviderConfig } from '../types';
 
 export class BinanceProvider extends BaseProvider<PriceData> {
