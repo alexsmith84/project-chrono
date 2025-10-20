@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ProviderRegistry } from '../registry';
-import { BaseProvider } from '../BaseProvider';
+import { BaseProvider } from '../BaseProvider.svelte';
 import type { ProviderConfig } from '../types';
 
 // Mock provider for testing
@@ -327,7 +327,8 @@ describe('ProviderRegistry', () => {
 			const config = { 'mock-provider': { wsUrl: 'ws://test' } };
 			await registry.connectAll(config);
 
-			expect(connectSpy).toHaveBeenCalledWith({ wsUrl: 'ws://test' });
+			// Registry passes the entire config object to each provider
+			expect(connectSpy).toHaveBeenCalledWith(config);
 		});
 	});
 

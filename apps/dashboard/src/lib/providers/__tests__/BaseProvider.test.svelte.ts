@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { BaseProvider } from '../BaseProvider';
+import { BaseProvider } from '../BaseProvider.svelte';
 import type { ProviderConfig } from '../types';
 
 // Concrete implementation for testing
