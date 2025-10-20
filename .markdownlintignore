@@ -8,3 +8,4 @@ build/
 # Ignore lock files
 *.lock
 bun.lockb
+node_modules/**

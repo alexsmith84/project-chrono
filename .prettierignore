@@ -1,0 +1,15 @@
+# Temporarily ignore Svelte files until prettier-plugin-svelte v4 is released
+# Version 3.x does not properly support Svelte 5 runes syntax
+*.svelte
+
+# Build outputs
+node_modules
+dist
+build
+.svelte-kit
+coverage
+
+# Lock files
+bun.lock
+package-lock.json
+yarn.lock

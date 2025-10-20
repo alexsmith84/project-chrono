@@ -2,6 +2,7 @@
   "name": "project-chrono",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "StarCraft 2 themed Flare Time Series Oracle (FTSO)",
   "author": "alexsmith84",
   "license": "MIT",
@@ -10,33 +11,26 @@
     "dev": "bun run --filter '*' dev",
     "build": "bun run --filter '*' build",
     "test": "bun test",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint .",
     "lint:md": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#target\"",
     "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#target\"",
-    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
     "prepare": "husky || true"
   },
   "devDependencies": {
+    "@eslint/js": "^9.38.0",
     "@types/bun": "latest",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
     "@typescript-eslint/parser": "^8.46.1",
     "eslint": "^9.37.0",
+    "eslint-plugin-svelte": "^3.12.5",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.0",
     "markdownlint-cli2": "^0.18.1",
     "prettier": "^3.1.0",
+    "prettier-plugin-svelte": "^3.4.0",
+    "svelte-eslint-parser": "^1.4.0",
     "typescript": "^5.3.0"
-  },
-  "lint-staged": {
-    "*.md": [
-      "markdownlint-cli2 --fix"
-    ],
-    "*.{ts,tsx}": [
-      "eslint --fix"
-    ],
-    "*.{ts,tsx,json,md}": [
-      "prettier --write"
-    ]
   },
   "engines": {
     "node": ">=18.0.0",

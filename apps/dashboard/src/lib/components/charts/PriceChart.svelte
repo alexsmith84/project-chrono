@@ -1,39 +1,64 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import * as Plot from '@observablehq/plot';
 	import type { DataProvider, PriceData } from '$lib/providers/types';
 
 	// Props
-	export let provider: DataProvider<PriceData>;
-	export let symbol: string = 'BTC/USD';
-	export let maxDataPoints: number = 100;
-	export let height: number = 200;
+	let { provider, symbol = 'BTC/USD', maxDataPoints = 100, height = 200 }: {
+		provider: DataProvider<PriceData>;
+		symbol?: string;
+		maxDataPoints?: number;
+		height?: number;
+	} = $props();
 
 	// State
 	let container: HTMLDivElement;
-	let priceHistory: PriceData[] = [];
+	let priceHistory: PriceData[] = $state([]);
 	let unsubscribe: (() => void) | null = null;
 
-	// Subscribe to provider data updates
-	onMount(() => {
-		if (!provider) return;
+	// Component instance logging
+	console.log(`🔧 [PriceChart] Component instance created for ${provider?.name || 'unknown'} - ${symbol}`);
 
-		unsubscribe = provider.onData((data: PriceData) => {
-			// Only track data for our symbol
-			if (data.symbol !== symbol) return;
+	// Subscribe to provider data updates using $effect (Svelte 5 way)
+	$effect(() => {
+		console.log(`✨ [PriceChart] $effect: Setting up subscription for ${provider?.name} - ${symbol}`);
 
-			// Add to history
-			priceHistory = [...priceHistory, data].slice(-maxDataPoints);
+		if (!provider) {
+			console.error('[PriceChart] $effect - no provider!');
+			return;
+		}
 
-			// Redraw chart
+		try {
+			console.log(`[PriceChart] Subscribing to ${provider.name} data updates for ${symbol}`);
+
+			unsubscribe = provider.onData((data: PriceData) => {
+				console.log(`[PriceChart] 📨 onData callback triggered for ${provider.name}`, data);
+
+				// Only track data for our symbol
+				if (data.symbol !== symbol) {
+					console.log(`[PriceChart] Ignoring data - symbol mismatch: ${data.symbol} !== ${symbol}`);
+					return;
+				}
+
+				// Add to history
+				console.log(`[PriceChart] Adding data point to history. Current length: ${priceHistory.length}`);
+				priceHistory = [...priceHistory, data].slice(-maxDataPoints);
+				console.log(`[PriceChart] New history length: ${priceHistory.length}`);
+
+				// Redraw chart
+				renderChart();
+			});
+
+			console.log(`[PriceChart] ✅ Subscribed to ${provider.name} data updates. Callback count:`, provider.callbacks?.length || 'unknown');
+
+			// Initial render
 			renderChart();
-		});
+		} catch (error) {
+			console.error(`[PriceChart] ❌ Error in $effect for ${provider.name}:`, error);
+		}
 
-		// Initial render
-		renderChart();
-
-		// Cleanup function (Svelte 5 way)
+		// Cleanup function - runs when effect re-runs or component unmounts
 		return () => {
+			console.log(`[PriceChart] 🧹 Cleanup for ${provider.name} - ${symbol}`);
 			unsubscribe?.();
 		};
 	});
@@ -109,11 +134,13 @@
 		return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 	}
 
-	// Get latest price
-	$: latestPrice = priceHistory[priceHistory.length - 1]?.price;
-	$: priceChange = priceHistory.length > 1
-		? ((latestPrice - priceHistory[0].price) / priceHistory[0].price) * 100
-		: 0;
+	// Get latest price (Svelte 5 derived state)
+	let latestPrice = $derived(priceHistory[priceHistory.length - 1]?.price);
+	let priceChange = $derived(
+		priceHistory.length > 1
+			? ((latestPrice - priceHistory[0].price) / priceHistory[0].price) * 100
+			: 0
+	);
 </script>
 
 <div class="price-chart-container" class:inactive={!provider.isActive}>
@@ -140,15 +167,15 @@
 
 	<!-- Status badges -->
 	<div class="status-badges">
-		<span class="badge status-{provider.getConnectionStatus()}">
-			{provider.getConnectionStatus()}
+		<span class="badge status-{provider.status}">
+			{provider.status}
 		</span>
 		{#if !provider.isActive}
 			<span class="badge excluded">EXCLUDED</span>
 		{/if}
-		{#if provider.getLatency()}
+		{#if provider.latency}
 			<span class="badge latency">
-				{provider.getLatency()}ms
+				{provider.latency}ms
 			</span>
 		{/if}
 	</div>
