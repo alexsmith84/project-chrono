@@ -1,62 +1,74 @@
 # Branch Management Workflow
 
-## TL;DR - Never Commit Directly to `khala`
+## TL;DR - All Feature Work Must Branch from `forge`
 
 ```bash
-# ❌ WRONG - Committing directly to khala
+# ❌ WRONG - Branching from khala or committing directly
 git checkout khala
-git add .
 git commit -m "feature"
 
-# ✅ CORRECT - Always use feature branches
+# ❌ ALSO WRONG - Branching from khala instead of forge
 git checkout khala
-git pull origin khala
-git checkout -b feature/chrono-XXX-description
+git checkout -b warp-in/CHRONO-XXX-description
+
+# ✅ CORRECT - Always branch from forge for feature work
+git checkout forge
+git pull origin forge
+git checkout -b warp-in/CHRONO-XXX-description
 # ... make changes ...
-git commit -m "feature"
-git push -u origin feature/chrono-XXX-description
-gh pr create --base khala
+git commit -m "CHRONO-XXX: feature description"
+git push -u origin warp-in/CHRONO-XXX-description
+gh pr create --base forge  # ← CRITICAL: PRs merge to forge, NOT khala
 ```
 
 ---
 
 ## Branch Strategy
 
-### Main Branch: `khala`
+### Production Branch: `khala`
 
 - **Purpose**: Production-ready code, always deployable
-- **Protection**: Should be protected via GitHub branch rules
-- **Updates**: Only via Pull Requests (PRs)
-- **Never**: Commit directly to this branch
+- **Protection**: Protected via GitHub branch rules
+- **Updates**: Only via PRs from `gateway` (staging)
+- **Never**: Feature branches should NOT be created from khala
+- **Never**: PRs should NOT target khala directly (except hotfixes)
+
+### Development Branch: `forge`
+
+- **Purpose**: Integration branch for all feature work
+- **Updates**: Feature branches merge here via PR
+- **Base for**: All `warp-in/*` feature branches
+- **Protection**: Should be stable and tested before merging to gateway
 
 ### Feature Branches
 
-**Naming Convention**: `feature/chrono-XXX-short-description`
+**Naming Convention**: `warp-in/CHRONO-XXX-short-description`
 
 **Examples**:
-- `feature/chrono-011-workers`
-- `feature/chrono-012-web-portal`
-- `feature/chrono-013-analytics`
+- `warp-in/CHRONO-011-workers`
+- `warp-in/CHRONO-012-web-portal`
+- `warp-in/CHRONO-013-analytics`
 
 **Lifecycle**:
-1. Created from `khala`
+1. **CRITICAL**: Created from `forge` (NOT khala)
 2. Development happens here
-3. PR created to merge back to `khala`
+3. PR created to merge back to `forge` (NOT khala)
 4. Deleted after merge
 
 ### Other Branch Types
 
-**Hotfix branches**: `hotfix/critical-bug-description`
+**Hotfix branches**: `recall/hotfix-critical-bug-description`
 - For urgent production fixes
-- Branch from `khala`, merge back immediately
+- Branch from `khala`, merge to khala, gateway, AND forge
+
+**Staging Branch**: `gateway`
+- Pre-production testing environment
+- Merges from `forge` when ready for release
+- Merges to `khala` after verification
 
 **Archive branches**: `archives/v0.1.0`
-- Long-lived branches for archival purposes
+- Long-lived branches for release snapshots
 - Never deleted
-
-**Experimental branches**: `forge`, `gateway`, etc.
-- For exploratory work
-- May or may not be merged
 
 ---
 
@@ -65,12 +77,12 @@ gh pr create --base khala
 ### 1. Start New Work
 
 ```bash
-# Always start from latest khala
-git checkout khala
-git pull origin khala
+# CRITICAL: Always start from latest forge (NOT khala)
+git checkout forge
+git pull origin forge
 
-# Create feature branch
-git checkout -b feature/chrono-XXX-description
+# Create feature branch with warp-in prefix
+git checkout -b warp-in/CHRONO-XXX-description
 
 # Verify you're on the feature branch
 git branch --show-current
@@ -84,28 +96,28 @@ git add .
 git commit -m "CHRONO-XXX: descriptive message"
 
 # Push to remote regularly (enables backup and collaboration)
-git push -u origin feature/chrono-XXX-description
+git push -u origin warp-in/CHRONO-XXX-description
 ```
 
 ### 3. Keep Branch Up to Date
 
 ```bash
-# If khala gets updated while you're working
-git checkout khala
-git pull origin khala
-git checkout feature/chrono-XXX-description
-git rebase khala  # or: git merge khala
+# If forge gets updated while you're working
+git checkout forge
+git pull origin forge
+git checkout warp-in/CHRONO-XXX-description
+git rebase forge  # or: git merge forge
 ```
 
 ### 4. Create Pull Request
 
 ```bash
 # Ensure all changes are pushed
-git push origin feature/chrono-XXX-description
+git push origin warp-in/CHRONO-XXX-description
 
-# Create PR via GitHub CLI
+# Create PR via GitHub CLI - CRITICAL: Base must be forge
 gh pr create \
-  --base khala \
+  --base forge \
   --title "CHRONO-XXX: Feature Name" \
   --body "Closes #XXX
 
@@ -127,15 +139,15 @@ gh pr create \
 ### 5. After PR Merged
 
 ```bash
-# Switch back to khala
-git checkout khala
-git pull origin khala
+# Switch back to forge
+git checkout forge
+git pull origin forge
 
 # Delete local feature branch
-git branch -d feature/chrono-XXX-description
+git branch -d warp-in/CHRONO-XXX-description
 
 # Delete remote feature branch (if not auto-deleted)
-git push origin --delete feature/chrono-XXX-description
+git push origin --delete warp-in/CHRONO-XXX-description
 
 # Or use GitHub CLI
 gh pr list --state merged
@@ -155,25 +167,25 @@ GitHub can auto-delete branches after PR merge. Enable via:
 **List merged branches**:
 ```bash
 # Local branches that are merged
-git branch --merged khala
+git branch --merged forge
 
 # Remote branches that are merged
-git branch -r --merged khala
+git branch -r --merged forge
 ```
 
 **Delete local merged branches**:
 ```bash
 # Safe delete (only if fully merged)
-git branch -d feature/old-branch
+git branch -d warp-in/old-branch
 
 # Force delete (use with caution)
-git branch -D feature/old-branch
+git branch -D warp-in/old-branch
 ```
 
 **Delete remote merged branches**:
 ```bash
 # Single branch
-git push origin --delete feature/old-branch
+git push origin --delete warp-in/old-branch
 
 # Multiple branches
 git push origin --delete feature/branch1 feature/branch2 feature/branch3
@@ -216,7 +228,7 @@ if [ "$branch" = "khala" ]; then
   echo "❌ ERROR: Cannot commit directly to 'khala' branch!"
   echo ""
   echo "Please create a feature branch:"
-  echo "  git checkout -b feature/chrono-XXX-description"
+  echo "  git checkout -b warp-in/CHRONO-XXX-description"
   echo ""
   exit 1
 fi
@@ -235,29 +247,29 @@ Add to `.gitconfig`:
 
 ```bash
 [alias]
-  # Start new feature
+  # Start new feature from forge
   feature = "!f() { \
-    git checkout khala && \
-    git pull origin khala && \
-    git checkout -b feature/$1; \
+    git checkout forge && \
+    git pull origin forge && \
+    git checkout -b warp-in/CHRONO-$1; \
   }; f"
 
-  # Finish feature (create PR)
+  # Finish feature (create PR to forge)
   finish = "!f() { \
     branch=$(git branch --show-current) && \
     git push -u origin $branch && \
-    gh pr create --base khala; \
+    gh pr create --base forge; \
   }; f"
 
   # Clean up merged branches
-  cleanup = "!git branch --merged khala | grep -v 'khala\\|archives/' | xargs git branch -d"
+  cleanup = "!git branch --merged forge | grep -v 'forge\\|khala\\|gateway\\|archives/' | xargs git branch -d"
 ```
 
 Usage:
 ```bash
-git feature chrono-011-workers
+git feature 011-workers  # Creates warp-in/CHRONO-011-workers from forge
 # ... work work work ...
-git finish
+git finish  # Creates PR to forge
 ```
 
 ---
@@ -270,14 +282,14 @@ If you accidentally committed directly to `khala`:
 
 ```bash
 # Create feature branch from current position
-git checkout -b feature/chrono-XXX-description
+git checkout -b warp-in/CHRONO-XXX-description
 
 # Reset khala to remote state
 git checkout khala
 git reset --hard origin/khala
 
 # Switch back to feature branch (has your commits)
-git checkout feature/chrono-XXX-description
+git checkout warp-in/CHRONO-XXX-description
 ```
 
 ### After Pushing (Already on Remote)
@@ -288,7 +300,7 @@ git checkout feature/chrono-XXX-description
 
 ```bash
 # Create feature branch from current position
-git checkout -b feature/chrono-XXX-description
+git checkout -b warp-in/CHRONO-XXX-description
 
 # Force reset khala to previous state
 git checkout khala
@@ -298,9 +310,9 @@ git reset --hard HEAD~N  # N = number of commits to undo
 git push --force origin khala
 
 # Create PR from feature branch
-git checkout feature/chrono-XXX-description
-git push -u origin feature/chrono-XXX-description
-gh pr create --base khala
+git checkout warp-in/CHRONO-XXX-description
+git push -u origin warp-in/CHRONO-XXX-description
+gh pr create --base forge
 ```
 
 ---
@@ -342,27 +354,27 @@ git branch --show-current
 git branch -a
 
 # Create and switch to feature branch
-git checkout -b feature/chrono-XXX-description
+git checkout -b warp-in/CHRONO-XXX-description
 
 # Push new branch to remote
-git push -u origin feature/chrono-XXX-description
+git push -u origin warp-in/CHRONO-XXX-description
 
-# Update branch from khala
-git checkout khala && git pull
-git checkout feature/chrono-XXX-description
-git rebase khala
+# Update branch from forge
+git checkout forge && git pull
+git checkout warp-in/CHRONO-XXX-description
+git rebase forge
 
 # Create PR
-gh pr create --base khala --title "CHRONO-XXX: Title"
+gh pr create --base forge --title "CHRONO-XXX: Title"
 
 # Delete local branch
-git branch -d feature/old-branch
+git branch -d warp-in/old-branch
 
 # Delete remote branch
-git push origin --delete feature/old-branch
+git push origin --delete warp-in/old-branch
 
 # Clean up all merged branches
-git branch --merged khala | grep -v "khala" | xargs git branch -d
+git branch --merged forge | grep -v "khala" | xargs git branch -d
 ```
 
 ---
@@ -376,7 +388,7 @@ git branch --merged khala | grep -v "khala" | xargs git branch -d
 git stash
 
 # Create feature branch
-git checkout -b feature/chrono-XXX-description
+git checkout -b warp-in/CHRONO-XXX-description
 
 # Apply stashed changes
 git stash pop
@@ -386,7 +398,7 @@ git stash pop
 
 ```bash
 # Move commits to feature branch (see "Emergency" section above)
-git checkout -b feature/chrono-XXX-description
+git checkout -b warp-in/CHRONO-XXX-description
 git checkout khala
 git reset --hard origin/khala
 ```
@@ -395,13 +407,13 @@ git reset --hard origin/khala
 
 See "Emergency: After Pushing" section above. Consider if force push is appropriate.
 
-### "My feature branch is behind `khala`"
+### "My feature branch is behind `forge`"
 
 ```bash
-git checkout khala
-git pull origin khala
-git checkout feature/chrono-XXX-description
-git rebase khala  # or: git merge khala
+git checkout forge
+git pull origin forge
+git checkout warp-in/CHRONO-XXX-description
+git rebase forge  # or: git merge forge
 ```
 
 ---
