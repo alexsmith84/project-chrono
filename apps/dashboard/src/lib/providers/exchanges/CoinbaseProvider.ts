@@ -5,7 +5,7 @@
  */
 
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { BaseProvider } from '../BaseProvider.svelte';
+import { BaseProvider } from '../BaseProvider.svelte.ts';
 import type { PriceData, ProviderConfig } from '../types';
 
 export class CoinbaseProvider extends BaseProvider<PriceData> {
@@ -83,8 +83,15 @@ export class CoinbaseProvider extends BaseProvider<PriceData> {
 		symbols.forEach((symbol) => this.subscribedSymbols.add(symbol));
 		this.log('Subscribed to:', Array.from(this.subscribedSymbols));
 
-		// In Project Chrono API, subscription is automatic
-		// Just tracking which symbols we care about for filtering
+		// Send subscribe message to WebSocket server
+		if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+			const message = {
+				type: 'subscribe',
+				symbols: Array.from(this.subscribedSymbols)
+			};
+			this.ws.send(JSON.stringify(message));
+			this.log('Sent subscribe message to server');
+		}
 	}
 
 	/**

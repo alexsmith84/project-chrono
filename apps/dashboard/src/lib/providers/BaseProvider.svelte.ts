@@ -2,6 +2,9 @@
  * Base Provider Class
  *
  * Abstract base class providing common functionality for all providers
+ *
+ * Note: This is a .svelte.ts file to enable Svelte 5 runes ($state, etc.)
+ * Runes are available globally in .svelte.ts files - no import needed
  */
 
 import type {
@@ -21,21 +24,31 @@ export abstract class BaseProvider<T = any> implements DataProvider<T> {
 	abstract readonly color: string;
 	readonly icon?: string;
 
-	// State
-	isActive: boolean = true;
-	isCollecting: boolean = false;
+	// Reactive state - Svelte 5 runes
+	isActive = $state(true);
+	isCollecting = $state(false);
+	status = $state<ConnectionStatus>('disconnected');
+	latency = $state<number | null>(null);
+	lastUpdate = $state<number | null>(null);
 
-	// Internal state
-	protected status: ConnectionStatus = 'disconnected';
-	protected latency: number | null = null;
-	protected lastUpdate: number | null = null;
-	protected data: T | null = null;
-	protected callbacks: Array<(data: T) => void> = [];
+	// Internal reactive state
+	protected data = $state<T | null>(null);
+	protected callbacks: Array<(_data: T) => void> = [];
+
+	// Registry callback for triggering UI updates (now optional since state is reactive)
+	private stateChangeCallback: (() => void) | null = null;
+
+	/**
+	 * Set state change callback (called by registry)
+	 */
+	setStateChangeCallback(callback: () => void): void {
+		this.stateChangeCallback = callback;
+	}
 
 	/**
 	 * Abstract methods to be implemented by subclasses
 	 */
-	abstract connect(config?: ProviderConfig): Promise<void>;
+	abstract connect(_config?: ProviderConfig): Promise<void>;
 	abstract disconnect(): void;
 
 	/**
@@ -48,7 +61,7 @@ export abstract class BaseProvider<T = any> implements DataProvider<T> {
 	/**
 	 * Subscribe to data updates
 	 */
-	onData(callback: (data: T) => void): () => void {
+	onData(callback: (_data: T) => void): () => void {
 		this.callbacks.push(callback);
 
 		// Return unsubscribe function
@@ -88,13 +101,21 @@ export abstract class BaseProvider<T = any> implements DataProvider<T> {
 		this.data = data;
 		this.lastUpdate = Date.now();
 
-		this.callbacks.forEach((callback) => {
+		console.log(`[${this.name}] BaseProvider notifySubscribers - callbacks:`, this.callbacks.length, 'lastUpdate:', this.lastUpdate);
+
+		this.callbacks.forEach((callback, index) => {
 			try {
+				console.log(`[${this.name}] Calling callback #${index}`);
 				callback(data);
+				console.log(`[${this.name}] Callback #${index} completed`);
 			} catch (error) {
 				console.error(`Error in provider ${this.id} callback:`, error);
 			}
 		});
+
+		// Trigger UI update
+		console.log(`[${this.name}] Triggering state change notification`);
+		this.notifyStateChange();
 	}
 
 	/**
@@ -103,13 +124,26 @@ export abstract class BaseProvider<T = any> implements DataProvider<T> {
 	protected setStatus(status: ConnectionStatus): void {
 		this.status = status;
 		this.isCollecting = status === 'connected';
+		this.notifyStateChange();
 	}
 
 	/**
 	 * Calculate and update latency
 	 */
 	protected updateLatency(startTime: number): void {
-		this.latency = Date.now() - startTime;
+		const newLatency = Date.now() - startTime;
+		// Ensure minimum latency of 1ms for display purposes (0ms means < 1ms)
+		this.latency = newLatency === 0 ? 1 : newLatency;
+		this.notifyStateChange();
+	}
+
+	/**
+	 * Notify registry of state change for UI updates
+	 */
+	private notifyStateChange(): void {
+		if (this.stateChangeCallback) {
+			this.stateChangeCallback();
+		}
 	}
 
 	/**

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { providerRegistry } from '$lib/providers';
 	import { CoinbaseProvider } from '$lib/providers/exchanges/CoinbaseProvider';
 	import { BinanceProvider } from '$lib/providers/exchanges/BinanceProvider';
@@ -8,28 +8,65 @@
 	import ProviderStatusCard from '$lib/components/ProviderStatusCard.svelte';
 
 	// Environment variables
-	const WS_URL = 'ws://localhost:3000';
+	const WS_URL = 'ws://localhost:3000/stream';
 	const SYMBOLS = ['BTC/USD', 'ETH/USD'];
 
-	// Initialize providers immediately (not in onMount to avoid hydration issues)
-	// Clear any existing providers first (handles HMR during development)
-	providerRegistry.clear();
-	providerRegistry.register(new CoinbaseProvider());
-	providerRegistry.register(new BinanceProvider());
-	providerRegistry.register(new KrakenProvider());
+	// Reactive state - Svelte 5 runes
+	let initialized = $state(false);
+	let error = $state<string | null>(null);
+	let debugMessage = $state('INITIAL STATE - onMount has not run yet');
 
-	// State
-	let initialized = true; // Set to true immediately since we registered providers
-	let error: string | null = null;
+	// Module-level code to verify script is loading
+	console.log('📍 PAGE SCRIPT IS LOADING');
+	debugMessage = 'Script loaded, waiting for onMount...';
+
+	// CRITICAL: Initialize providers immediately in browser
+	if (browser) {
+		console.log('📍 BROWSER CHECK PASSED - initializing providers');
+		debugMessage = '🔵 Browser detected, registering providers...';
+
+		providerRegistry.clear();
+		providerRegistry.register(new CoinbaseProvider());
+		providerRegistry.register(new BinanceProvider());
+		providerRegistry.register(new KrakenProvider());
+
+		console.log('📍 After registration - store value:', providerRegistry.$providers.get());
+		console.log('📍 After registration - provider count:', providerRegistry.$providerCount.get());
+
+		initialized = true;
+		debugMessage = '🔵 Providers registered, about to connect...';
+
+		// Connect immediately
+		console.log('📍 CALLING connectAll');
+		providerRegistry.connectAll({
+			wsUrl: WS_URL,
+			symbols: SYMBOLS
+		}).then(() => {
+			console.log('✅ All providers connected');
+			debugMessage = '✅ All providers connected successfully!';
+		}).catch((err) => {
+			console.error('❌ Failed to connect providers:', err);
+			error = err instanceof Error ? err.message : 'Connection error';
+			debugMessage = '❌ Failed: ' + (err instanceof Error ? err.message : 'Unknown error');
+		});
+	} else {
+		console.log('📍 NOT IN BROWSER - skipping initialization');
+		debugMessage = '⚠️ Not in browser context';
+	}
 
 	// Extract stores from registry for Svelte reactivity
 	const providersStore = providerRegistry.$providers;
 	const activeProvidersStore = providerRegistry.$activeProviders;
 	const providerCountStore = providerRegistry.$providerCount;
 
-	// Get providers as array - using $ prefix to access nanostore reactively
-	$: providersList = Object.values($providersStore);
-	$: exchangeProviders = providersList.filter((p) => p.category === 'exchange');
+	// Derived reactive values - Svelte 5 style
+	let providersList = $derived(Object.values($providersStore));
+	let exchangeProviders = $derived(providersList.filter((p) => p.category === 'exchange'));
+
+	// Debug logging
+	$effect(() => {
+		console.log('📊 Reactive update - providersList:', providersList.length, 'exchangeProviders:', exchangeProviders.length);
+	});
 </script>
 
 <div class="dashboard-container">
@@ -51,6 +88,12 @@
 			</div>
 		</div>
 	</header>
+
+	{#if debugMessage}
+		<div class="debug-banner">
+			{debugMessage}
+		</div>
+	{/if}
 
 	{#if error}
 		<div class="error-banner">
@@ -82,7 +125,7 @@
 		<section class="section">
 			<h2 class="section-title">Real-Time Price Charts</h2>
 
-			{#each SYMBOLS as symbol}
+			{#each SYMBOLS as symbol (symbol)}
 				<div class="symbol-section">
 					<h3 class="symbol-title">{symbol}</h3>
 					<div class="charts-grid">
@@ -167,6 +210,16 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
+	}
+
+	.debug-banner {
+		background: #dbeafe;
+		border: 2px solid #3b82f6;
+		border-radius: 12px;
+		padding: 16px;
+		margin-bottom: 24px;
+		color: #1e40af;
+		font-weight: 600;
 	}
 
 	.error-banner {

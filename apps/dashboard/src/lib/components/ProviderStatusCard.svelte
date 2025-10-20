@@ -2,20 +2,26 @@
 	import type { DataProvider } from '$lib/providers/types';
 	import { providerRegistry } from '$lib/providers';
 
-	export let provider: DataProvider;
+	// Props - Svelte 5 style
+	let { provider }: { provider: DataProvider } = $props();
 
 	function toggleActive() {
 		providerRegistry.toggleActive(provider.id);
-		// Force reactivity
-		provider = provider;
 	}
 
-	$: statusColor = {
+	// Derived values - now reactive because provider properties use $state()
+	// Access properties directly so Svelte can track state changes
+	let connectionStatus = $derived(provider.status);
+	let latency = $derived(provider.latency);
+	let lastUpdate = $derived(provider.lastUpdate);
+
+	// Status color mapping
+	let statusColor = $derived({
 		connected: '#059669',
 		connecting: '#d97706',
 		disconnected: '#6b7280',
 		error: '#dc2626'
-	}[provider.getConnectionStatus()];
+	}[connectionStatus]);
 </script>
 
 <div class="provider-card" class:inactive={!provider.isActive}>
@@ -36,22 +42,20 @@
 	<div class="card-body">
 		<div class="metric">
 			<span class="metric-label">Status</span>
-			<span class="metric-value">{provider.getConnectionStatus()}</span>
+			<span class="metric-value">{connectionStatus}</span>
 		</div>
 
 		<div class="metric">
 			<span class="metric-label">Latency</span>
 			<span class="metric-value">
-				{provider.getLatency() ? `${provider.getLatency()}ms` : '-'}
+				{latency ? `${latency}ms` : '-'}
 			</span>
 		</div>
 
 		<div class="metric">
 			<span class="metric-label">Last Update</span>
 			<span class="metric-value">
-				{provider.getLastUpdate()
-					? new Date(provider.getLastUpdate()!).toLocaleTimeString()
-					: '-'}
+				{lastUpdate ? new Date(lastUpdate).toLocaleTimeString() : '-'}
 			</span>
 		</div>
 	</div>
@@ -60,7 +64,7 @@
 		<button
 			class="toggle-button"
 			class:active={provider.isActive}
-			on:click={toggleActive}
+			onclick={toggleActive}
 		>
 			{provider.isActive ? '✓ Included in Calculations' : '⏸ Excluded from Calculations'}
 		</button>

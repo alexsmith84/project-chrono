@@ -170,7 +170,9 @@ class ProviderRegistry {
 	 */
 	async connectAll(config?: Record<string, any>): Promise<void> {
 		const promises = this.getAll().map((provider) =>
-			provider.connect(config?.[provider.id])
+			// Pass the whole config to each provider (not config[provider.id])
+			// This allows passing common config like wsUrl and symbols to all providers
+			provider.connect(config)
 		);
 
 		await Promise.allSettled(promises);
