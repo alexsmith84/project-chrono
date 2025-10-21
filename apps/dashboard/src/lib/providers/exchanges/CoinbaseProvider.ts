@@ -25,7 +25,7 @@ export class CoinbaseProvider extends BaseProvider<PriceData> {
 	 * Connect to API WebSocket
 	 */
 	async connect(config?: ProviderConfig): Promise<void> {
-		const wsUrl = config?.wsUrl || 'ws://localhost:3000';
+		const wsUrl = config?.wsUrl || 'ws://localhost:3000/stream';
 
 		this.log('Connecting to', wsUrl);
 		this.setStatus('connecting');
@@ -159,34 +159,47 @@ export class CoinbaseProvider extends BaseProvider<PriceData> {
 		try {
 			const message = JSON.parse(data);
 
-			// Filter for Coinbase data
-			if (message.exchange !== 'coinbase') {
-				return;
+			// Handle different message types from API
+			if (message.type === 'price_update' && message.data) {
+				const { data: priceUpdate } = message;
+
+				// Filter for Coinbase data (API uses 'source' field)
+				if (priceUpdate.source !== 'coinbase') {
+					return;
+				}
+
+				// Check if we're subscribed to this symbol
+				if (this.subscribedSymbols.size > 0 && !this.subscribedSymbols.has(priceUpdate.symbol)) {
+					return;
+				}
+
+				const priceData: PriceData = {
+					symbol: priceUpdate.symbol,
+					price: priceUpdate.price,
+					timestamp: priceUpdate.timestamp ? new Date(priceUpdate.timestamp).getTime() : Date.now(),
+					exchange: 'coinbase',
+					volume: priceUpdate.volume,
+					bid: priceUpdate.metadata?.bid,
+					ask: priceUpdate.metadata?.ask
+				};
+
+				// Update cache
+				this.priceCache.set(priceUpdate.symbol, priceData);
+
+				// Update latency
+				this.updateLatency(startTime);
+
+				// Notify subscribers
+				this.notifySubscribers(priceData);
+
+				this.log('📊 Received price update:', priceUpdate.symbol, priceUpdate.price);
+			} else if (message.type === 'subscribed') {
+				this.log('✅ Server confirmed subscription:', message.symbols);
+			} else if (message.type === 'pong') {
+				// Heartbeat response
+			} else if (message.type === 'error') {
+				this.error('Server error:', message.message);
 			}
-
-			// Check if we're subscribed to this symbol
-			if (this.subscribedSymbols.size > 0 && !this.subscribedSymbols.has(message.symbol)) {
-				return;
-			}
-
-			const priceData: PriceData = {
-				symbol: message.symbol,
-				price: message.price,
-				timestamp: message.timestamp || Date.now(),
-				exchange: 'coinbase',
-				volume: message.volume,
-				bid: message.bid,
-				ask: message.ask
-			};
-
-			// Update cache
-			this.priceCache.set(message.symbol, priceData);
-
-			// Update latency
-			this.updateLatency(startTime);
-
-			// Notify subscribers
-			this.notifySubscribers(priceData);
 		} catch (error) {
 			this.error('Failed to parse message:', error);
 		}

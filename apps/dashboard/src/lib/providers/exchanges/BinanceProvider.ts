@@ -22,7 +22,7 @@ export class BinanceProvider extends BaseProvider<PriceData> {
 	private pingInterval: NodeJS.Timeout | null = null;
 
 	async connect(config?: ProviderConfig): Promise<void> {
-		const wsUrl = config?.wsUrl || 'ws://localhost:3000';
+		const wsUrl = config?.wsUrl || 'ws://localhost:3000/stream';
 
 		this.log('Connecting to', wsUrl);
 		this.setStatus('connecting');
@@ -120,27 +120,38 @@ export class BinanceProvider extends BaseProvider<PriceData> {
 		try {
 			const message = JSON.parse(data);
 
-			if (message.exchange !== 'binance') {
-				return;
+			if (message.type === 'price_update' && message.data) {
+				const { data: priceUpdate } = message;
+
+				if (priceUpdate.source !== 'binance') {
+					return;
+				}
+
+				if (this.subscribedSymbols.size > 0 && !this.subscribedSymbols.has(priceUpdate.symbol)) {
+					return;
+				}
+
+				const priceData: PriceData = {
+					symbol: priceUpdate.symbol,
+					price: priceUpdate.price,
+					timestamp: priceUpdate.timestamp ? new Date(priceUpdate.timestamp).getTime() : Date.now(),
+					exchange: 'binance',
+					volume: priceUpdate.volume,
+					bid: priceUpdate.metadata?.bid,
+					ask: priceUpdate.metadata?.ask
+				};
+
+				this.priceCache.set(priceUpdate.symbol, priceData);
+				this.updateLatency(startTime);
+				this.notifySubscribers(priceData);
+				this.log('📊 Received price update:', priceUpdate.symbol, priceUpdate.price);
+			} else if (message.type === 'subscribed') {
+				this.log('✅ Server confirmed subscription:', message.symbols);
+			} else if (message.type === 'pong') {
+				// Heartbeat response
+			} else if (message.type === 'error') {
+				this.error('Server error:', message.message);
 			}
-
-			if (this.subscribedSymbols.size > 0 && !this.subscribedSymbols.has(message.symbol)) {
-				return;
-			}
-
-			const priceData: PriceData = {
-				symbol: message.symbol,
-				price: message.price,
-				timestamp: message.timestamp || Date.now(),
-				exchange: 'binance',
-				volume: message.volume,
-				bid: message.bid,
-				ask: message.ask
-			};
-
-			this.priceCache.set(message.symbol, priceData);
-			this.updateLatency(startTime);
-			this.notifySubscribers(priceData);
 		} catch (error) {
 			this.error('Failed to parse message:', error);
 		}
