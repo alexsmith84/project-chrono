@@ -100,14 +100,24 @@ export async function subscribeToPriceUpdates(
 ): Promise<() => void> {
   const channels = symbols.map((symbol) => PubSubChannels.priceUpdate(symbol));
 
-  // Subscribe to all channels
-  await redisPubSub.subscribe(...channels);
-
-  // Set up message handler
-  const messageHandler = (channel: string, message: string) => {
+  // Bun's RedisClient subscribe pattern: callback is passed directly to subscribe
+  // We need to subscribe to each channel individually
+  const messageHandler = (message: string, channel: string) => {
+    logger.debug(
+      { channel, message_preview: message.substring(0, 100) },
+      "🔔 Received message from Redis pub/sub"
+    );
     try {
       const parsed = JSON.parse(message) as PriceUpdateMessage;
+      logger.debug(
+        { channel, symbol: parsed.data.symbol },
+        "✅ Parsed message, calling callback"
+      );
       callback(parsed);
+      logger.debug(
+        { channel, symbol: parsed.data.symbol },
+        "✅ Callback completed"
+      );
     } catch (error) {
       logger.error(
         { err: error, channel, message },
@@ -116,14 +126,18 @@ export async function subscribeToPriceUpdates(
     }
   };
 
-  redisPubSub.on("message", messageHandler);
+  // Subscribe to all channels (Bun's subscribe accepts callback directly)
+  for (const channel of channels) {
+    await redisPubSub.subscribe(channel, messageHandler);
+  }
 
   logger.info({ symbols, channels }, "Subscribed to price updates");
 
   // Return unsubscribe function
   return async () => {
-    redisPubSub.off("message", messageHandler);
-    await redisPubSub.unsubscribe(...channels);
+    for (const channel of channels) {
+      await redisPubSub.unsubscribe(channel);
+    }
     logger.info({ symbols, channels }, "Unsubscribed from price updates");
   };
 }
@@ -137,11 +151,8 @@ export async function subscribeToAllPriceUpdates(
 ): Promise<() => void> {
   const channel = PubSubChannels.priceUpdateAll();
 
-  await redisPubSub.subscribe(channel);
-
-  const messageHandler = (ch: string, message: string) => {
-    if (ch !== channel) return;
-
+  // Bun's RedisClient subscribe pattern: callback is passed directly to subscribe
+  const messageHandler = (message: string, ch: string) => {
     try {
       const parsed = JSON.parse(message) as PriceUpdateMessage;
       callback(parsed);
@@ -153,12 +164,11 @@ export async function subscribeToAllPriceUpdates(
     }
   };
 
-  redisPubSub.on("message", messageHandler);
+  await redisPubSub.subscribe(channel, messageHandler);
 
   logger.info({ channel }, "Subscribed to all price updates");
 
   return async () => {
-    redisPubSub.off("message", messageHandler);
     await redisPubSub.unsubscribe(channel);
     logger.info({ channel }, "Unsubscribed from all price updates");
   };

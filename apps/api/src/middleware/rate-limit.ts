@@ -32,17 +32,9 @@ async function checkRateLimit(
   const windowSeconds = 60; // 1-minute sliding window
 
   try {
-    // Atomic INCR + EXPIRE operation
-    const pipeline = redis.pipeline();
-    pipeline.incr(key);
-    pipeline.expire(key, windowSeconds);
-    const results = await pipeline.exec();
-
-    if (!results) {
-      throw new Error('Redis pipeline returned no results');
-    }
-
-    const count = results[0][1] as number;
+    // Use individual commands (Bun's RedisClient doesn't support pipeline)
+    const count = await redis.incr(key);
+    await redis.expire(key, windowSeconds);
 
     // Get TTL to calculate reset time
     const ttl = await redis.ttl(key);

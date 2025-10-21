@@ -1,76 +1,33 @@
 /**
  * Redis client for caching and pub/sub
- * Supports both single instance and cluster configurations
+ * Uses Bun's native RedisClient for optimal performance
  */
 
-import Redis from 'ioredis';
+import { RedisClient } from 'bun';
 import { config } from '../utils/config';
 import { logger, logCacheError } from '../utils/logger';
 
 /**
- * Redis client instance
+ * Redis client instance for general operations (caching, etc.)
  */
-export const redis = new Redis(config.REDIS_URL, {
-  maxRetriesPerRequest: 3,
-  retryStrategy(times) {
-    const delay = Math.min(times * 50, 2000);
-    return delay;
-  },
-  reconnectOnError(err) {
-    logger.warn({ err }, 'Redis connection error, attempting reconnect');
-    return true;
-  },
-});
+export const redis = new RedisClient(config.REDIS_URL);
+await redis.connect();
 
 /**
  * Redis pub/sub subscriber client (separate connection for receiving)
+ * Note: Bun's subscription mode takes over the connection
  */
-export const redisPubSub = new Redis(config.REDIS_URL, {
-  maxRetriesPerRequest: 3,
-  retryStrategy(times) {
-    const delay = Math.min(times * 50, 2000);
-    return delay;
-  },
-});
+export const redisPubSub = new RedisClient(config.REDIS_URL);
+await redisPubSub.connect();
 
 /**
  * Redis publisher client (separate connection for sending)
- * Required because subscriber connections cannot publish
+ * Required because subscriber connections can only subscribe
  */
-export const redisPublisher = new Redis(config.REDIS_URL, {
-  maxRetriesPerRequest: 3,
-  retryStrategy(times) {
-    const delay = Math.min(times * 50, 2000);
-    return delay;
-  },
-});
+export const redisPublisher = new RedisClient(config.REDIS_URL);
+await redisPublisher.connect();
 
-/**
- * Handle Redis connection events
- */
-redis.on('connect', () => {
-  logger.info('Redis connected');
-});
-
-redis.on('error', (error) => {
-  logCacheError(error, 'Redis connection');
-});
-
-redisPubSub.on('connect', () => {
-  logger.info('Redis pub/sub connected');
-});
-
-redisPubSub.on('error', (error) => {
-  logCacheError(error, 'Redis pub/sub connection');
-});
-
-redisPublisher.on('connect', () => {
-  logger.info('Redis publisher connected');
-});
-
-redisPublisher.on('error', (error) => {
-  logCacheError(error, 'Redis publisher connection');
-});
+logger.info('Redis clients connected (using Bun native RedisClient)');
 
 /**
  * Health check for Redis connection
@@ -90,9 +47,9 @@ export async function checkRedisHealth(): Promise<boolean> {
  */
 export async function closeRedisConnection(): Promise<void> {
   try {
-    await redis.quit();
-    await redisPubSub.quit();
-    await redisPublisher.quit();
+    redis.close();
+    redisPubSub.close();
+    redisPublisher.close();
     logger.info('Redis connections closed');
   } catch (error) {
     logCacheError(error as Error, 'Connection close');
