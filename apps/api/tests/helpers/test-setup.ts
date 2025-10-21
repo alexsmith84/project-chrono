@@ -28,7 +28,11 @@ export async function cleanDatabase() {
  */
 export async function cleanRedis() {
   // Flush all keys (safe in test environment)
-  await redis.flushall();
+  // Get all keys and delete them manually
+  const keys = await redis.keys('*');
+  if (keys && keys.length > 0) {
+    await redis.del(...keys);
+  }
 }
 
 /**
