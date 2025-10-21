@@ -14,6 +14,10 @@
 	let container: HTMLDivElement;
 	let priceHistory: PriceData[] = $state([]);
 	let unsubscribe: (() => void) | null = null;
+	let chartElement: HTMLElement | null = null;
+	let updateTimer: NodeJS.Timeout | null = null;
+	let needsRedraw = $state(false);
+	let lastRenderTime = 0; // Track when we last rendered
 
 	// Component instance logging
 	console.log(`🔧 [PriceChart] Component instance created for ${provider?.name || 'unknown'} - ${symbol}`);
@@ -41,17 +45,42 @@
 
 				// Add to history
 				console.log(`[PriceChart] Adding data point to history. Current length: ${priceHistory.length}`);
+				const wasEmpty = priceHistory.length === 0;
 				priceHistory = [...priceHistory, data].slice(-maxDataPoints);
 				console.log(`[PriceChart] New history length: ${priceHistory.length}`);
 
-				// Redraw chart
-				renderChart();
+				// Throttle rendering (not debounce!)
+				// This ensures we render at most once every 2 seconds
+				const now = Date.now();
+				const timeSinceLastRender = now - lastRenderTime;
+
+				if (wasEmpty) {
+					// First data point - render immediately
+					console.log(`[PriceChart] First data point - rendering immediately`);
+					needsRedraw = true;
+					lastRenderTime = now;
+				} else if (timeSinceLastRender >= 2000) {
+					// Enough time has passed - render now
+					console.log(`[PriceChart] ${timeSinceLastRender}ms since last render - rendering now`);
+					needsRedraw = true;
+					lastRenderTime = now;
+				} else {
+					// Too soon - schedule render for later (only if not already scheduled)
+					if (!updateTimer) {
+						const delay = 2000 - timeSinceLastRender;
+						console.log(`[PriceChart] Scheduling render in ${delay}ms`);
+						updateTimer = setTimeout(() => {
+							needsRedraw = true;
+							lastRenderTime = Date.now();
+							updateTimer = null;
+						}, delay);
+					} else {
+						console.log(`[PriceChart] Render already scheduled, skipping`);
+					}
+				}
 			});
 
 			console.log(`[PriceChart] ✅ Subscribed to ${provider.name} data updates. Callback count:`, provider.callbacks?.length || 'unknown');
-
-			// Initial render
-			renderChart();
 		} catch (error) {
 			console.error(`[PriceChart] ❌ Error in $effect for ${provider.name}:`, error);
 		}
@@ -63,11 +92,29 @@
 		};
 	});
 
-	function renderChart() {
-		if (!container || priceHistory.length === 0) return;
+	// Separate effect for rendering chart when needsRedraw changes
+	$effect(() => {
+		console.log(`[PriceChart] Render effect triggered. needsRedraw=${needsRedraw}, container=${!!container}, dataLength=${priceHistory.length}`);
 
-		// Clear previous chart
-		container.innerHTML = '';
+		// Only redraw when explicitly flagged
+		if (!needsRedraw || !container || priceHistory.length === 0) {
+			console.log(`[PriceChart] Skipping render: needsRedraw=${needsRedraw}, container=${!!container}, dataLength=${priceHistory.length}`);
+			return;
+		}
+
+		console.log(`[PriceChart] 🎨 RENDERING CHART with ${priceHistory.length} data points`);
+		needsRedraw = false; // Reset flag
+
+		// Clear previous chart completely
+		if (chartElement) {
+			chartElement.remove();
+			chartElement = null;
+		}
+
+		// Also clear container to be safe
+		while (container.firstChild) {
+			container.removeChild(container.firstChild);
+		}
 
 		// Create Observable Plot chart
 		const chart = Plot.plot({
@@ -98,23 +145,21 @@
 					x: 'timestamp',
 					y: 'price',
 					fill: provider.color,
-					fillOpacity: 0.1,
-					curve: 'catmull-rom'
+					fillOpacity: 0.1
 				}),
-				// Price line
+				// Price line (straight lines, no smoothing)
 				Plot.lineY(priceHistory, {
 					x: 'timestamp',
 					y: 'price',
 					stroke: provider.color,
-					strokeWidth: 2,
-					curve: 'catmull-rom'
+					strokeWidth: 2
 				}),
-				// Latest price dot
-				Plot.dot([priceHistory[priceHistory.length - 1]], {
+				// Dot for each data point
+				Plot.dot(priceHistory, {
 					x: 'timestamp',
 					y: 'price',
 					fill: provider.color,
-					r: 4
+					r: 3
 				}),
 				// Horizontal line at latest price
 				Plot.ruleY([priceHistory[priceHistory.length - 1].price], {
@@ -125,8 +170,9 @@
 			]
 		});
 
+		chartElement = chart;
 		container.appendChild(chart);
-	}
+	});
 
 	// Format price for display
 	function formatPrice(price: number | undefined): string {

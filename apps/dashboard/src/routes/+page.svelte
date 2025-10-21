@@ -33,6 +33,12 @@
 		console.log('📍 After registration - store value:', providerRegistry.$providers.get());
 		console.log('📍 After registration - provider count:', providerRegistry.$providerCount.get());
 
+		// Expose registry to window for browser console testing
+		if (typeof window !== 'undefined') {
+			(window as any).__PROVIDER_REGISTRY__ = providerRegistry;
+			console.log('🔧 Registry exposed to window.__PROVIDER_REGISTRY__ for console testing');
+		}
+
 		initialized = true;
 		debugMessage = '🔵 Providers registered, about to connect...';
 

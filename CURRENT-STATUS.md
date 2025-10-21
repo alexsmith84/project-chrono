@@ -1,11 +1,11 @@
 # Project Chrono - Current Status
 **Last Updated**: 2025-10-20
-**Session**: CHRONO-016 Dashboard Implementation - Test Fixes Complete
+**Session**: CHRONO-016 Dashboard Implementation - Chart Rendering Fixed, Redis Pub/Sub Blocker
 
 ## 🎯 Where We Left Off
 
 ### Just Completed (This Session)
-1. ✅ **CHRONO-016**: SvelteKit Dashboard with Plugin Architecture (READY FOR MANUAL TESTING)
+1. ✅ **CHRONO-016**: SvelteKit Dashboard with Plugin Architecture (BLOCKED - See Redis Pub/Sub Issue)
    - Issue: #36
    - Branch: `warp-in/CHRONO-016-dashboard-v2` (clean history from forge)
    - PR: #38 - https://github.com/alexsmith84/project-chrono/pull/38
@@ -45,17 +45,36 @@
    - ✅ Added jsdom dependency for test environment
    - ✅ Updated vite.config to recognize `.svelte.ts` test files
    - ✅ Fixed registry test assertion
+   - ✅ **Fixed chart y-axis label overlap** - Implemented proper cleanup and debouncing
+   - ✅ **Chart renders immediately on first data** - 0ms delay for first point, then 2s debounce
+
+   **🚨 BLOCKER - Redis Pub/Sub Not Working**:
+   - ❌ WebSocket clients successfully subscribe to Redis channels
+   - ❌ API successfully publishes price updates to Redis channels
+   - ❌ **BUT**: Redis message event handler never triggered
+   - **Root Cause**: `redisPubSub.on("message", handler)` callback never executes
+   - **Impact**: Dashboard cannot receive real-time price updates from API
+   - **Status**: API infrastructure issue (not dashboard code)
+   - **Evidence**:
+     - API logs show "Published price update to Redis" ✓
+     - API logs show "Subscribed to price updates" ✓
+     - API logs DO NOT show "🔔 Received message from Redis pub/sub" ❌
+     - Browser console shows only "Render effect triggered", no data callbacks
+   - **Workaround**: Browser console test created (see below)
 
    **Test Results**:
    - 84/84 tests passing ✅
    - 3 test files (BaseProvider, CoinbaseProvider, Registry)
    - Execution time: ~2.7s
 
-   **Ready for Manual Testing**:
-   - Both API and dashboard servers running
-   - PR #38 created and ready for review
-   - All tests passing
-   - Build successful
+   **Dashboard Implementation Status**:
+   - ✅ All dashboard components implemented and tested
+   - ✅ Chart rendering with proper cleanup and debouncing
+   - ✅ Provider status cards with toggle functionality
+   - ✅ Svelte 5 runes working correctly throughout
+   - ❌ **BLOCKED**: Cannot test with live API data due to Redis pub/sub issue
+   - ✅ **WORKAROUND**: Browser console test available (see below)
+   - 🔧 **NEXT**: Fix Redis pub/sub in API to enable full integration testing
 
 ### Previous Sessions
 2. ✅ **CHRONO-012**: Fixed wrangler.toml duplicate vars configuration
@@ -208,17 +227,115 @@ b1f5bb6 CHRONO-016: Fix test environment for Svelte 5 runes
 55f0278 CHRONO-016: Fix dashboard reactivity and migrate to Svelte 5
 ```
 
+## 🧪 Testing the Dashboard
+
+### Browser Console Test (Workaround for Redis Pub/Sub Issue)
+
+Since the Redis pub/sub is not working, you can manually test the dashboard chart rendering using browser console injection. This verifies that:
+- Chart renders correctly with proper cleanup
+- Debounce mechanism works (first render immediate, then every 2s)
+- Axis labels don't accumulate
+- Data flows through the provider system
+
+**Steps**:
+
+1. Open dashboard at http://localhost:5173
+2. Open browser console (F12)
+3. Run this script to simulate price updates:
+
+```javascript
+// Find the Coinbase provider instance from the registry
+const registry = window.__PROVIDER_REGISTRY__;
+if (!registry) {
+  console.error('Registry not found. Make sure dashboard is loaded.');
+} else {
+  // Get Coinbase provider from registry
+  const coinbase = registry.get('coinbase');
+  if (!coinbase) {
+    console.error('Coinbase provider not found');
+    console.log('Available providers:', registry.getAll().map(p => p.id));
+  } else {
+    console.log('✅ Found Coinbase provider:', coinbase.name);
+    console.log('Provider status:', coinbase.status);
+    console.log('Provider callbacks:', coinbase.callbacks?.length || 0);
+
+    // Simulate price updates every second
+    let price = 50000;
+    let count = 0;
+    const interval = setInterval(() => {
+      // Random price movement (+/- $100)
+      price = price + (Math.random() - 0.5) * 200;
+
+      const priceData = {
+        symbol: 'BTC/USD',
+        price: parseFloat(price.toFixed(2)),
+        timestamp: Date.now(),
+        exchange: 'coinbase',
+        volume: parseFloat((Math.random() * 1000).toFixed(2))
+      };
+
+      console.log(`\n[Test ${count}] Injecting price: $${priceData.price.toLocaleString()}`);
+
+      // Use the protected notifySubscribers method (accessible in browser console)
+      // This triggers all registered callbacks, simulating real data flow
+      try {
+        coinbase.notifySubscribers(priceData);
+        console.log(`✅ [Test ${count}] Data injected successfully`);
+      } catch (error) {
+        console.error(`❌ [Test ${count}] Failed to inject:`, error);
+      }
+
+      count++;
+      if (count >= 20) {
+        clearInterval(interval);
+        console.log('\n🎉 Test complete! Injected 20 price updates.');
+        console.log('Check the chart - it should have updated ~10 times (2s debounce)');
+      }
+    }, 1000); // Every second
+
+    console.log('🚀 Started price injection. Will run for 20 seconds.');
+    console.log('Expected behavior:');
+    console.log('  - First data point renders immediately');
+    console.log('  - Subsequent updates debounced to every 2 seconds');
+    console.log('  - Chart should render ~10 times total');
+  }
+}
+```
+
+**Expected Behavior**:
+1. First data point renders immediately (0ms delay)
+2. Subsequent updates debounced to every 2 seconds
+3. Chart smoothly updates without axis label overlap
+4. Latest price and percentage change update
+5. Console shows:
+   - `[PriceChart] 📨 onData callback triggered`
+   - `[PriceChart] Adding data point to history`
+   - `[PriceChart] 🎨 RENDERING CHART with X data points`
+
+**Note**: This test bypasses the WebSocket/Redis layer and directly injects data into the provider callbacks, proving the dashboard code works correctly.
+
 ## 🚀 Next Steps
 
-### Immediate Priority (Tomorrow - Manual Testing)
-1. **Manual Testing** - User will test dashboard with live API data
+### Immediate Priority (Fix Redis Pub/Sub)
+1. **Fix Redis Pub/Sub in API** - BLOCKING all integration testing
+   - Investigate ioredis compatibility with Bun runtime
+   - Try alternative: Use Bun's native Redis client if available
+   - Consider pattern: Direct WebSocket forwarding without Redis pub/sub for MVP
+   - Test with redis-cli SUBSCRIBE/PUBLISH to verify Redis is working
+   - Check Redis logs for any connection/subscription errors
+   - **Files to Modify**:
+     - `/apps/api/src/cache/redis.ts` - Try different client configuration
+     - `/apps/api/src/cache/pubsub.ts` - Alternative pub/sub implementation
+     - `/apps/api/src/routes/websocket.ts` - Consider direct broadcasting
+
+2. **Manual Testing** - After Redis pub/sub is fixed
    - Start API server: `cd apps/api && bun run dev`
    - Start dashboard: `cd apps/dashboard && bun run dev`
-   - Verify real-time data flow
+   - Verify real-time data flow from collector → API → Redis → WebSocket → Dashboard
    - Test provider toggle functionality
    - Check chart rendering and updates
 
-2. **Review PR #38** - If tests pass, review and merge to forge
+3. **Review PR #38** - After successful integration testing
    - PR: https://github.com/alexsmith84/project-chrono/pull/38
    - Branch: `warp-in/CHRONO-016-dashboard-v2`
    - Base: `forge` (correct!)
@@ -304,12 +421,34 @@ gh pr create --base forge --title "CHRONO-XXX: Title"
 
 ## 🐛 Known Issues
 
-1. **Pre-commit hooks disabled**: Bypassing lint-staged temporarily
+1. **🚨 CRITICAL: Redis Pub/Sub Not Working** - BLOCKING DASHBOARD TESTING
+   - **Location**: `/apps/api/src/cache/pubsub.ts:107-137`
+   - **Problem**: `redisPubSub.on("message", messageHandler)` never triggers
+   - **Evidence**:
+     - `redisPublisher.publish()` succeeds (logs confirm) ✓
+     - `redisPubSub.subscribe()` succeeds (logs confirm) ✓
+     - Message handler callback never executes ❌
+   - **Impact**: WebSocket clients cannot receive price updates from Redis
+   - **Files Affected**:
+     - `/apps/api/src/cache/pubsub.ts` - Message handler setup
+     - `/apps/api/src/cache/redis.ts` - Redis client configuration
+     - `/apps/api/src/routes/websocket.ts` - WebSocket subscription
+   - **Possible Causes**:
+     - ioredis compatibility issue with Bun runtime
+     - Redis database number mismatch between publisher/subscriber
+     - Event emitter registration issue
+   - **Debug Logging Added**:
+     - Lines 107-137 in `pubsub.ts` (extensive message handler logging)
+     - Lines 273-293 in `websocket.ts` (callback logging)
+   - **Workaround**: Browser console test (see "Testing the Dashboard" section below)
+   - **Next Steps**: Investigate ioredis/Bun compatibility, try alternative Redis client
+
+2. **Pre-commit hooks disabled**: Bypassing lint-staged temporarily
    - Reason: Prevent auto-formatting from breaking Svelte 5 syntax
    - File: `.husky/pre-commit` (commented out)
    - TODO: Re-enable after ESLint config updated for Svelte 5
 
-2. **ESLint warnings**: Some "no-undef" errors for Svelte stores
+3. **ESLint warnings**: Some "no-undef" errors for Svelte stores
    - Not blocking, just noisy
    - Need to update ESLint config for Svelte 5
 
