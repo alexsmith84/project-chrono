@@ -28,7 +28,8 @@ export async function cacheLatestPrice(
 ): Promise<void> {
   try {
     const key = CacheKeys.latestPrice(symbol);
-    await redis.setex(key, config.REDIS_CACHE_TTL, JSON.stringify(price));
+    // Bun's RedisClient uses set with separate args for EX
+    await redis.set(key, JSON.stringify(price), 'EX', config.REDIS_CACHE_TTL);
   } catch (error) {
     throw new CacheError(
       `Failed to cache latest price for ${symbol}`,
@@ -81,7 +82,7 @@ export async function cacheLatestPrices(prices: PriceFeed[]): Promise<void> {
     // For small batches this is acceptable; for larger ones we'd use Lua script
     const promises = prices.map(async (price) => {
       const key = CacheKeys.latestPrice(price.symbol);
-      await redis.setex(key, config.REDIS_CACHE_TTL, JSON.stringify(price));
+      await redis.set(key, JSON.stringify(price), 'EX', config.REDIS_CACHE_TTL);
     });
 
     await Promise.all(promises);
@@ -151,7 +152,7 @@ export async function cachePriceRange(
   try {
     const key = CacheKeys.priceRange(symbol, from, to, interval);
     // Cache range queries for 5 minutes (300 seconds)
-    await redis.setex(key, 300, JSON.stringify(data));
+    await redis.set(key, JSON.stringify(data), 'EX', 300);
   } catch (error) {
     throw new CacheError(
       `Failed to cache price range for ${symbol}`,
@@ -204,7 +205,7 @@ export async function cacheConsensusPrice(
 ): Promise<void> {
   try {
     const key = CacheKeys.consensus(symbol, timestamp);
-    await redis.setex(key, config.REDIS_CACHE_TTL, JSON.stringify(data));
+    await redis.set(key, JSON.stringify(data), 'EX', config.REDIS_CACHE_TTL);
   } catch (error) {
     throw new CacheError(
       `Failed to cache consensus price for ${symbol}`,
