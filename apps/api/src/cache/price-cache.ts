@@ -77,14 +77,14 @@ export async function cacheLatestPrices(prices: PriceFeed[]): Promise<void> {
       return;
     }
 
-    const pipeline = redis.pipeline();
-
-    for (const price of prices) {
+    // Bun's RedisClient doesn't support pipeline, use individual commands
+    // For small batches this is acceptable; for larger ones we'd use Lua script
+    const promises = prices.map(async (price) => {
       const key = CacheKeys.latestPrice(price.symbol);
-      pipeline.setex(key, config.REDIS_CACHE_TTL, JSON.stringify(price));
-    }
+      await redis.setex(key, config.REDIS_CACHE_TTL, JSON.stringify(price));
+    });
 
-    await pipeline.exec();
+    await Promise.all(promises);
   } catch (error) {
     throw new CacheError(
       `Failed to cache ${prices.length} latest prices`,
