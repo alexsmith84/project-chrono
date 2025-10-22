@@ -1,0 +1,24 @@
+#!/bin/bash
+# Commit-msg hook: Enforce CHRONO-XXX: format
+# Rejects commits that don't follow the pattern
+
+COMMIT_MSG_FILE=$1
+
+# Read first line of commit message (ignore comments)
+COMMIT_MSG=$(grep -v '^#' "$COMMIT_MSG_FILE" | head -1)
+
+# Check format: CHRONO-XXX: [Description]
+if ! echo "$COMMIT_MSG" | grep -qE '^CHRONO-[0-9]+:'; then
+  echo ""
+  echo "❌ Commit message must start with: CHRONO-XXX: Description"
+  echo ""
+  echo "Current message:"
+  echo "  $COMMIT_MSG"
+  echo ""
+  echo "Example:"
+  echo "  CHRONO-018: Implement workflow enforcement system"
+  echo ""
+  exit 1
+fi
+
+exit 0

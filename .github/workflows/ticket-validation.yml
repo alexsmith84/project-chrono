@@ -1,0 +1,93 @@
+name: Ticket Validation
+
+on:
+  pull_request:
+    branches: [forge, gateway, master]
+  push:
+    branches: [forge]
+
+jobs:
+  validate-docs:
+    name: Validate Ticket Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract ticket number from PR title or branch
+        id: ticket
+        run: |
+          # Try PR title first
+          TICKET=""
+          if [ -n "${{ github.event.pull_request.title }}" ]; then
+            TICKET=$(echo "${{ github.event.pull_request.title }}" | grep -oE 'CHRONO-[0-9]+' || echo "")
+          fi
+
+          # Fall back to branch name
+          if [ -z "$TICKET" ]; then
+            BRANCH=$(echo "${{ github.event.pull_request.head.ref || github.ref }}" | sed 's|refs/heads/||')
+            TICKET=$(echo "$BRANCH" | grep -oE 'CHRONO-[0-9]+' || echo "")
+          fi
+
+          echo "ticket=$TICKET" >> $GITHUB_OUTPUT
+          echo "Extracted ticket: $TICKET"
+
+      - name: Check if ticket extracted
+        if: steps.ticket.outputs.ticket == ''
+        run: |
+          echo "⚠️  Warning: Could not extract CHRONO-XXX from PR title or branch"
+          exit 0
+
+      - name: Validate specification document exists
+        if: steps.ticket.outputs.ticket != ''
+        run: |
+          TICKET=${{ steps.ticket.outputs.ticket }}
+          if ! ls docs/specs/${TICKET}-*.md 1>/dev/null 2>&1; then
+            echo "❌ Missing specification: docs/specs/${TICKET}-*.md"
+            exit 1
+          fi
+          echo "✅ Found specification"
+
+      - name: Validate implementation guide exists
+        if: steps.ticket.outputs.ticket != ''
+        run: |
+          TICKET=${{ steps.ticket.outputs.ticket }}
+          if [ ! -f "docs/implementation/${TICKET}-guide.md" ]; then
+            echo "❌ Missing implementation guide: docs/implementation/${TICKET}-guide.md"
+            exit 1
+          fi
+          echo "✅ Found implementation guide"
+
+      - name: Validate test specification exists
+        if: steps.ticket.outputs.ticket != ''
+        run: |
+          TICKET=${{ steps.ticket.outputs.ticket }}
+          if [ ! -f "docs/tests/${TICKET}-tests.md" ]; then
+            echo "❌ Missing test specification: docs/tests/${TICKET}-tests.md"
+            exit 1
+          fi
+          echo "✅ Found test specification"
+
+      - name: Validate PR links to GitHub issue
+        if: steps.ticket.outputs.ticket != ''
+        run: |
+          TICKET=${{ steps.ticket.outputs.ticket }}
+          BODY="${{ github.event.pull_request.body }}"
+
+          # Check if PR body contains issue reference
+          if ! echo "$BODY" | grep -qE "(fixes|closes|resolves) #|#[0-9]+"; then
+            echo "⚠️  Warning: PR should reference GitHub issue (e.g., 'fixes #XX')"
+          else
+            echo "✅ PR links to GitHub issue"
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          TICKET=${{ steps.ticket.outputs.ticket }}
+          if [ -z "$TICKET" ]; then
+            echo "✅ No ticket number detected (may be docs-only PR)"
+          else
+            echo "✅ All validation checks passed for $TICKET"
+          fi

@@ -1,3 +1,53 @@
-# Run lint-staged to auto-fix staged files
-# Temporarily disabled to prevent Svelte 5 syntax from being reverted
-# npx lint-staged
+#!/bin/bash
+set -e
+
+# Pre-commit hook: Validate ticket documentation exists
+# Purpose: Block commits if CHRONO-XXX docs are missing
+
+# Extract ticket number from current branch
+# Examples: CHRONO-018, CHRONO-018-workflow-enforcement
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+TICKET=$(echo "$BRANCH" | grep -oE 'CHRONO-[0-9]+' || echo "")
+
+# If not on a ticket branch, allow commit (may be on main/fork/etc)
+if [ -z "$TICKET" ]; then
+  exit 0
+fi
+
+# Verify all 3 required documentation files exist
+SPEC_PATTERN="docs/specs/${TICKET}-*.md"
+IMPL_FILE="docs/implementation/${TICKET}-guide.md"
+TEST_FILE="docs/tests/${TICKET}-tests.md"
+
+# Check each file
+MISSING=0
+
+# For spec, use find since it may have different suffixes
+if ! find . -maxdepth 3 -name "${TICKET}-*.md" -path "*/docs/specs/*" 2>/dev/null | grep -q .; then
+  echo "❌ Missing specification: ${SPEC_PATTERN}"
+  MISSING=1
+fi
+
+if [ ! -f "$IMPL_FILE" ]; then
+  echo "❌ Missing implementation guide: ${IMPL_FILE}"
+  MISSING=1
+fi
+
+if [ ! -f "$TEST_FILE" ]; then
+  echo "❌ Missing test specification: ${TEST_FILE}"
+  MISSING=1
+fi
+
+# If any files are missing, block the commit
+if [ $MISSING -eq 1 ]; then
+  echo ""
+  echo "🛑 Cannot commit without all 3 documentation files:"
+  echo "   Specification:         docs/specs/${TICKET}-*.md"
+  echo "   Implementation Guide:  ${IMPL_FILE}"
+  echo "   Test Specification:    ${TEST_FILE}"
+  echo ""
+  echo "ℹ️  Create these files BEFORE committing."
+  exit 1
+fi
+
+exit 0

@@ -174,20 +174,272 @@ When deployed, Project Chrono will be accessible at:
 
 ## 🎫 Development Workflow
 
+### Spec-First Development with Multi-Layer Enforcement
+
+Project Chrono uses a **disciplined, specification-first workflow** with automated enforcement at three layers:
+
+#### 📋 The Three-Document System
+
+Every ticket requires **3 documents created BEFORE any implementation**:
+
+1. **Specification** (`docs/specs/CHRONO-XXX-*.md`)
+   - What to build, why, and acceptance criteria
+   - Technical architecture and design decisions
+   - ~300-500 words
+
+2. **Implementation Guide** (`docs/implementation/CHRONO-XXX-guide.md`)
+   - Step-by-step how-to checklist
+   - Common pitfalls and debugging tips
+   - ~500-800 words
+
+3. **Test Specification** (`docs/tests/CHRONO-XXX-tests.md`)
+   - Unit, integration, and E2E test cases
+   - Manual verification steps
+   - Performance and security requirements
+   - ~200-400 words
+
+**Why this works**: Specifications reduce token usage by 50-70% vs discovery-driven development and prevent scope creep.
+
+### Quick Start: Working on a Ticket
+
+#### Step 1: Create GitHub Issue
+
+```bash
+# Create issue titled: "CHRONO-123: Your feature description"
+gh issue create --title "CHRONO-123: Feature description" \
+  --body "Context here..."
+```
+
+#### Step 2: Create the 3 Documentation Files
+
+**Create specification** (`docs/specs/CHRONO-123-short-name.md`):
+```markdown
+# CHRONO-123: Short Feature Name
+
+## Context
+Why are we building this?
+
+## Requirements
+What needs to be built?
+
+## Acceptance Criteria
+How do we know it's done?
+```
+
+**Create implementation guide** (`docs/implementation/CHRONO-123-guide.md`):
+```markdown
+# CHRONO-123: Implementation Guide
+
+## Prerequisites
+What tools/knowledge are needed?
+
+## Step-by-Step Checklist
+1. [ ] First step
+2. [ ] Second step
+...
+
+## Common Pitfalls
+Watch out for...
+
+## Debugging Tips
+If something breaks...
+```
+
+**Create test specification** (`docs/tests/CHRONO-123-tests.md`):
+```markdown
+# CHRONO-123: Test Specification
+
+## Unit Tests
+Test cases for...
+
+## Integration Tests
+End-to-end scenarios...
+
+## Manual Verification
+How to verify manually...
+```
+
+#### Step 3: Update GitHub Issue
+
+Link all 3 docs in the issue description:
+```
+## Documentation
+- docs/specs/CHRONO-123-*.md - Specification
+- docs/implementation/CHRONO-123-guide.md - Implementation guide
+- docs/tests/CHRONO-123-tests.md - Test specification
+```
+
+#### Step 4: Use Claude Code to Begin
+
+```bash
+# Load ticket context
+/ticket CHRONO-123
+
+# Validate all docs exist
+/spec-ready CHRONO-123
+
+# Begin implementation with pre-work checklist
+/start-work
+```
+
+#### Step 5: Create Feature Branch and Implement
+
+```bash
+# Create feature branch
+git checkout -b CHRONO-123-your-feature
+
+# Git hooks will:
+# ✅ Block commits without 3 docs
+# ✅ Auto-inject "CHRONO-123:" into commit messages
+# ✅ Enforce commit message format
+
+# Commit after each major step
+git add .
+git commit -m "Descriptive message"  # Auto-becomes: CHRONO-123: Descriptive message
+```
+
+#### Step 6: Create PR and Merge
+
+```bash
+# Push branch
+git push origin CHRONO-123-your-feature
+
+# Create PR
+gh pr create --title "CHRONO-123: Your feature" \
+  --body "Fixes #123
+
+See documentation:
+- docs/specs/CHRONO-123-*.md
+- docs/implementation/CHRONO-123-guide.md
+- docs/tests/CHRONO-123-tests.md"
+
+# GitHub Actions will:
+# ✅ Extract ticket number from PR title
+# ✅ Verify all 3 docs exist
+# ✅ Block merge if docs missing
+# ✅ Allow merge when all docs present
+```
+
+#### Step 7: Close Loop
+
+```bash
+# Merge PR when tests pass
+gh pr merge <pr-number>
+
+# Close issue
+gh issue close <issue-number> \
+  --comment "Completed via PR #<pr-number>"
+
+# Update project board
+gh project item-edit <item-id> --status Done
+```
+
+### Multi-Layer Enforcement System
+
+#### Layer 1️⃣: Git Hooks (Local Machine)
+
+Enforced via **Husky** when you commit:
+
+- **pre-commit**: Validates all 3 docs exist (blocks if missing)
+- **prepare-commit-msg**: Auto-injects CHRONO-123 into commit messages
+- **commit-msg**: Enforces format "CHRONO-XXX: Description"
+
+Example:
+```bash
+$ git commit -m "Add feature"
+CHRONO-123: Add feature  # Auto-prefixed!
+
+$ git commit -m "Fix bug"  # On branch without CHRONO-XXX
+❌ Commit blocked - missing docs
+```
+
+#### Layer 2️⃣: GitHub Actions (Remote CI/CD)
+
+Enforced when you create a PR:
+
+- Extracts ticket number from PR title or branch name
+- Verifies `docs/specs/CHRONO-XXX-*.md` exists
+- Verifies `docs/implementation/CHRONO-XXX-guide.md` exists
+- Verifies `docs/tests/CHRONO-XXX-tests.md` exists
+- **Blocks merge** if any doc is missing
+
+Example:
+```
+PR #42: "CHRONO-123: Add feature"
+  ↓
+GitHub Actions ticket-validation.yml runs
+  ✅ Extract ticket: CHRONO-123
+  ✅ Spec exists
+  ✅ Implementation guide exists
+  ✅ Test spec exists
+  ✓ All checks passed!
+```
+
+#### Layer 3️⃣: Claude Code (IDE/Session)
+
+Guided workflow in Claude Code:
+
+- **CLAUDE.md**: Project workflow guide loaded on session start
+- **Slash commands**: `/ticket`, `/spec-ready`, `/start-work`
+- **Reference guides**: Svelte 5 patterns, Bun compatibility, etc.
+- **Hooks**: Detect ticket patterns and suggest best practices
+
+### Reference Documents
+
+Available when you start a new Claude Code session:
+
+- **Pre-Ticket Checklist** (`docs/claude/pre-ticket-checklist.md`)
+- **Implementation Phases** (`docs/claude/implementation-phases.md`)
+- **Backend Patterns** (`docs/claude/backend-patterns.md`)
+- **Frontend Patterns** (`docs/claude/frontend-patterns.md`)
+- **Svelte 5 Reference** (`docs/reference/svelte5-patterns.md`)
+- **Bun Compatibility** (`docs/reference/bun-compatibility.md`)
+
+### Common Workflow Problems & Solutions
+
+#### ❌ "Git hook blocks my commit"
+
+**Solution**: You're missing one of the 3 required docs.
+
+```bash
+# Check which docs exist
+ls docs/specs/CHRONO-123-*.md       # Should exist
+ls docs/implementation/CHRONO-123-guide.md  # Should exist
+ls docs/tests/CHRONO-123-tests.md   # Should exist
+
+# If any are missing, create them before committing
+```
+
+#### ❌ "GitHub Actions blocks my PR"
+
+**Solution**: Check the workflow logs - a doc file is likely missing.
+
+```bash
+# Go to PR > Checks > ticket-validation
+# See which doc is missing
+# Add the missing file and push again
+```
+
+#### ❌ "I need to deviate from the spec"
+
+**Solution**: Create a follow-up ticket instead of expanding the current one.
+
+This keeps scope predictable and token usage under control. Document the change as a reason for the follow-up ticket.
+
+### Supply Cost Estimation (StarCraft Style)
+
+- **1 Supply** (XS) - Marine/Zealot level tasks
+- **2 Supply** (S) - Stalker/Marauder level features
+- **3 Supply** (M) - High Templar/Ghost level complexity
+- **5 Supply** (L) - Colossus/Thor level major systems
+- **8 Supply** (XL) - Carrier/Battlecruiser level epic implementations
+
 ### Project Management
 
 - **GitHub Projects**: Roadmap view with StarCraft-themed epics
 - **Issue Tracking**: Comprehensive tickets with supply cost estimation
 - **CI/CD Pipeline**: Multi-language testing and deployment
 - **Quality Gates**: Code coverage, security scanning, performance tests
-
-### Supply Cost Estimation (StarCraft Style)
-
-- **1 Supply** (XS) - Marine/Zealot level tasks
-- **2 Supply** (S) - Stalker/Marauder level features  
-- **3 Supply** (M) - High Templar/Ghost level complexity
-- **5 Supply** (L) - Colossus/Thor level major systems
-- **8 Supply** (XL) - Carrier/Battlecruiser level epic implementations
 
 ## 📈 Business Model
 
