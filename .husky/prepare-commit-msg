@@ -1,0 +1,27 @@
+#!/bin/bash
+# Prepare-commit-msg hook: Auto-prefix commit messages with ticket number
+# If on branch CHRONO-018-something, auto-adds "CHRONO-018: " prefix
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+
+# Don't modify if already a merge/rebase commit
+if [ "$COMMIT_SOURCE" != "" ]; then
+  exit 0
+fi
+
+# Extract ticket from branch name
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+TICKET=$(echo "$BRANCH" | grep -oE 'CHRONO-[0-9]+' || echo "")
+
+# If no ticket found or message already has ticket, skip
+if [ -z "$TICKET" ] || grep -q "^${TICKET}" "$COMMIT_MSG_FILE"; then
+  exit 0
+fi
+
+# Prepend ticket to commit message
+# Use sed to insert at first line (non-comment lines)
+sed -i.bak "1s/^/${TICKET}: /" "$COMMIT_MSG_FILE"
+rm -f "$COMMIT_MSG_FILE.bak"
+
+exit 0
