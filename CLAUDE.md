@@ -28,7 +28,26 @@ Welcome to Project Chrono! This file guides you through the correct process for 
    - docs/tests/CHRONO-XXX-tests.md
    ```
 
-4. **In Claude Code**, load ticket context:
+4. **Add required labels** to the issue:
+   - **Supply cost** (required): Pick one supply label that matches estimate
+     - `1-supply` (XS), `2-supply` (S), `3-supply` (M), `5-supply` (L), `8-supply` (XL)
+   - **Epic** (required): Pick one to categorize the work
+     - `epic-nexus` (infrastructure), `epic-warp` (UI), `epic-khala` (ML/backend), `epic-fleet` (blockchain), `epic-chrono` (core)
+   - **Role** (recommended): Pick the primary role(s)
+     - `zealot-frontend`, `overlord-backend`, `marine-devops`, `probe-data`, `scv-qa`, `templar-blockchain`
+   - **Importance** (recommended): `Main Objective` for foundational work
+
+   ```bash
+   # Example for an 8-supply infrastructure ticket
+   gh issue edit <NUMBER> --add-label "8-supply,epic-nexus,marine-devops,Main Objective"
+   ```
+
+5. **Add to project board**:
+   ```bash
+   gh project item-add 5 --owner alexsmith84 --url https://github.com/alexsmith84/project-chrono/issues/<NUMBER>
+   ```
+
+6. **In Claude Code**, load ticket context:
    ```
    /ticket CHRONO-XXX
    /spec-ready

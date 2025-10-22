@@ -468,12 +468,31 @@ Welcome! This file guides you through the correct process for working on Project
 ### Before You Code
 
 1. **Create GitHub issue** with title: "CHRONO-XXX: Short description"
+
 2. **Create 3 documentation files** (in this order):
    - `docs/specs/CHRONO-XXX-short-name.md` - What to build, why, acceptance criteria
    - `docs/implementation/CHRONO-XXX-guide.md` - How to build it, step-by-step
    - `docs/tests/CHRONO-XXX-tests.md` - How to test it, test cases
+
 3. **Update GitHub issue** to link all 3 docs in the description
-4. **Use slash commands**:
+
+4. **Add required labels** to the GitHub issue:
+   - **Supply cost**: `1-supply`, `2-supply`, `3-supply`, `5-supply`, or `8-supply` (required)
+   - **Epic**: One of `epic-nexus`, `epic-warp`, `epic-khala`, `epic-fleet`, `epic-chrono` (required)
+   - **Role**: One of `zealot-frontend`, `overlord-backend`, `marine-devops`, `probe-data`, `scv-qa`, `templar-blockchain` (recommended)
+   - **Importance**: `Main Objective` for foundational work (optional but recommended for major tickets)
+
+   Example:
+   ```bash
+   gh issue edit 123 --add-label "8-supply,epic-nexus,marine-devops,Main Objective"
+   ```
+
+5. **Add issue to GitHub project**:
+   ```bash
+   gh project item-add 5 --owner alexsmith84 --url https://github.com/alexsmith84/project-chrono/issues/123
+   ```
+
+6. **Use slash commands**:
    - `/ticket CHRONO-XXX` - Load ticket context
    - `/spec-ready` - Verify all docs exist
    - `/start-work` - Begin implementation with phase gates
