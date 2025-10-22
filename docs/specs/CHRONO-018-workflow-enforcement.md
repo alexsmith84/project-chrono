@@ -291,10 +291,15 @@ The implementation is complete when:
 4. ✅ All slash commands functional and documented
 5. ✅ README.md updated with workflow examples
 6. ✅ CHRONO-018 itself follows the 3-doc system (this spec!)
-7. ✅ No regressions to existing CI/CD workflows
-8. ✅ Tested on macOS and Linux environments
-9. ✅ All tests passing (unit, integration, GitHub Actions)
-10. ✅ Documentation is clear and easy to follow
+7. ✅ Label requirements documented and enforced
+   - Supply cost labels (1-supply, 2-supply, 3-supply, 5-supply, 8-supply)
+   - Epic labels (epic-nexus, epic-warp, epic-khala, epic-fleet, epic-chrono)
+   - Role labels (zealot-frontend, overlord-backend, marine-devops, probe-data, scv-qa, templar-blockchain)
+   - Implementation guide specifies label requirements for all future tickets
+8. ✅ No regressions to existing CI/CD workflows
+9. ✅ Tested on macOS and Linux environments
+10. ✅ All tests passing (unit, integration, GitHub Actions)
+11. ✅ Documentation is clear and easy to follow
 
 ---
 
