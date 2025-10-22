@@ -291,15 +291,21 @@ The implementation is complete when:
 4. ✅ All slash commands functional and documented
 5. ✅ README.md updated with workflow examples
 6. ✅ CHRONO-018 itself follows the 3-doc system (this spec!)
-7. ✅ Label requirements documented and enforced
+7. ✅ Feature branch workflow documented and enforced
+   - All ticket work happens on feature branches: `CHRONO-XXX-description`
+   - Feature branches start from `forge` (development branch)
+   - PRs go from feature branch → `forge` (not directly to `khala`)
+   - CLAUDE.md and implementation guide specify feature branch requirement
+   - CHRONO-018 itself demonstrates proper feature branch usage (PR from CHRONO-018-workflow)
+8. ✅ Label requirements documented and enforced
    - Supply cost labels (1-supply, 2-supply, 3-supply, 5-supply, 8-supply)
    - Epic labels (epic-nexus, epic-warp, epic-khala, epic-fleet, epic-chrono)
    - Role labels (zealot-frontend, overlord-backend, marine-devops, probe-data, scv-qa, templar-blockchain)
    - Implementation guide specifies label requirements for all future tickets
-8. ✅ No regressions to existing CI/CD workflows
-9. ✅ Tested on macOS and Linux environments
-10. ✅ All tests passing (unit, integration, GitHub Actions)
-11. ✅ Documentation is clear and easy to follow
+9. ✅ No regressions to existing CI/CD workflows
+10. ✅ Tested on macOS and Linux environments
+11. ✅ All tests passing (unit, integration, GitHub Actions)
+12. ✅ Documentation is clear and easy to follow
 
 ---
 

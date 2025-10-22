@@ -10,17 +10,26 @@ Welcome to Project Chrono! This file guides you through the correct process for 
 
 ### Phase 1: Before You Write Any Code
 
-1. **Create GitHub issue** with title: `CHRONO-XXX: Short description`
+1. **Create feature branch** (required - all work happens here):
+   ```bash
+   git checkout -b CHRONO-XXX-short-description
+   # Example: CHRONO-019-webhook-support
+   ```
+   - Feature branches start from `forge` (development branch)
+   - Branch names must start with CHRONO-XXX
+   - This ensures clean separation of work and proper PR workflow
+
+2. **Create GitHub issue** with title: `CHRONO-XXX: Short description`
    ```bash
    gh issue create --title "CHRONO-XXX: Feature description"
    ```
 
-2. **Create 3 documentation files** (in this order):
+3. **Create 3 documentation files** (in this order):
    - `docs/specs/CHRONO-XXX-short-name.md` - **What** to build, **why**, acceptance criteria
    - `docs/implementation/CHRONO-XXX-guide.md` - **How** to build it (step-by-step)
    - `docs/tests/CHRONO-XXX-tests.md` - **How** to test it, test cases
 
-3. **Update GitHub issue** to link all 3 docs in description:
+4. **Update GitHub issue** to link all 3 docs in description:
    ```markdown
    ## Documentation
    - docs/specs/CHRONO-XXX-*.md
@@ -28,7 +37,7 @@ Welcome to Project Chrono! This file guides you through the correct process for 
    - docs/tests/CHRONO-XXX-tests.md
    ```
 
-4. **Add required labels** to the issue:
+5. **Add required labels** to the issue:
    - **Supply cost** (required): Pick one supply label that matches estimate
      - `1-supply` (XS), `2-supply` (S), `3-supply` (M), `5-supply` (L), `8-supply` (XL)
    - **Epic** (required): Pick one to categorize the work
@@ -42,12 +51,12 @@ Welcome to Project Chrono! This file guides you through the correct process for 
    gh issue edit <NUMBER> --add-label "8-supply,epic-nexus,marine-devops,Main Objective"
    ```
 
-5. **Add to project board**:
+6. **Add to project board**:
    ```bash
    gh project item-add 5 --owner alexsmith84 --url https://github.com/alexsmith84/project-chrono/issues/<NUMBER>
    ```
 
-6. **In Claude Code**, load ticket context:
+7. **In Claude Code**, load ticket context:
    ```
    /ticket CHRONO-XXX
    /spec-ready
